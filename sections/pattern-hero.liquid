@@ -1,0 +1,157 @@
+{%- style -%}
+  #PatternHero-{{ section.id }} {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    font-family: 'Urbanist', sans-serif;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__column {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: 100%;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__left {
+    background-color: #1c1c1c;
+    justify-content: space-between;
+    padding: 4rem 3rem;
+    box-sizing: border-box;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__eyebrow {
+    color: #e85c41;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__headline {
+    color: #ffffff;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.1;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__headline em {
+    font-style: italic;
+    font-weight: 700;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__subheading {
+    color: #cccccc;
+    font-size: 1.125rem;
+    line-height: 1.5;
+    max-width: 30ch;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 0.9rem 1.75rem;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__cta:hover {
+    background-color: #ffffff;
+    color: #1c1c1c;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__tags {
+    color: #e85c41;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__right {
+    position: relative;
+    background-color: #3a3a3a;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 2rem;
+    box-sizing: border-box;
+    background-size: cover;
+    background-position: center;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__right-caption {
+    color: #ffffff;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: right;
+    max-width: 22ch;
+    margin: 0;
+    font-weight: 500;
+  }
+
+  @media screen and (max-width: 749px) {
+    #PatternHero-{{ section.id }} {
+      flex-direction: column;
+      height: auto;
+      min-height: 100vh;
+    }
+
+    #PatternHero-{{ section.id }} .pattern-hero__column {
+      width: 100%;
+    }
+
+    #PatternHero-{{ section.id }} .pattern-hero__left {
+      padding: 2.5rem 1.5rem;
+    }
+
+    #PatternHero-{{ section.id }} .pattern-hero__right {
+      min-height: 40vh;
+      padding: 1.5rem;
+    }
+  }
+{%- endstyle -%}
+
+<div id="PatternHero-{{ section.id }}" class="pattern-hero">
+  <div class="pattern-hero__column pattern-hero__left">
+    <p class="pattern-hero__eyebrow">Independent Record Shop</p>
+
+    <div class="pattern-hero__content">
+      <h1 class="pattern-hero__headline"><strong>New cuts</strong> <em>for</em> <strong>curious listeners.</strong></h1>
+      <p class="pattern-hero__subheading">Carefully selected electronic, jazz, house and second-hand vinyl from a room in Lisbon.</p>
+      <a href="/collections/all" class="pattern-hero__cta">Hear What Just Landed &rarr;</a>
+    </div>
+
+    <p class="pattern-hero__tags">House / Jazz / Electro</p>
+  </div>
+
+  <div class="pattern-hero__column pattern-hero__right">
+    <p class="pattern-hero__right-caption">Listen closer. Browse slower. Take the long way home.</p>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Pattern Hero",
+  "settings": []
+}
+{% endschema %}
