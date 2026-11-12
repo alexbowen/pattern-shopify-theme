@@ -199,6 +199,14 @@
           "other": "{{ count }} records"
         }
       },
+      "origin": {
+        "from": "From",
+        "all": "All origins",
+        "chip": "Origin",
+        "title": "Origins",
+        "search": "Search origins",
+        "no_match": "No origins match"
+      },
       "filter_bar": {
         "filters": "Filters",
         "in_stock": "In stock",

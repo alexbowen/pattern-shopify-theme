@@ -1,0 +1,27 @@
+{% comment %}
+  One origin pill in the origin line: a toggle button (aria-pressed). It has no input of its own;
+  facets.js toggles the matching hidden input in origin-line.liquid.
+
+  Accepts:
+  - value: {Object} Filter value
+  - key: {String} Handleized value, shared with the panel checkbox and hidden input
+{% endcomment %}
+<button
+  type="button"
+  id="OriginPill-{{ key }}"
+  class="origin-pill{% if value.active %} origin-pill--active{% endif %}"
+  aria-pressed="{% if value.active %}true{% else %}false{% endif %}"
+  data-origin-key="{{ key }}"
+>
+  <span class="origin-pill__label">{{ value.label | escape }}</span>
+  <span class="origin-pill__count" aria-hidden="true">{{ value.count }}</span>
+  <span class="visually-hidden">
+    (
+    {%- if value.count == 1 -%}
+      {{- 'products.facets.product_count_simple.one' | t: count: value.count -}}
+    {%- else -%}
+      {{- 'products.facets.product_count_simple.other' | t: count: value.count -}}
+    {%- endif -%}
+    )
+  </span>
+</button>

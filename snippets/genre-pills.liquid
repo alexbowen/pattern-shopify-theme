@@ -10,6 +10,8 @@
   Accepts:
   - results: {Object} Collection object
   - param_name: {String} Param name of the genre filter, e.g. 'filter.p.m.custom.pattern_genre'
+  - origin_param: {String} Optional. Param name of the origin filter (e.g. 'filter.p.m.custom.origin');
+    rendered as a line under the genre pills by snippets/origin-line.liquid when it has values.
   - show_sort: {Boolean} Render the record count and sort control (snippets/pattern-sort.liquid).
     False when the Pattern filter bar shows them instead.
     Its select is in this form, so sort_by is submitted with the genres on every filter change.
@@ -54,8 +56,12 @@
     endfor
 
     assign parents_html = ''
-    assign children_html = ''
-    assign visible_children = 0
+    # Children are grouped into one tray per parent (genres.json lists each parent's children
+    # together, right after it). Trays are shown for expanded parents only.
+    assign trays_html = ''
+    assign tray_html = ''
+    assign current_tray = ''
+    assign visible_trays = 0
   -%}
 
   {%- for entry in entries -%}
@@ -74,7 +80,6 @@
         continue
       endif
 
-      assign is_hidden = false
       assign has_active_child = false
       if parent == blank and value.active == false
         assign handle_key = ',' | append: handle | append: ','
@@ -82,33 +87,47 @@
           assign has_active_child = true
         endif
       endif
-      if parent != blank
-        assign parent_key = ',' | append: parent | append: ','
-        unless expanded contains parent_key or value.active
-          assign is_hidden = true
-        endunless
-        unless is_hidden
-          assign visible_children = visible_children | plus: 1
-        endunless
-      endif
     -%}
+    {%- comment -%} Starting a new parent's children: close the previous tray. {%- endcomment -%}
+    {%- if parent != blank and parent != current_tray and current_tray != blank -%}
+      {%- capture tray -%}{% render 'genre-tray', parent: current_tray, genre_map: genre_map, expanded: expanded, pills: tray_html %}{%- endcapture -%}
+      {%- liquid
+        assign trays_html = trays_html | append: tray
+        assign tray_key = ',' | append: current_tray | append: ','
+        if expanded contains tray_key
+          assign visible_trays = visible_trays | plus: 1
+        endif
+        assign tray_html = ''
+      -%}
+    {%- endif -%}
     {%- capture pill -%}
       {% render 'genre-pill',
         value: value,
         handle: handle,
         parent: parent,
-        is_hidden: is_hidden,
+        is_hidden: false,
         has_active_child: has_active_child
       %}
     {%- endcapture -%}
     {%- liquid
       if parent != blank
-        assign children_html = children_html | append: pill
+        assign current_tray = parent
+        assign tray_html = tray_html | append: pill
       else
         assign parents_html = parents_html | append: pill
       endif
     -%}
   {%- endfor -%}
+  {%- if current_tray != blank -%}
+    {%- capture tray -%}{% render 'genre-tray', parent: current_tray, genre_map: genre_map, expanded: expanded, pills: tray_html %}{%- endcapture -%}
+    {%- liquid
+      assign trays_html = trays_html | append: tray
+      assign tray_key = ',' | append: current_tray | append: ','
+      if expanded contains tray_key
+        assign visible_trays = visible_trays | plus: 1
+      endif
+    -%}
+  {%- endif -%}
 
   {%- comment -%} Values not in the genre tree: show as top-level pills so nothing disappears. {%- endcomment -%}
   {%- for value in genre_filter.values -%}
@@ -123,12 +142,12 @@
       assign handle = 'other-' | append: forloop.index
     -%}
     {%- capture pill -%}
-      {% render 'genre-pill', value: value, handle: handle, parent: '', is_hidden: false %}
+      {% render 'genre-pill', value: value, handle: handle, parent: '', is_hidden: false, has_active_child: false %}
     {%- endcapture -%}
     {%- assign parents_html = parents_html | append: pill -%}
   {%- endfor -%}
 
-  {%- if parents_html != blank or children_html != blank or show_sort -%}
+  {%- if parents_html != blank or trays_html != blank or show_sort -%}
     {%- assign any_active = false -%}
     {%- if genre_filter.active_values.size > 0 -%}{%- assign any_active = true -%}{%- endif -%}
     {{ 'component-genre-pills.css' | asset_url | stylesheet_tag }}
@@ -153,21 +172,6 @@
                     </a>
                   </facet-remove>
                   {{- parents_html -}}
-                  <facet-remove
-                    class="genre-pills__remove genre-pills__clear-wrapper"
-                    {% unless any_active %}
-                      hidden
-                    {% endunless %}
-                  >
-                    <a
-                      href="{{ genre_filter.url_to_remove }}"
-                      id="GenrePillsClear"
-                      class="genre-pills__clear link underlined-link"
-                      data-genre-clear
-                    >
-                      {{- 'products.facets.clear' | t -}}
-                    </a>
-                  </facet-remove>
                 </div>
                 {%- if show_sort -%}
                 <div class="genre-pills__meta">
@@ -184,14 +188,15 @@
                 {%- endif -%}
               </div>
               {%- comment -%} Grid rows 0fr -> 1fr animates the height, so the grid below moves smoothly. {%- endcomment -%}
-              <div class="genre-pills__children{% if visible_children > 0 %} is-open{% endif %}" data-genre-children>
+              <div class="genre-pills__children{% if visible_trays > 0 %} is-open{% endif %}" data-genre-children>
                 <div class="genre-pills__children-inner">
-                  <div class="genre-pills__row genre-pills__row--children" data-genre-row="children">
-                    {{- children_html -}}
-                  </div>
+                  {{- trays_html -}}
                 </div>
               </div>
             </fieldset>
+            {%- if origin_param != blank -%}
+              {% render 'origin-line', results: results, param_name: origin_param %}
+            {%- endif -%}
           </div>
         </form>
       </facet-filters-form>

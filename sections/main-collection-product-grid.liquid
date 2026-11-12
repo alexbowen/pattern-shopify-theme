@@ -40,6 +40,10 @@
   {%- paginate collection.products by section.settings.products_per_page -%}
     {%- liquid
       assign genre_param = 'filter.p.m.custom.pattern_genre'
+      # Discovery filters live in the pill bar: genre pills, and the origin line under them.
+      assign origin_param = 'filter.p.m.custom.origin'
+      # The old taxonomy genre filter duplicates the pills; keep it out of the utility row.
+      assign legacy_genre_param = 'filter.v.t.shopify.music-genre'
       assign genre_pills = false
       assign genre_param_excluded = ''
       if section.settings.enable_filtering and section.settings.show_genre_pills
@@ -70,6 +74,12 @@
         assign filter_bar = true
         assign pills_show_sort = false
       endif
+      # Params the utility row and sheet skip (,a,b, list), and the discovery params a sheet
+      # "Clear" keeps.
+      assign utility_excludes = ',' | append: genre_param | append: ',' | append: legacy_genre_param | append: ',' | append: origin_param | append: ','
+      assign discovery_params = ',' | append: genre_param | append: ',' | append: origin_param | append: ','
+      # Active chips skip genres: the pills already show them as active.
+      assign chip_excludes = ',' | append: genre_param | append: ',' | append: legacy_genre_param | append: ','
     -%}
     {% comment %} Sort is the first tabbable element when filter type is vertical {% endcomment %}
     {%- if facets_sorting and section.settings.filter_type == 'vertical' -%}
@@ -131,7 +141,12 @@
     {%- endif -%}
 
     {%- if genre_pills -%}
-      {% render 'genre-pills', results: collection, param_name: genre_param, show_sort: pills_show_sort %}
+      {% render 'genre-pills',
+        results: collection,
+        param_name: genre_param,
+        origin_param: origin_param,
+        show_sort: pills_show_sort
+      %}
     {%- endif -%}
 
     <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
@@ -152,7 +167,10 @@
             paginate: paginate,
             exclude_param: genre_param_excluded,
             sort_in_bar: sort_in_bar,
-            filter_bar: filter_bar
+            filter_bar: filter_bar,
+            utility_excludes: utility_excludes,
+            discovery_params: discovery_params,
+            chip_excludes: chip_excludes
           %}
         </aside>
       {%- endif -%}

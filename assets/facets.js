@@ -42,7 +42,151 @@ class FacetFiltersForm extends HTMLElement {
     }, true);
     window.addEventListener('resize', debounce(() => FacetFiltersForm.refreshGenreRows(form), 100));
 
+    FacetFiltersForm.initOriginLine(form);
+
     requestAnimationFrame(() => FacetFiltersForm.refreshGenreRows(form, { scrollActive: true }));
+  }
+
+  // Origin line (snippets/origin-line.liquid). Each origin has one hidden input that the form
+  // submits; the pills and the panel checkboxes are proxies kept in step here.
+  static initOriginLine(form) {
+    // Listeners sit on the form (its contents are replaced on every AJAX render).
+    form.addEventListener('click', (event) => {
+      const pill = event.target.closest('.origin-pill[data-origin-key]');
+      if (pill) {
+        FacetFiltersForm.setOriginSelected(form, pill.dataset.originKey, pill.getAttribute('aria-pressed') !== 'true');
+        pill.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+      }
+      if (event.target.closest('[data-origin-close]')) {
+        FacetFiltersForm.closeOriginPanel(form, true);
+      }
+    });
+
+    form.addEventListener('change', (event) => {
+      const checkbox = event.target.closest('[data-origin-panel] input[type="checkbox"][data-origin-key]');
+      if (checkbox) FacetFiltersForm.setOriginSelected(form, checkbox.dataset.originKey, checkbox.checked);
+    });
+
+    // The search box filters the list; it must never submit the filters (debounced 'input' handler
+    // on the form, or implicit submission on Enter).
+    const pillsContainer = form.querySelector('#GenrePills') || form;
+    pillsContainer.addEventListener('input', (event) => {
+      if (!event.target.matches('[data-origin-search]')) return;
+      event.stopPropagation();
+      FacetFiltersForm.filterOriginList(form);
+    });
+    form.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && event.target.matches('[data-origin-search]')) event.preventDefault();
+      if (event.key === 'Tab') FacetFiltersForm.trapOriginTab(event);
+    });
+
+    // Keep focus in the open panel if it lands outside by other means (the toggle itself is
+    // allowed: clicking outside closes the panel through it).
+    document.addEventListener('focusin', (event) => {
+      const panel = document.querySelector('[data-origin-panel][open]');
+      if (!panel) return;
+      const content = panel.querySelector('.origin-panel__content');
+      if (content.contains(event.target) || event.target === panel.querySelector(':scope > summary')) return;
+      FacetFiltersForm.originFocusables(panel)[0]?.focus();
+    });
+
+    form.addEventListener('keyup', (event) => {
+      if (event.code && event.code.toUpperCase() === 'ESCAPE' && event.target.closest('[data-origin-panel][open]')) {
+        FacetFiltersForm.closeOriginPanel(form, true);
+      }
+    });
+
+    // Open: trap focus in the panel (search first) and, on mobile, lock page scroll. Close: release.
+    form.addEventListener(
+      'toggle',
+      (event) => {
+        const panel = event.target;
+        if (!(panel instanceof HTMLDetailsElement) || !panel.matches('[data-origin-panel]')) return;
+        const summary = panel.querySelector(':scope > summary');
+        summary.setAttribute('aria-expanded', String(panel.open));
+        if (panel.open) {
+          const focusId = FacetFiltersForm.originRestoreFocusId;
+          FacetFiltersForm.originRestoreFocusId = null;
+          const focusTarget = (focusId && document.getElementById(focusId)) || panel.querySelector('[data-origin-search]');
+          focusTarget?.focus({ preventScroll: true });
+          if (window.matchMedia('(max-width: 749px)').matches) document.body.classList.add('overflow-hidden-mobile');
+        } else {
+          document.body.classList.remove('overflow-hidden-mobile');
+          // Escape / close buttons return focus to the toggle; clicking outside leaves it where it lands.
+          if (FacetFiltersForm.originClosingWithFocus) summary.focus({ preventScroll: true });
+          FacetFiltersForm.originClosingWithFocus = false;
+        }
+      },
+      true
+    );
+  }
+
+  static setOriginSelected(form, key, selected) {
+    const input = form.querySelector(`[data-origin-input="${CSS.escape(key)}"]`);
+    if (input) input.disabled = !selected;
+    form.querySelectorAll(`.origin-pill[data-origin-key="${CSS.escape(key)}"]`).forEach((pill) => {
+      pill.setAttribute('aria-pressed', String(selected));
+      pill.classList.toggle('origin-pill--active', selected);
+    });
+    form.querySelectorAll(`[data-origin-panel] input[data-origin-key="${CSS.escape(key)}"]`).forEach((checkbox) => {
+      checkbox.checked = selected;
+    });
+    const selectedCount = form.querySelectorAll('[data-origin-input]:not([disabled])').length;
+    const countLabel = form.querySelector('[data-origin-count]');
+    if (countLabel) countLabel.textContent = selectedCount > 0 ? ` · ${selectedCount}` : '';
+    form.querySelector('.origin-panel__toggle')?.classList.toggle('origin-panel__toggle--active', selectedCount > 0);
+  }
+
+  // Focusable controls in the open panel that are actually visible right now (search hides list
+  // items; the footer button only shows on mobile), so the trap wraps at the real ends.
+  static originFocusables(panel) {
+    return Array.from(
+      panel.querySelectorAll('.origin-panel__content button, .origin-panel__content input:not([type="hidden"])')
+    ).filter((el) => !el.disabled && el.offsetParent !== null);
+  }
+
+  static trapOriginTab(event) {
+    const panel = event.target.closest && event.target.closest('[data-origin-panel][open]');
+    if (!panel || !panel.querySelector('.origin-panel__content').contains(event.target)) return;
+    const focusables = FacetFiltersForm.originFocusables(panel);
+    if (focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (event.shiftKey && event.target === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && event.target === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  static closeOriginPanel(form, returnFocus) {
+    const panel = form.querySelector('[data-origin-panel][open]');
+    if (!panel) return;
+    FacetFiltersForm.originClosingWithFocus = returnFocus;
+    panel.open = false;
+    if (returnFocus) panel.querySelector(':scope > summary')?.focus();
+  }
+
+  // Live search: case- and accent-insensitive match anywhere in the name.
+  static normaliseOriginText(text) {
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+
+  static filterOriginList(form) {
+    const search = form.querySelector('[data-origin-search]');
+    if (!search) return;
+    const query = FacetFiltersForm.normaliseOriginText(search.value);
+    let shown = 0;
+    form.querySelectorAll('[data-origin-panel] [data-origin-name]').forEach((item) => {
+      const match = !query || FacetFiltersForm.normaliseOriginText(item.dataset.originName).includes(query);
+      item.hidden = !match;
+      if (match) shown++;
+    });
+    const empty = form.querySelector('[data-origin-empty]');
+    if (empty) empty.hidden = shown > 0;
   }
 
   static setGenrePillPressed(pill, pressed) {
@@ -82,29 +226,30 @@ class FacetFiltersForm extends HTMLElement {
 
     const childWrapper = form.querySelector('[data-genre-children]');
     if (!childWrapper) return;
-    const children = pills.filter((pill) => pill.dataset.genreParent);
-    // Same rule as genre-pills.liquid: a parent's children stay open while the parent or any of them is selected.
-    const shouldShow = (pill) =>
-      pressedHandles.has(pill.dataset.genreParent) || parentsOfPressedChildren.has(pill.dataset.genreParent);
+    // One tray per parent. Same rule as genre-pills.liquid: a tray stays open while its parent or
+    // any of its children is selected.
+    const trays = Array.from(childWrapper.querySelectorAll('[data-genre-tray]'));
+    const shouldShow = (tray) =>
+      pressedHandles.has(tray.dataset.genreTray) || parentsOfPressedChildren.has(tray.dataset.genreTray);
 
     clearTimeout(FacetFiltersForm.genreCollapseTimer);
-    if (children.some(shouldShow)) {
-      children.forEach((pill) => {
-        const show = shouldShow(pill);
-        if (show && pill.hidden) {
-          pill.hidden = false;
-          pill.classList.add('genre-pill--entering');
-          pill.addEventListener('animationend', () => pill.classList.remove('genre-pill--entering'), { once: true });
+    if (trays.some(shouldShow)) {
+      trays.forEach((tray) => {
+        const show = shouldShow(tray);
+        if (show && tray.hidden) {
+          tray.hidden = false;
+          tray.classList.add('genre-tray--entering');
+          tray.addEventListener('animationend', () => tray.classList.remove('genre-tray--entering'), { once: true });
         } else if (!show) {
-          pill.hidden = true;
+          tray.hidden = true;
         }
       });
       childWrapper.classList.add('is-open');
     } else {
-      // Collapse with the pills still in place, then hide them once the row has closed.
+      // Collapse with the trays still in place, then hide them once the row has closed.
       childWrapper.classList.remove('is-open');
       FacetFiltersForm.genreCollapseTimer = setTimeout(() => {
-        children.forEach((pill) => (pill.hidden = true));
+        trays.forEach((tray) => (tray.hidden = true));
       }, FacetFiltersForm.prefersReducedMotion() ? 0 : 220);
     }
     FacetFiltersForm.refreshGenreRows(form);
@@ -442,12 +587,35 @@ class FacetFiltersForm extends HTMLElement {
       scrollPositions[row.dataset.genreRow] = row.scrollLeft;
     });
 
+    // Origin panel: keep it open with the same search, list scroll and focus.
+    const originPanel = target.querySelector('[data-origin-panel]');
+    const originState = originPanel && originPanel.open
+      ? {
+          query: originPanel.querySelector('[data-origin-search]')?.value || '',
+          listScroll: originPanel.querySelector('.origin-panel__list')?.scrollTop || 0,
+          focusId: originPanel.contains(document.activeElement) ? document.activeElement.id : null,
+        }
+      : null;
+
     target.innerHTML = source.innerHTML;
+
+    if (originState) {
+      const newPanel = target.querySelector('[data-origin-panel]');
+      if (newPanel) {
+        const search = newPanel.querySelector('[data-origin-search]');
+        if (search) search.value = originState.query;
+        FacetFiltersForm.filterOriginList(target.closest('form'));
+        FacetFiltersForm.originRestoreFocusId = originState.focusId;
+        newPanel.open = true;
+        const list = newPanel.querySelector('.origin-panel__list');
+        if (list) list.scrollTop = originState.listScroll;
+      }
+    }
 
     target.querySelectorAll('[data-genre-row]').forEach((row) => {
       if (scrollPositions[row.dataset.genreRow]) row.scrollLeft = scrollPositions[row.dataset.genreRow];
     });
-    if (focusedId) {
+    if (focusedId && !originState) {
       let focusTarget = document.getElementById(focusedId);
       // Clear is hidden once nothing is selected; move focus to "All" instead of losing it.
       if (!focusTarget || focusTarget.closest('[hidden]')) focusTarget = document.getElementById('GenrePill-all');

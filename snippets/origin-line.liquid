@@ -1,0 +1,165 @@
+{% comment %}
+  Origin filter line under the genre pills: "From", the top 6 origins by count as small outline
+  pills, any other selected origins, and an "All origins" panel (popover on desktop, bottom sheet
+  on mobile) with live search over a flat alphabetical list. On mobile the line collapses to a
+  single "Origin" chip that opens the sheet.
+
+  Every visible origin has one hidden input (disabled unless selected): that's what the form
+  submits. The pills and the panel checkboxes have no name; facets.js keeps them and the inputs in
+  step, so a value is never sent twice. The line sits in the genre pills form, so origin goes with
+  every submission. Shopify combines origins with OR and with genres with AND.
+
+  Renders nothing if the filter is missing or has no values with results.
+
+  Accepts:
+  - results: {Object} Collection
+  - param_name: {String} Param name of the origin filter, e.g. 'filter.p.m.custom.origin'
+{% endcomment %}
+
+{%- liquid
+  assign origin_filter = results.filters | where: 'param_name', param_name | first
+  assign visible = 0
+  if origin_filter
+    for value in origin_filter.values
+      if value.count > 0 or value.active
+        assign visible = visible | plus: 1
+      endif
+    endfor
+  endif
+-%}
+
+{%- if origin_filter and visible > 0 -%}
+  {%- liquid
+    assign selected_count = origin_filter.active_values.size
+
+    # Top 6 by count (ties keep Shopify's order), skipping zero counts.
+    assign by_count = origin_filter.values | sort: 'count' | reverse
+    assign top_keys = ','
+    assign top_shown = 0
+    for value in by_count
+      if top_shown >= 6
+        break
+      endif
+      if value.count > 0
+        assign key = value.value | handleize
+        assign top_keys = top_keys | append: key | append: ','
+        assign top_shown = top_shown | plus: 1
+      endif
+    endfor
+
+    assign alphabetical = origin_filter.values | sort_natural: 'label'
+  -%}
+
+  <div class="origin-line" data-origin-line>
+    <span class="origin-line__label small-hide" id="OriginLineLabel">{{ 'products.facets.origin.from' | t }}</span>
+
+    <div
+      class="origin-line__row genre-pills__row small-hide"
+      data-genre-row="origins"
+      role="group"
+      aria-labelledby="OriginLineLabel"
+    >
+      {%- comment -%} Top 6 in count order, then selected origins outside the top 6. {%- endcomment -%}
+      {%- for value in by_count -%}
+        {%- assign key = value.value | handleize -%}
+        {%- assign key_check = ',' | append: key | append: ',' -%}
+        {%- if top_keys contains key_check -%}
+          {% render 'origin-pill', value: value, key: key %}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- for value in origin_filter.active_values -%}
+        {%- assign key = value.value | handleize -%}
+        {%- assign key_check = ',' | append: key | append: ',' -%}
+        {%- unless top_keys contains key_check -%}
+          {% render 'origin-pill', value: value, key: key %}
+        {%- endunless -%}
+      {%- endfor -%}
+    </div>
+
+    <details class="origin-panel disclosure-has-popup" data-origin-panel>
+      <summary
+        class="origin-panel__toggle{% if selected_count > 0 %} origin-panel__toggle--active{% endif %}"
+        aria-controls="OriginPanel"
+        aria-expanded="false"
+      >
+        <span class="small-hide">{{ 'products.facets.origin.all' | t }}</span>
+        <span class="medium-hide large-up-hide">
+          {{- 'products.facets.origin.chip' | t -}}
+          <span class="origin-panel__count" data-origin-count>
+            {%- if selected_count > 0 %} · {{ selected_count }}{% endif -%}
+          </span>
+        </span>
+        <span class="origin-panel__caret svg-wrapper" aria-hidden="true">
+          {{- 'icon-caret.svg' | inline_asset_content -}}
+        </span>
+      </summary>
+      <div
+        class="origin-panel__content"
+        id="OriginPanel"
+        role="dialog"
+        aria-labelledby="OriginPanelTitle"
+      >
+        <div class="origin-panel__header">
+          <h2 class="origin-panel__title" id="OriginPanelTitle">{{ 'products.facets.origin.title' | t }}</h2>
+          <button type="button" class="origin-panel__close" data-origin-close aria-label="{{ 'accessibility.close' | t }}">
+            <span class="svg-wrapper">{{- 'icon-close.svg' | inline_asset_content -}}</span>
+          </button>
+        </div>
+        <div class="origin-panel__search-wrap">
+          <label class="visually-hidden" for="OriginSearch">{{ 'products.facets.origin.search' | t }}</label>
+          <input
+            type="search"
+            id="OriginSearch"
+            class="origin-panel__search"
+            placeholder="{{ 'products.facets.origin.search' | t }}"
+            autocomplete="off"
+            spellcheck="false"
+            aria-controls="OriginList"
+            data-origin-search
+          >
+        </div>
+        <ul class="origin-panel__list list-unstyled" id="OriginList" role="list">
+          {%- for value in alphabetical -%}
+            {%- if value.count == 0 and value.active == false -%}{%- continue -%}{%- endif -%}
+            {%- assign key = value.value | handleize -%}
+            <li class="origin-panel__item" data-origin-name="{{ value.label | escape }}">
+              <label class="filter-option" for="OriginOption-{{ key }}">
+                <input
+                  type="checkbox"
+                  id="OriginOption-{{ key }}"
+                  data-origin-key="{{ key }}"
+                  {% if value.active %}
+                    checked
+                  {% endif %}
+                >
+                <span class="filter-option__label">{{ value.label | escape }}</span>
+                <span class="filter-option__count">{{ value.count }}</span>
+              </label>
+            </li>
+          {%- endfor -%}
+        </ul>
+        <p class="origin-panel__empty" data-origin-empty hidden>{{ 'products.facets.origin.no_match' | t }}</p>
+        <div class="origin-panel__footer">
+          <button type="button" class="button button--primary origin-panel__done" data-origin-close>
+            {{- 'products.facets.filter_bar.show_records' | t: count: results.products_count -}}
+          </button>
+        </div>
+      </div>
+    </details>
+
+    <div class="origin-line__inputs" hidden>
+      {%- for value in origin_filter.values -%}
+        {%- if value.count == 0 and value.active == false -%}{%- continue -%}{%- endif -%}
+        <input
+          type="hidden"
+          name="{{ value.param_name }}"
+          value="{{ value.value }}"
+          data-origin-input="{{ value.value | handleize }}"
+          {% unless value.active %}
+            disabled
+          {% endunless %}
+        >
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}

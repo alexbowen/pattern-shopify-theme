@@ -9,6 +9,7 @@
   - paginate: {Object}
   - exclude_param: {String} Optional. Param name of a filter rendered elsewhere (e.g. genre pills); left out of the filter dropdowns and drawer
   - filter_bar: {Boolean} Optional. Render snippets/pattern-filter-bar.liquid (chip row + mobile sheet) instead of the Dawn markup below
+  - utility_excludes / discovery_params / chip_excludes: {String} Optional, ,a,b, lists passed to pattern-filter-bar.liquid
   - sort_in_bar: {Boolean} Optional. Sorting lives in the genre pill bar: renders its mobile copy next to the Filter button (pass enable_sorting: false so the Dawn sort UI is off)
 
   Usage:
@@ -32,7 +33,13 @@
 -%}
 
 {%- if filter_bar -%}
-  {% render 'pattern-filter-bar', results: results, exclude_param: exclude_param, paginate: paginate %}
+  {% render 'pattern-filter-bar',
+    results: results,
+    utility_excludes: utility_excludes,
+    discovery_params: discovery_params,
+    chip_excludes: chip_excludes,
+    paginate: paginate
+  %}
 {%- else -%}
 <div class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if sort_in_bar %} facets-container--bar-sort{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
   {%- if filter_type == 'vertical' or filter_type == 'horizontal' -%}

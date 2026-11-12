@@ -1,0 +1,35 @@
+{% comment %}
+  One parent's child genres: an indented tray with a "House ›" label and a scrolling row of child
+  pills. Shown while the parent or one of its children is selected (facets.js mirrors this).
+  Used by genre-pills.liquid.
+
+  Accepts:
+  - parent: {String} Parent genre handle
+  - genre_map: {String} Output of snippets/pattern-genres.liquid
+  - expanded: {String} ,handle, list of expanded parents
+  - pills: {String} Rendered child pills
+{% endcomment %}
+{%- liquid
+  assign label_key = '=' | append: parent | append: '>'
+  assign parent_label = genre_map | split: label_key | first | split: '|' | last
+  assign tray_key = ',' | append: parent | append: ','
+-%}
+<div
+  class="genre-tray"
+  data-genre-tray="{{ parent }}"
+  {% unless expanded contains tray_key %}
+    hidden
+  {% endunless %}
+>
+  <span class="genre-tray__label" id="GenreTrayLabel-{{ parent }}">
+    {{- parent_label | escape }} <span aria-hidden="true">›</span>
+  </span>
+  <div
+    class="genre-pills__row genre-pills__row--children"
+    data-genre-row="tray-{{ parent }}"
+    role="group"
+    aria-labelledby="GenreTrayLabel-{{ parent }}"
+  >
+    {{- pills -}}
+  </div>
+</div>

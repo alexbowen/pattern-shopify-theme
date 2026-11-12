@@ -1,20 +1,27 @@
-/* Genre pills above the collection grid (snippets/genre-pills.liquid).
+/* Collection filter UI: discovery zone (genre pills, origin line) in the sticky bar, utility zone
+   (format, condition, in stock, count, sort) below its hairline. Markup: snippets/genre-pills.liquid,
+   genre-tray.liquid, origin-line.liquid, pattern-filter-bar.liquid, pattern-sort.liquid.
 
    Palette: --pattern-opal / --pattern-sandstone / --pattern-charcoal (+ --pattern-opal-text for
-   text on Opal) when the theme defines them. Until then they fall back to the section's colour
-   scheme variables, so nothing here is a hard-coded colour. */
-/* Tokens are shared with the sort control (snippets/pattern-sort.liquid), whose mobile copy sits
-   outside the pill bar, next to the Filter button. */
+   text on Opal). The theme doesn't define these yet, so each falls back to the section's colour
+   scheme variables; nothing here is a hard-coded colour. */
 .genre-pills,
 .pattern-sort,
 .filter-bar-container {
-  --genre-pill-accent: var(--pattern-opal, rgb(var(--color-button)));
-  --genre-pill-accent-text: var(--pattern-opal-text, rgb(var(--color-button-text)));
-  --genre-pill-bg: var(--pattern-sandstone, rgba(var(--color-foreground), 0.06));
-  --genre-pill-text: var(--pattern-charcoal, rgb(var(--color-foreground)));
-  --genre-pill-border: rgba(var(--color-foreground), 0.15);
+  --pal-opal: var(--pattern-opal, rgb(var(--color-button)));
+  --pal-on-opal: var(--pattern-opal-text, rgb(var(--color-button-text)));
+  --pal-sandstone: var(--pattern-sandstone, rgba(var(--color-foreground), 0.06));
+  --pal-charcoal: var(--pattern-charcoal, rgb(var(--color-foreground)));
+  --pal-on-charcoal: rgb(var(--color-background));
+  --pal-hairline: rgba(var(--color-foreground), 0.12);
+  --pal-quiet-border: rgba(var(--color-foreground), 0.25);
+
   --genre-pill-duration: 180ms;
-  --genre-pill-height: 4.4rem; /* touch target on mobile */
+  /* Mobile heights: touch targets of at least 40px */
+  --genre-pill-height: 4.4rem;
+  --child-pill-height: 4rem;
+  --origin-pill-height: 4rem;
+  --utility-height: 4rem;
 }
 
 @media screen and (min-width: 750px) {
@@ -22,25 +29,34 @@
   .pattern-sort,
   .filter-bar-container {
     --genre-pill-height: 3.6rem;
+    --child-pill-height: 3.1rem; /* ~85% of a parent pill */
+    --origin-pill-height: 2.8rem; /* smaller than a child pill */
+    --utility-height: 3.2rem;
   }
 }
 
+/* ===================================================================== */
+/* DISCOVERY ZONE: sticky bar                                             */
+/* ===================================================================== */
 .genre-pills {
-
-  /* Sticky bar: sits under the header while the grid scrolls */
   position: sticky;
   top: 0;
   z-index: 2; /* below the header (3) and drawers; the product grid isolates its own stacking */
-  margin-bottom: 1.6rem;
+  margin-bottom: 1.2rem;
   background-color: rgb(var(--color-background));
-  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  /* The hairline between the discovery and utility zones */
+  border-bottom: 0.1rem solid var(--pal-hairline);
   transition: top 0.15s ease-out; /* same as .section-header.animate */
 }
 
-/* The header is visible and sticky (always-sticky, or revealed on scroll up): sit below it.
-   When it's hidden (scrolling down) or back in normal flow, top: 0 is right. */
+/* The header is visible and sticky (always-sticky, or revealed on scroll up): sit below it. */
 body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-header-hidden)) .genre-pills {
   top: var(--header-height, 0px);
+}
+
+/* While the origin panel is open (bottom sheet on mobile), lift the bar over the header */
+.genre-pills:has(.origin-panel[open]) {
+  z-index: 101;
 }
 
 .genre-pills__inner {
@@ -64,6 +80,14 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
 
 .genre-pills__top .genre-pills__row {
   flex: 1 1 auto;
+}
+
+/* Count + sort in the pill bar: only for layouts without the utility row */
+.genre-pills__meta {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 1.2rem;
 }
 
 .genre-pills__count {
@@ -101,7 +125,102 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
   mask-image: linear-gradient(to right, black calc(100% - 4rem), transparent);
 }
 
-/* Child row: height animates from 0 via grid rows, so content below moves smoothly instead of jumping */
+@media screen and (min-width: 750px) {
+  .genre-pills__row {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .genre-pills__top {
+    align-items: flex-start;
+  }
+
+  .genre-pills__count {
+    line-height: var(--genre-pill-height);
+  }
+}
+
+/* ----- Parent genre pills: Sandstone; active = Charcoal with light text ----- */
+.genre-pill {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: var(--genre-pill-height);
+  margin: 0;
+  padding: 0 1.6rem;
+  border: 0.1rem solid transparent;
+  border-radius: 999px;
+  background-color: var(--pal-sandstone);
+  color: var(--pal-charcoal);
+  font-family: inherit;
+  font-size: 1.4rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.genre-pill[hidden] {
+  display: none;
+}
+
+@media (hover: hover) {
+  .genre-pill:hover {
+    border-color: var(--pal-charcoal);
+  }
+}
+
+.genre-pill__count {
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Active parent (or "All"), and a parent whose child is selected: the path reads House › Tech house */
+.genre-pill--active,
+.genre-pill--has-active-child {
+  background-color: var(--pal-charcoal);
+  border-color: var(--pal-charcoal);
+  color: var(--pal-on-charcoal);
+}
+
+.genre-pill--active .genre-pill__count,
+.genre-pill--has-active-child .genre-pill__count {
+  opacity: 0.75;
+}
+
+/* ----- Child genre pills: outline, ~85% size; active = Opal ----- */
+.genre-pill.genre-pill--child {
+  min-height: var(--child-pill-height);
+  padding: 0 1.2rem;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  background-color: transparent;
+  border-color: var(--pal-charcoal);
+  color: var(--pal-charcoal);
+}
+
+.genre-pill.genre-pill--child.genre-pill--active {
+  background-color: var(--pal-opal);
+  border-color: var(--pal-opal);
+  color: var(--pal-on-opal);
+}
+
+@media (hover: hover) {
+  .genre-pill.genre-pill--child:hover {
+    background-color: var(--pal-sandstone);
+  }
+
+  .genre-pill.genre-pill--child.genre-pill--active:hover {
+    background-color: var(--pal-opal);
+  }
+}
+
+/* ----- Child trays: one per expanded parent, height animates via grid rows ----- */
 .genre-pills__children {
   display: grid;
   grid-template-rows: 0fr;
@@ -122,138 +241,55 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
 }
 
 .genre-pills__children-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
   min-height: 0;
   overflow: hidden;
 }
 
-.genre-pills__children .genre-pills__row {
-  /* inner padding replaces the negative-margin trick so the clip box has room for outlines */
-  margin: 0;
-  padding: 0.8rem 0.4rem 0.4rem;
+.genre-pills__children.is-open .genre-pills__children-inner {
+  padding-top: 0.8rem;
 }
 
-/* Pills */
-.genre-pill {
-  position: relative;
-  flex: 0 0 auto;
-  display: inline-flex;
+.genre-tray {
+  display: flex;
   align-items: center;
-  gap: 0.6rem;
-  min-height: var(--genre-pill-height);
-  margin: 0;
-  padding: 0 1.6rem;
-  border: 0.1rem solid var(--genre-pill-border);
-  border-radius: 999px;
-  background-color: var(--genre-pill-bg);
-  color: var(--genre-pill-text);
-  font-family: inherit;
-  font-size: 1.4rem;
-  line-height: 1.2;
-  white-space: nowrap;
-  text-decoration: none;
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  gap: 1rem;
+  min-width: 0;
+  margin-left: 0.8rem;
+  padding: 0.4rem 0.8rem 0.4rem 1.2rem;
+  border-radius: 1.2rem;
+  background-color: color-mix(in srgb, var(--pal-sandstone) 55%, transparent);
 }
 
-.genre-pill[hidden] {
+.genre-tray[hidden] {
   display: none;
 }
 
-.genre-pill--child {
-  font-size: 1.3rem;
-  padding: 0 1.4rem;
+.genre-tray__label {
+  flex: 0 0 auto;
+  font-size: 1.2rem;
+  font-weight: var(--font-body-weight-bold);
+  color: var(--pal-charcoal);
+  white-space: nowrap;
+}
+
+.genre-tray .genre-pills__row {
+  flex: 1 1 auto;
+  /* inside an overflow: hidden wrapper: keep focus outlines within the tray's own padding */
+  margin: 0;
+  padding: 0.3rem;
 }
 
 @media screen and (min-width: 750px) {
-  .genre-pills__row {
-    flex-wrap: wrap;
-    overflow-x: visible;
-  }
-
-  .genre-pills__top {
-    align-items: flex-start;
-  }
-
-  .genre-pills__count {
-    line-height: var(--genre-pill-height);
+  .genre-tray {
+    margin-left: 1.6rem;
+    padding: 0.4rem 1rem 0.4rem 1.4rem;
   }
 }
 
-@media (hover: hover) {
-  .genre-pill:hover {
-    border-color: var(--genre-pill-text);
-  }
-}
-
-.genre-pill__count {
-  opacity: 0.6;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Active */
-.genre-pill--active {
-  background-color: var(--genre-pill-accent);
-  border-color: var(--genre-pill-accent);
-  color: var(--genre-pill-accent-text);
-}
-
-.genre-pill--active .genre-pill__count {
-  opacity: 0.85;
-}
-
-@media (hover: hover) {
-  .genre-pill--active:hover {
-    border-color: var(--genre-pill-accent);
-  }
-}
-
-/* Parent with a selected child: lighter version of the active state */
-.genre-pill--has-active-child {
-  border-color: var(--genre-pill-accent);
-  background-color: var(--genre-pill-bg);
-  background-image: linear-gradient(
-    color-mix(in srgb, var(--genre-pill-accent) 16%, transparent),
-    color-mix(in srgb, var(--genre-pill-accent) 16%, transparent)
-  );
-  color: var(--genre-pill-text);
-}
-
-/* Keyboard focus */
-.genre-pill:focus {
-  outline: none;
-}
-
-.genre-pill:focus-visible,
-.genre-pills__clear:focus-visible {
-  outline: 0.2rem solid rgb(var(--color-foreground));
-  outline-offset: 0.2rem;
-  box-shadow: 0 0 0 0.4rem rgb(var(--color-background));
-}
-
-/* facet-remove wrappers (All, Clear) */
-.genre-pills__remove {
-  display: flex;
-  flex: 0 0 auto;
-}
-
-.genre-pills__remove[hidden] {
-  display: none;
-}
-
-.genre-pills__clear {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--genre-pill-height);
-  padding: 0 0.8rem;
-  font-size: 1.3rem;
-  color: rgb(var(--color-foreground));
-  white-space: nowrap;
-}
-
-/* Child pills fade/slide in when revealed (class added by facets.js, not on re-render) */
-.genre-pill--entering {
+.genre-tray--entering {
   animation: genrePillIn var(--genre-pill-duration) ease both;
 }
 
@@ -268,106 +304,338 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
   }
 }
 
-/* Count + sort, right of the parent row */
-.genre-pills__meta {
+/* "All" pill wrapper (facet-remove) */
+.genre-pills__remove {
   display: flex;
   flex: 0 0 auto;
-  align-items: center;
-  gap: 1.2rem;
 }
 
-/* Sort control: pill-shaped "Sort: <current>" with a transparent native select over it */
-.pattern-sort {
-  position: relative;
-  display: inline-flex;
+.genre-pills__remove[hidden] {
+  display: none;
+}
+
+/* ----- Origin line ----- */
+.origin-line {
+  display: flex;
   align-items: center;
   gap: 0.8rem;
-  min-height: var(--genre-pill-height);
-  padding: 0 1.4rem 0 1.6rem;
-  border: 0.1rem solid var(--genre-pill-border);
+  padding-top: 0.8rem;
+  min-width: 0;
+}
+
+.origin-line__label {
+  flex: 0 0 auto;
+  font-size: 1.2rem;
+  color: rgba(var(--color-foreground), 0.7);
+}
+
+.origin-line__row.genre-pills__row {
+  flex: 0 1 auto;
+  gap: 0.6rem;
+}
+
+.origin-pill {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: var(--origin-pill-height);
+  margin: 0;
+  padding: 0 1rem;
+  border: 0.1rem solid var(--pal-charcoal);
   border-radius: 999px;
-  background-color: var(--genre-pill-bg);
-  color: var(--genre-pill-text);
-  font-size: 1.4rem;
+  background-color: transparent;
+  color: var(--pal-charcoal);
+  font-family: inherit;
+  font-size: 1.15rem;
   line-height: 1.2;
   white-space: nowrap;
-  transition: border-color 0.15s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.pattern-sort__label,
-.pattern-sort__caret {
-  pointer-events: none;
+.origin-pill__count {
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
 }
 
-.pattern-sort__current {
-  font-weight: var(--font-body-weight-bold);
+@media (hover: hover) {
+  .origin-pill:hover {
+    background-color: var(--pal-sandstone);
+  }
 }
 
-.pattern-sort__caret {
+.origin-pill--active,
+.origin-pill--active:hover {
+  background-color: var(--pal-opal);
+  border-color: var(--pal-opal);
+  color: var(--pal-on-opal);
+}
+
+.origin-pill--active .origin-pill__count {
+  opacity: 0.85;
+}
+
+/* "All origins" (desktop text button) / "Origin" chip (mobile) */
+.origin-panel {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.origin-panel__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: var(--origin-pill-height);
+  padding: 0 0.4rem;
+  border-radius: 0.4rem;
+  color: var(--pal-charcoal);
+  font-size: 1.2rem;
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+  white-space: nowrap;
+  cursor: pointer;
+  list-style: none;
+}
+
+.origin-panel__toggle::-webkit-details-marker {
+  display: none;
+}
+
+/* Caret as a flex child: undo Dawn's absolute `summary .icon-caret` */
+.origin-panel__toggle .origin-panel__caret.svg-wrapper {
+  position: static;
+  flex: 0 0 1rem;
   width: 1rem;
   height: 1rem;
+  margin: 0;
+  transition: transform 0.15s ease;
 }
 
-.pattern-sort__caret .icon {
+.origin-panel__toggle .origin-panel__caret .icon-caret {
+  position: static;
+  top: auto;
+  right: auto;
   width: 1rem;
   height: 0.6rem;
 }
 
-.pattern-sort__select {
+.origin-panel[open] .origin-panel__caret.svg-wrapper {
+  transform: rotate(180deg);
+}
+
+/* Panel: popover on desktop */
+.origin-panel__content {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(32rem, calc(100vw - 3rem));
+  max-height: 44rem;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  border: 0.1rem solid var(--pal-hairline);
+  border-radius: 1.2rem;
+  box-shadow: 0 0.8rem 2.4rem rgba(var(--color-shadow), 0.14);
+  animation: genrePillIn var(--genre-pill-duration) ease;
+}
+
+.origin-panel__header {
+  display: none;
+}
+
+.origin-panel__title {
   margin: 0;
+  font-size: 1.8rem;
+}
+
+.origin-panel__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
   padding: 0;
   border: 0;
-  border-radius: inherit;
-  opacity: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgb(var(--color-foreground));
   cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
+}
+
+.origin-panel__close .svg-wrapper {
+  width: 2rem;
+  height: 2rem;
+}
+
+.origin-panel__search-wrap {
+  padding: 0.8rem;
+  border-bottom: 0.1rem solid var(--pal-hairline);
+}
+
+.origin-panel__search {
+  width: 100%;
+  min-height: 4rem;
+  margin: 0;
+  padding: 0 1.2rem;
+  border: 0.1rem solid var(--pal-quiet-border);
+  border-radius: 0.6rem;
+  background: transparent;
+  color: rgb(var(--color-foreground));
+  font-family: inherit;
   font-size: 1.6rem; /* 16px stops iOS zooming in on focus */
 }
 
-@media (hover: hover) {
-  .pattern-sort:hover {
-    border-color: var(--genre-pill-text);
+@media screen and (min-width: 750px) {
+  .origin-panel__search {
+    font-size: 1.4rem;
   }
 }
 
-.pattern-sort:has(.pattern-sort__select:focus-visible) {
+.origin-panel__search:focus {
+  outline: none;
+}
+
+.origin-panel__search:focus-visible {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: 0.1rem;
+}
+
+.origin-panel__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: 0.4rem 0.6rem 0.6rem;
+}
+
+.origin-panel__item[hidden] {
+  display: none;
+}
+
+.origin-panel .filter-option input[type='checkbox'] {
+  accent-color: var(--pal-opal);
+}
+
+.origin-panel__empty {
+  margin: 0;
+  padding: 1.2rem 1.6rem;
+  font-size: 1.3rem;
+  color: rgba(var(--color-foreground), 0.7);
+}
+
+.origin-panel__empty[hidden] {
+  display: none;
+}
+
+.origin-panel__footer {
+  display: none;
+}
+
+/* Mobile: the line collapses to one "Origin" chip; the panel is a bottom sheet */
+@media screen and (max-width: 749px) {
+  .origin-line {
+    padding-top: 0.6rem;
+  }
+
+  .origin-panel__toggle {
+    min-height: var(--origin-pill-height);
+    padding: 0 1.2rem;
+    gap: 0.5rem;
+    border: 0.1rem solid var(--pal-charcoal);
+    border-radius: 999px;
+    font-size: 1.3rem;
+    text-decoration: none;
+  }
+
+  .origin-panel__toggle--active {
+    background-color: var(--pal-opal);
+    border-color: var(--pal-opal);
+    color: var(--pal-on-opal);
+  }
+
+  .origin-panel[open] > summary::before {
+    background-color: rgba(var(--color-foreground), 0.5);
+  }
+
+  .origin-panel__content {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: calc(var(--viewport-height, 100vh) * 0.85);
+    border: 0;
+    border-radius: 1.6rem 1.6rem 0 0;
+    box-shadow: 0 -0.8rem 2.4rem rgba(var(--color-shadow), 0.16);
+    animation: originSheetIn var(--duration-default) ease;
+  }
+
+  .origin-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1.2rem 0.8rem 2rem;
+    border-bottom: 0.1rem solid var(--pal-hairline);
+  }
+
+  .origin-panel__search-wrap {
+    padding: 1rem 1.6rem;
+  }
+
+  .origin-panel__list {
+    padding: 0.4rem 1.2rem;
+  }
+
+  .origin-panel__list .filter-option {
+    min-height: 4.4rem;
+  }
+
+  .origin-panel__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1.2rem 2rem calc(1.2rem + env(safe-area-inset-bottom));
+    border-top: 0.1rem solid var(--pal-hairline);
+  }
+
+  .origin-panel__done {
+    width: 100%;
+    min-height: 4.4rem;
+  }
+}
+
+@keyframes originSheetIn {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* Discovery zone keyboard focus */
+.genre-pill:focus,
+.origin-pill:focus,
+.origin-panel__toggle:focus {
+  outline: none;
+}
+
+.genre-pill:focus-visible,
+.origin-pill:focus-visible,
+.origin-panel__toggle:focus-visible,
+.origin-panel__close:focus-visible {
   outline: 0.2rem solid rgb(var(--color-foreground));
   outline-offset: 0.2rem;
   box-shadow: 0 0 0 0.4rem rgb(var(--color-background));
 }
 
-/* Mobile: sort on the Filter button row. Dawn's "N of M products" moves off-screen (the pill bar
-   shows the record count) but stays in the DOM as the live status facets.js updates. */
-.facets-container--bar-sort > menu-drawer {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.facets-container--bar-sort > .facets-mobile-sort {
-  grid-column: 2;
-  grid-row: 1;
-  justify-self: end;
-  align-self: center;
-}
-
-.facets-container--bar-sort > .product-count {
-  position: absolute !important;
-  overflow: hidden;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-  clip: rect(0 0 0 0);
-  word-wrap: normal !important;
-}
-
-/* ===== Filter bar (snippets/pattern-filter-bar.liquid) ===== */
+/* ===================================================================== */
+/* UTILITY ZONE: quiet controls (snippets/pattern-filter-bar.liquid)      */
+/* ===================================================================== */
 .filter-bar-container .filter-bar {
   grid-column: 1 / -1;
   display: block;
@@ -376,15 +644,15 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
 .filter-bar__row {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
-  padding: 0.4rem 0 1.2rem;
+  gap: 1rem;
+  padding: 0.2rem 0 1rem;
 }
 
 .filter-bar__filters {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.6rem;
   flex: 1 1 auto;
   min-width: 0;
 }
@@ -398,7 +666,7 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
 .filter-bar__meta {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1rem;
   flex: 0 0 auto;
   margin-left: auto;
 }
@@ -411,27 +679,27 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
   font-variant-numeric: tabular-nums;
 }
 
-/* Chips: dropdown summaries, the In stock toggle and the mobile Filters button */
+/* Quiet control: dropdown chips, In stock toggle, mobile Filters button */
 .filter-chip,
 .filter-bar .facets__summary.filter-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  min-height: var(--genre-pill-height);
+  min-height: var(--utility-height);
   margin: 0;
-  padding: 0 1.2rem; /* same on every chip: dropdowns, In stock, mobile Filters */
-  border: 0.1rem solid var(--genre-pill-border);
-  border-radius: 999px;
-  background-color: var(--genre-pill-bg);
-  color: var(--genre-pill-text);
-  font-size: 1.4rem;
+  padding: 0 1rem;
+  border: 0.1rem solid var(--pal-quiet-border);
+  border-radius: 0.4rem;
+  background-color: transparent;
+  color: var(--pal-charcoal);
+  font-size: 1.3rem;
   line-height: 1.2;
   white-space: nowrap;
   list-style: none;
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 summary.filter-chip::-webkit-details-marker {
@@ -441,36 +709,29 @@ summary.filter-chip::-webkit-details-marker {
 @media (hover: hover) {
   .filter-chip:hover,
   .filter-bar .facets__summary.filter-chip:hover {
-    border-color: var(--genre-pill-text);
-    color: var(--genre-pill-text);
+    border-color: var(--pal-charcoal);
+    color: var(--pal-charcoal);
   }
 }
 
-/* Filled in Opal when the filter has selections (classes from the server; :has() for instant
-   feedback on the toggle; the mobile button keys off its badge because facets.js only swaps its innerHTML) */
+/* Selected: Charcoal border (doubled with an inset ring) and the count, no fill. Classes come
+   from the server; :has() gives the toggle instant feedback; the mobile button keys off its badge
+   because facets.js only swaps its innerHTML. */
 .filter-chip--active,
 .filter-bar .facets__summary.filter-chip--active,
 .filter-chip--toggle:has(input:checked),
 .mobile-facets__open.filter-chip:has(.filter-sheet__badge) {
-  background-color: var(--genre-pill-accent);
-  border-color: var(--genre-pill-accent);
-  color: var(--genre-pill-accent-text);
+  border-color: var(--pal-charcoal);
+  box-shadow: inset 0 0 0 0.1rem var(--pal-charcoal);
+  color: var(--pal-charcoal);
+  font-weight: var(--font-body-weight-bold);
 }
 
-@media (hover: hover) {
-  .filter-chip--active:hover,
-  .filter-bar .facets__summary.filter-chip--active:hover,
-  .filter-chip--toggle:has(input:checked):hover {
-    border-color: var(--genre-pill-accent);
-    color: var(--genre-pill-accent-text);
-  }
-}
-
-/* Unticked before the AJAX response: drop the server's filled state */
+/* Unticked before the AJAX response: drop the server's selected state */
 .filter-chip--toggle.filter-chip--active:not(:has(input:checked)) {
-  background-color: var(--genre-pill-bg);
-  border-color: var(--genre-pill-border);
-  color: var(--genre-pill-text);
+  border-color: var(--pal-quiet-border);
+  box-shadow: none;
+  font-weight: inherit;
 }
 
 .filter-chip__count {
@@ -478,9 +739,8 @@ summary.filter-chip::-webkit-details-marker {
 }
 
 /* Caret: a normal fixed-size flex child. Overrides Dawn's `summary .icon-caret` (absolute, right
-   1.5rem), `.facets__summary .icon-caret` (right 0) and `.facets__summary .svg-wrapper` (auto size),
-   which pinned it to the chip's right edge over the padding. Selectors outrank those because
-   component-facets.css loads after this file. */
+   1.5rem), `.facets__summary .icon-caret` (right 0) and `.facets__summary .svg-wrapper` (auto size).
+   Selectors outrank those because component-facets.css loads after this file. */
 .filter-chip .filter-chip__caret.svg-wrapper {
   position: static;
   flex: 0 0 1rem;
@@ -535,8 +795,8 @@ summary.filter-chip::-webkit-details-marker {
   padding: 0.6rem;
   background-color: rgb(var(--color-background));
   color: rgb(var(--color-foreground));
-  border: 0.1rem solid rgba(var(--color-foreground), 0.12);
-  border-radius: 1.2rem;
+  border: 0.1rem solid var(--pal-hairline);
+  border-radius: 0.8rem;
   box-shadow: 0 0.8rem 2.4rem rgba(var(--color-shadow), 0.14);
   animation: genrePillIn var(--genre-pill-duration) ease;
 }
@@ -553,14 +813,14 @@ summary.filter-chip::-webkit-details-marker {
   padding: 0;
 }
 
-/* Option rows (popover and sheet) */
+/* Option rows (utility popovers, origin panel, sheet) */
 .filter-option {
   display: flex;
   align-items: center;
   gap: 1rem;
   min-height: 4rem;
   padding: 0.4rem 1rem;
-  border-radius: 0.8rem;
+  border-radius: 0.6rem;
   font-size: 1.4rem;
   line-height: 1.3;
   cursor: pointer;
@@ -579,7 +839,7 @@ summary.filter-chip::-webkit-details-marker {
   height: 1.8rem;
   margin: 0;
   opacity: 1;
-  accent-color: var(--genre-pill-accent);
+  accent-color: var(--pal-charcoal); /* utility zone: Charcoal, not Opal */
   cursor: pointer;
 }
 
@@ -596,7 +856,73 @@ summary.filter-chip::-webkit-details-marker {
   font-variant-numeric: tabular-nums;
 }
 
-/* Active filters under the row: compact removable pills */
+/* Sort: same quiet control, "Sort: <current>" over a transparent native select */
+.pattern-sort {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--utility-height);
+  padding: 0 1rem;
+  border: 0.1rem solid var(--pal-quiet-border);
+  border-radius: 0.4rem;
+  background-color: transparent;
+  color: var(--pal-charcoal);
+  font-size: 1.3rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: border-color 0.15s ease;
+}
+
+.pattern-sort__label,
+.pattern-sort__caret {
+  pointer-events: none;
+}
+
+.pattern-sort__current {
+  font-weight: var(--font-body-weight-bold);
+}
+
+.pattern-sort__caret.svg-wrapper {
+  flex: 0 0 1rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+.pattern-sort__caret .icon {
+  width: 1rem;
+  height: 0.6rem;
+}
+
+.pattern-sort__select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  opacity: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  font-size: 1.6rem; /* 16px stops iOS zooming in on focus */
+}
+
+@media (hover: hover) {
+  .pattern-sort:hover {
+    border-color: var(--pal-charcoal);
+  }
+}
+
+.pattern-sort:has(.pattern-sort__select:focus-visible) {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: 0.2rem;
+  box-shadow: 0 0 0 0.4rem rgb(var(--color-background));
+}
+
+/* Active filters (non-genre) as small removable chips, and the single "Clear all" */
 .filter-bar-container .active-facets {
   gap: 0.6rem;
   align-items: center;
@@ -612,36 +938,69 @@ summary.filter-chip::-webkit-details-marker {
 }
 
 .filter-bar-container span.active-facets__button-inner {
-  min-height: 3.2rem;
-  padding: 0 0.6rem 0 1.2rem;
+  min-height: 2.8rem;
+  padding: 0 0.6rem 0 1rem;
   gap: 0.4rem;
-  font-size: 1.3rem;
-  color: var(--genre-pill-text);
-  background-color: var(--genre-pill-bg);
-  box-shadow: 0 0 0 0.1rem var(--genre-pill-border);
-  border-radius: 999px;
+  font-size: 1.2rem;
+  color: var(--pal-charcoal);
+  background-color: transparent;
+  box-shadow: 0 0 0 0.1rem var(--pal-quiet-border);
+  border-radius: 0.4rem;
 }
 
 .filter-bar-container .active-facets__button:hover .active-facets__button-inner {
-  box-shadow: 0 0 0 0.1rem var(--genre-pill-text);
+  box-shadow: 0 0 0 0.1rem var(--pal-charcoal);
 }
 
 .filter-bar-container .active-facets__button-remove {
   font-size: 1.3rem;
 }
 
-/* ===== Mobile: Filters button + bottom sheet ===== */
+/* Dawn hides "Clear all" when it's the only child; here it shows whenever any filter (genres
+   included) is active, and the server only renders it then. */
+.filter-bar-container .active-facets .filter-bar__clear-all {
+  display: flex;
+}
+
+/* ===================================================================== */
+/* MOBILE: Filters button + Sort row, Filters bottom sheet                */
+/* ===================================================================== */
+.facets-container--bar-sort > menu-drawer {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.facets-container--bar-sort > .facets-mobile-sort {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  align-self: center;
+}
+
+/* Dawn's "N of M products": off-screen, but kept as the live status facets.js updates */
+.facets-container--bar-sort > .product-count {
+  position: absolute !important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  word-wrap: normal !important;
+}
+
 .filter-sheet .mobile-facets__open-wrapper {
   display: inline-flex;
 }
 
 .filter-sheet .mobile-facets__open {
   width: auto;
-  padding: 0 1.2rem;
+  padding: 0 1rem;
 }
 
 .filter-sheet .mobile-facets__open .svg-wrapper {
-  width: 1.8rem;
+  width: 1.6rem;
 }
 
 .filter-sheet .mobile-facets__open line,
@@ -657,13 +1016,13 @@ summary.filter-chip::-webkit-details-marker {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 2rem;
-  height: 2rem;
+  min-width: 1.8rem;
+  height: 1.8rem;
   padding: 0 0.5rem;
   border-radius: 999px;
-  background-color: var(--genre-pill-accent-text);
-  color: var(--genre-pill-accent);
-  font-size: 1.2rem;
+  background-color: var(--pal-charcoal);
+  color: var(--pal-on-charcoal);
+  font-size: 1.1rem;
   font-weight: var(--font-body-weight-bold);
   font-variant-numeric: tabular-nums;
 }
@@ -701,7 +1060,7 @@ summary.filter-chip::-webkit-details-marker {
   align-items: center;
   justify-content: space-between;
   padding: 0.8rem 1.2rem 0.8rem 2rem;
-  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  border-bottom: 0.1rem solid var(--pal-hairline);
 }
 
 .filter-sheet__title {
@@ -743,7 +1102,7 @@ summary.filter-chip::-webkit-details-marker {
   margin: 0;
   padding: 1.6rem 0 1.2rem;
   border: 0;
-  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  border-bottom: 0.1rem solid var(--pal-hairline);
   min-width: 0;
 }
 
@@ -774,7 +1133,7 @@ summary.filter-chip::-webkit-details-marker {
   justify-content: space-between;
   gap: 1.6rem;
   padding: 1.2rem 2rem calc(1.2rem + env(safe-area-inset-bottom));
-  border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  border-top: 0.1rem solid var(--pal-hairline);
 }
 
 .filter-sheet__footer .mobile-facets__clear-wrapper {
@@ -795,7 +1154,7 @@ summary.filter-chip::-webkit-details-marker {
 }
 
 /* Dawn hides input.mobile-facets__checkbox (appearance: none, absolutely placed). The sheet uses
-   native checkboxes in option rows, and a full-cover invisible input on the In stock chip. */
+   native checkboxes in option rows, and a full-cover invisible input on the In stock control. */
 .filter-sheet .filter-option input.mobile-facets__checkbox {
   position: static;
   appearance: auto;
@@ -816,23 +1175,19 @@ summary.filter-chip::-webkit-details-marker {
   cursor: pointer;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .filter-sheet__inner,
-  .filter-chip,
-  .filter-chip__caret {
-    transition: none;
-  }
-
-  .filter-chip__popover {
-    animation: none;
-  }
-}
-
+/* ===================================================================== */
+/* Reduced motion                                                         */
+/* ===================================================================== */
 @media (prefers-reduced-motion: reduce) {
   .genre-pills,
   .genre-pill,
+  .origin-pill,
   .genre-pills__children,
-  .genre-pills__children.is-open {
+  .genre-pills__children.is-open,
+  .filter-sheet__inner,
+  .filter-chip,
+  .filter-chip__caret,
+  .origin-panel__caret {
     transition: none;
   }
 
@@ -840,7 +1195,9 @@ summary.filter-chip::-webkit-details-marker {
     transform: none;
   }
 
-  .genre-pill--entering {
+  .genre-tray--entering,
+  .filter-chip__popover,
+  .origin-panel__content {
     animation: none;
   }
 }

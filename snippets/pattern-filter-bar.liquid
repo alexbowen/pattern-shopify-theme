@@ -11,12 +11,16 @@
   badge opens a bottom sheet with the same controls and a "Show N records" button. Sort sits next
   to the button (proxy select, see pattern-sort.liquid).
 
-  The genre filter (exclude_param) is left out: it's the pill bar above. Groups with no values
+  Discovery filters (genre, origin) and the legacy taxonomy genre are left out (utility_excludes):
+  they're in the pill bar above. Groups with no values
   for the current results are hidden; zero-count values are hidden unless active.
 
   Accepts:
   - results: {Object} Collection
-  - exclude_param: {String} Param name of the genre filter
+  - utility_excludes: {String} ,param,param, list of filters this row and sheet skip
+  - discovery_params: {String} ,param,param, list kept by the sheet's "Clear" (genre, origin)
+  - chip_excludes: {String} ,param,param, list left out of the active chips (genres: the pills
+    already show them)
   - paginate: {Object}
 {% endcomment %}
 
@@ -27,12 +31,21 @@
   # Mobile sheet "Clear": remove the sheet's filters but keep genres and sort.
   assign clear_sheet_url = clear_all_url
   assign active_count = 0
+  # Any filter at all (genres included): drives the single "Clear all".
+  assign any_active = false
   for filter in results.filters
-    if filter.param_name == exclude_param
+    if filter.active_values.size > 0 or filter.min_value.value != null or filter.max_value.value != null
+      assign any_active = true
+    endif
+    assign filter_key = ',' | append: filter.param_name | append: ','
+    if discovery_params contains filter_key
       for value in filter.active_values
         assign encoded_value = value.value | url_encode
         assign clear_sheet_url = clear_sheet_url | append: '&' | append: value.param_name | append: '=' | append: encoded_value
       endfor
+      continue
+    endif
+    if utility_excludes contains filter_key
       continue
     endif
     if filter.type == 'price_range'
@@ -53,7 +66,8 @@
         <h2 class="visually-hidden" id="verticalTitle" tabindex="-1">{{ 'products.facets.filter_by_label' | t }}</h2>
         <div class="filter-bar__filters" id="FilterBarFilters">
           {%- for filter in results.filters -%}
-            {%- if filter.param_name == exclude_param -%}{%- continue -%}{%- endif -%}
+            {%- assign filter_key = ',' | append: filter.param_name | append: ',' -%}
+            {%- if utility_excludes contains filter_key -%}{%- continue -%}{%- endif -%}
             {%- liquid
               assign visible_values = 0
               for value in filter.values
@@ -184,6 +198,8 @@
       {%- comment -%} Active filters (genres included). Class names are Dawn's so facets.js re-renders them. {%- endcomment -%}
       <div class="active-facets active-facets-desktop filter-bar__active">
         {%- for filter in results.filters -%}
+          {%- assign filter_key = ',' | append: filter.param_name | append: ',' -%}
+          {%- if chip_excludes contains filter_key -%}{%- continue -%}{%- endif -%}
           {%- for value in filter.active_values -%}
             <facet-remove>
               <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
@@ -215,11 +231,13 @@
             {%- endif -%}
           {%- endif -%}
         {%- endfor -%}
-        <facet-remove class="active-facets__button-wrapper">
-          <a href="{{ clear_all_url }}" class="active-facets__button-remove underlined-link">
-            <span>{{ 'products.facets.filter_bar.clear_all' | t }}</span>
-          </a>
-        </facet-remove>
+        {%- if any_active -%}
+          <facet-remove class="active-facets__button-wrapper filter-bar__clear-all">
+            <a href="{{ clear_all_url }}" class="active-facets__button-remove underlined-link">
+              <span>{{ 'products.facets.filter_bar.clear_all' | t }}</span>
+            </a>
+          </facet-remove>
+        {%- endif -%}
       </div>
     </form>
   </facet-filters-form>
@@ -263,7 +281,8 @@
 
             <div class="filter-sheet__body" id="FilterSheetGroups">
               {%- for filter in results.filters -%}
-                {%- if filter.param_name == exclude_param -%}{%- continue -%}{%- endif -%}
+                {%- assign filter_key = ',' | append: filter.param_name | append: ',' -%}
+            {%- if utility_excludes contains filter_key -%}{%- continue -%}{%- endif -%}
                 {%- liquid
                   assign visible_values = 0
                   for value in filter.values
@@ -376,6 +395,8 @@
 
   <div class="active-facets active-facets-mobile medium-hide large-up-hide">
     {%- for filter in results.filters -%}
+      {%- assign filter_key = ',' | append: filter.param_name | append: ',' -%}
+      {%- if chip_excludes contains filter_key -%}{%- continue -%}{%- endif -%}
       {%- for value in filter.active_values -%}
         <facet-remove>
           <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
@@ -407,11 +428,13 @@
         {%- endif -%}
       {%- endif -%}
     {%- endfor -%}
-    <facet-remove class="active-facets__button-wrapper">
-      <a href="{{ clear_all_url }}" class="active-facets__button-remove underlined-link">
-        <span>{{ 'products.facets.filter_bar.clear_all' | t }}</span>
-      </a>
-    </facet-remove>
+    {%- if any_active -%}
+      <facet-remove class="active-facets__button-wrapper filter-bar__clear-all">
+        <a href="{{ clear_all_url }}" class="active-facets__button-remove underlined-link">
+          <span>{{ 'products.facets.filter_bar.clear_all' | t }}</span>
+        </a>
+      </facet-remove>
+    {%- endif -%}
   </div>
 
   {%- comment -%} Dawn's count: kept off-screen as the live status facets.js updates (#ProductCount is required). {%- endcomment -%}
