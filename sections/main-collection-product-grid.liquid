@@ -61,6 +61,15 @@
       if sort_in_bar
         assign facets_sorting = false
       endif
+
+      # Horizontal layout with genre pills: Pattern filter bar (chip row + mobile sheet, sort and
+      # record count at the right end). Other layouts keep Dawn's filters, with sort in the pill bar.
+      assign filter_bar = false
+      assign pills_show_sort = sort_in_bar
+      if sort_in_bar and section.settings.filter_type == 'horizontal'
+        assign filter_bar = true
+        assign pills_show_sort = false
+      endif
     -%}
     {% comment %} Sort is the first tabbable element when filter type is vertical {% endcomment %}
     {%- if facets_sorting and section.settings.filter_type == 'vertical' -%}
@@ -122,7 +131,7 @@
     {%- endif -%}
 
     {%- if genre_pills -%}
-      {% render 'genre-pills', results: collection, param_name: genre_param, show_sort: sort_in_bar %}
+      {% render 'genre-pills', results: collection, param_name: genre_param, show_sort: pills_show_sort %}
     {%- endif -%}
 
     <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
@@ -142,7 +151,8 @@
             filter_type: section.settings.filter_type,
             paginate: paginate,
             exclude_param: genre_param_excluded,
-            sort_in_bar: sort_in_bar
+            sort_in_bar: sort_in_bar,
+            filter_bar: filter_bar
           %}
         </aside>
       {%- endif -%}

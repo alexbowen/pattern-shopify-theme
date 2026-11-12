@@ -178,13 +178,17 @@ class FacetFiltersForm extends HTMLElement {
     if (current && option) current.textContent = option.textContent.trim();
   }
 
+  // Re-render the sort controls from the response: they sit outside the .js-filter blocks facets.js
+  // updates, so without this they'd show a stale choice after Clear, back/forward, etc.
   static renderMobileSort(html) {
-    const source = html.getElementById('PatternSortMobile-wrapper');
-    const target = document.getElementById('PatternSortMobile-wrapper');
-    if (!source || !target) return;
-    const hadFocus = target.contains(document.activeElement);
-    target.innerHTML = source.innerHTML;
-    if (hadFocus) document.getElementById('PatternSortMobile')?.focus({ preventScroll: true });
+    ['PatternSort', 'PatternSortMobile'].forEach((id) => {
+      const source = html.getElementById(`${id}-wrapper`);
+      const target = document.getElementById(`${id}-wrapper`);
+      if (!source || !target) return;
+      const hadFocus = target.contains(document.activeElement);
+      target.innerHTML = source.innerHTML;
+      if (hadFocus) document.getElementById(id)?.focus({ preventScroll: true });
+    });
   }
 
   static toggleActiveFacets(disable = true) {
@@ -321,6 +325,7 @@ class FacetFiltersForm extends HTMLElement {
     FacetFiltersForm.renderAdditionalElements(parsedHTML);
     FacetFiltersForm.renderGenrePills(parsedHTML);
     FacetFiltersForm.renderMobileSort(parsedHTML);
+    FacetFiltersForm.renderFilterBarCount(parsedHTML);
 
     if (countsToRender) {
       const closestJSFilterID = event.target.closest('.js-filter').id;
@@ -338,8 +343,68 @@ class FacetFiltersForm extends HTMLElement {
         const isTextInput = event.target.getAttribute('type') === 'text';
 
         if (newElementToActivate && !isTextInput) newElementToActivate.focus();
+
+        // Pattern filter bar: re-render the whole chip / sheet group (label count, filled state,
+        // hidden values) but keep its popover open and focus on the same checkbox.
+        if (newFacetDetailsElement.matches('.filter-bar__item, .filter-sheet__item')) {
+          FacetFiltersForm.renderPatternFilterItem(countsToRender, newFacetDetailsElement, event.target.id);
+        }
       }
     }
+  }
+
+  static renderPatternFilterItem(source, target, focusId) {
+    const wasOpen = Boolean(target.querySelector('details[open]'));
+    target.innerHTML = source.innerHTML;
+    const details = target.querySelector('details');
+    if (wasOpen && details) {
+      details.setAttribute('open', '');
+      details.querySelector('summary')?.setAttribute('aria-expanded', 'true');
+    }
+    const focusTarget = focusId && document.getElementById(focusId);
+    if (focusTarget) focusTarget.focus({ preventScroll: true });
+  }
+
+  // Filter bar pieces outside the .js-filter blocks: record count and the sheet's Clear link
+  // (its URL keeps the current genres and sort, so it must follow every render).
+  static renderFilterBarCount(html) {
+    const source = html.getElementById('FilterBarCount');
+    const target = document.getElementById('FilterBarCount');
+    if (source && target) target.innerHTML = source.innerHTML;
+
+    const clearSource = html.getElementById('FilterSheetClear');
+    const clearTarget = document.getElementById('FilterSheetClear');
+    if (clearSource && clearTarget) clearTarget.setAttribute('href', clearSource.getAttribute('href'));
+  }
+
+  // Filter bar popovers and sheet: keep aria-expanded in step with <details>, close a popover when
+  // focus leaves it, and move focus into the sheet when it opens.
+  static setFilterBarListeners() {
+    document.addEventListener(
+      'toggle',
+      (event) => {
+        const details = event.target;
+        if (!(details instanceof HTMLDetailsElement)) return;
+        if (!details.matches('.filter-chip-disclosure, .filter-sheet > details')) return;
+        details.querySelector(':scope > summary')?.setAttribute('aria-expanded', String(details.open));
+        if (details.open && details.closest('.filter-sheet')) {
+          setTimeout(() => details.querySelector('.filter-sheet__close')?.focus(), 150);
+        }
+      },
+      true
+    );
+
+    document.addEventListener('focusout', (event) => {
+      const details = event.target.closest && event.target.closest('.filter-chip-disclosure[open]');
+      if (!details) return;
+      if (event.relatedTarget && details.contains(event.relatedTarget)) return;
+      // Leave it open while a click inside is in progress (relatedTarget is null for non-focusable targets)
+      setTimeout(() => {
+        if (details.open && !details.contains(document.activeElement) && !details.matches(':hover')) {
+          details.removeAttribute('open');
+        }
+      });
+    });
   }
 
   static renderActiveFacets(html) {
@@ -458,8 +523,13 @@ class FacetFiltersForm extends HTMLElement {
     const sortFilterForms = document.querySelectorAll('facet-filters-form form');
     const sourceForm = event.target.closest('form');
     const forms = [];
+    const usedForms = new Set();
+    const addForm = (form) => {
+      usedForms.add(form);
+      forms.push(this.createSearchParams(form));
+    };
     if (event.srcElement.className == 'mobile-facets__checkbox') {
-      forms.push(this.createSearchParams(sourceForm));
+      addForm(sourceForm);
     } else {
       // Genre pills sit outside both filter forms, so pair them with whichever set is on screen.
       const isGenrePills = sourceForm.id === 'FacetGenrePillsForm';
@@ -469,17 +539,24 @@ class FacetFiltersForm extends HTMLElement {
       sortFilterForms.forEach((form) => {
         if (!isMobile) {
           if (form.id === 'FacetSortForm' || form.id === 'FacetFiltersForm' || form.id === 'FacetSortDrawerForm') {
-            forms.push(this.createSearchParams(form));
+            addForm(form);
           }
         } else if (form.id === 'FacetFiltersFormMobile') {
-          forms.push(this.createSearchParams(form));
+          addForm(form);
         }
       });
     }
 
     // The genre filter lives only in the pills form, so add it to every submission.
     const genrePillsForm = document.getElementById('FacetGenrePillsForm');
-    if (genrePillsForm) forms.push(this.createSearchParams(genrePillsForm));
+    if (genrePillsForm) addForm(genrePillsForm);
+
+    // The sort control (#PatternSort) may sit in a form this submission didn't include (the
+    // filter bar's desktop form when the mobile sheet submits): add sort_by so it's never dropped.
+    const patternSort = document.getElementById('PatternSort');
+    if (patternSort && patternSort.form && !usedForms.has(patternSort.form)) {
+      forms.push(new URLSearchParams({ sort_by: patternSort.value }).toString());
+    }
 
     this.onSubmitForm(forms.filter(Boolean).join('&'), event);
   }
@@ -500,6 +577,7 @@ FacetFiltersForm.searchParamsInitial = window.location.search.slice(1);
 FacetFiltersForm.searchParamsPrev = window.location.search.slice(1);
 customElements.define('facet-filters-form', FacetFiltersForm);
 FacetFiltersForm.setListeners();
+FacetFiltersForm.setFilterBarListeners();
 
 class PriceRange extends HTMLElement {
   constructor() {

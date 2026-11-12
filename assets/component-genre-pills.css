@@ -6,7 +6,8 @@
 /* Tokens are shared with the sort control (snippets/pattern-sort.liquid), whose mobile copy sits
    outside the pill bar, next to the Filter button. */
 .genre-pills,
-.pattern-sort {
+.pattern-sort,
+.filter-bar-container {
   --genre-pill-accent: var(--pattern-opal, rgb(var(--color-button)));
   --genre-pill-accent-text: var(--pattern-opal-text, rgb(var(--color-button-text)));
   --genre-pill-bg: var(--pattern-sandstone, rgba(var(--color-foreground), 0.06));
@@ -18,7 +19,8 @@
 
 @media screen and (min-width: 750px) {
   .genre-pills,
-  .pattern-sort {
+  .pattern-sort,
+  .filter-bar-container {
     --genre-pill-height: 3.6rem;
   }
 }
@@ -363,6 +365,467 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
   border: 0;
   clip: rect(0 0 0 0);
   word-wrap: normal !important;
+}
+
+/* ===== Filter bar (snippets/pattern-filter-bar.liquid) ===== */
+.filter-bar-container .filter-bar {
+  grid-column: 1 / -1;
+  display: block;
+}
+
+.filter-bar__row {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.4rem 0 1.2rem;
+}
+
+.filter-bar__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* A group with nothing to show (all values zero, or not returned) takes no space in the row */
+.filter-bar__item:not(:has(> :not([hidden]))),
+.filter-chip-disclosure[hidden] {
+  display: none;
+}
+
+.filter-bar__meta {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.filter-bar__count {
+  margin: 0;
+  font-size: 1.3rem;
+  color: rgba(var(--color-foreground), 0.7);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Chips: dropdown summaries, the In stock toggle and the mobile Filters button */
+.filter-chip,
+.filter-bar .facets__summary.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--genre-pill-height);
+  margin: 0;
+  padding: 0 1.2rem; /* same on every chip: dropdowns, In stock, mobile Filters */
+  border: 0.1rem solid var(--genre-pill-border);
+  border-radius: 999px;
+  background-color: var(--genre-pill-bg);
+  color: var(--genre-pill-text);
+  font-size: 1.4rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+summary.filter-chip::-webkit-details-marker {
+  display: none;
+}
+
+@media (hover: hover) {
+  .filter-chip:hover,
+  .filter-bar .facets__summary.filter-chip:hover {
+    border-color: var(--genre-pill-text);
+    color: var(--genre-pill-text);
+  }
+}
+
+/* Filled in Opal when the filter has selections (classes from the server; :has() for instant
+   feedback on the toggle; the mobile button keys off its badge because facets.js only swaps its innerHTML) */
+.filter-chip--active,
+.filter-bar .facets__summary.filter-chip--active,
+.filter-chip--toggle:has(input:checked),
+.mobile-facets__open.filter-chip:has(.filter-sheet__badge) {
+  background-color: var(--genre-pill-accent);
+  border-color: var(--genre-pill-accent);
+  color: var(--genre-pill-accent-text);
+}
+
+@media (hover: hover) {
+  .filter-chip--active:hover,
+  .filter-bar .facets__summary.filter-chip--active:hover,
+  .filter-chip--toggle:has(input:checked):hover {
+    border-color: var(--genre-pill-accent);
+    color: var(--genre-pill-accent-text);
+  }
+}
+
+/* Unticked before the AJAX response: drop the server's filled state */
+.filter-chip--toggle.filter-chip--active:not(:has(input:checked)) {
+  background-color: var(--genre-pill-bg);
+  border-color: var(--genre-pill-border);
+  color: var(--genre-pill-text);
+}
+
+.filter-chip__count {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Caret: a normal fixed-size flex child. Overrides Dawn's `summary .icon-caret` (absolute, right
+   1.5rem), `.facets__summary .icon-caret` (right 0) and `.facets__summary .svg-wrapper` (auto size),
+   which pinned it to the chip's right edge over the padding. Selectors outrank those because
+   component-facets.css loads after this file. */
+.filter-chip .filter-chip__caret.svg-wrapper {
+  position: static;
+  flex: 0 0 1rem;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  transition: transform 0.15s ease;
+}
+
+.filter-chip .filter-chip__caret .icon-caret {
+  position: static;
+  top: auto;
+  right: auto;
+  width: 1rem;
+  height: 0.6rem;
+  margin: 0;
+}
+
+.filter-chip-disclosure[open] .filter-chip .filter-chip__caret.svg-wrapper {
+  transform: rotate(180deg);
+}
+
+/* Visible keyboard focus */
+.filter-bar summary.filter-chip:focus,
+.filter-sheet__toggle:focus {
+  outline: none;
+}
+
+.filter-bar summary.filter-chip:focus-visible,
+.filter-chip--toggle:has(input:focus-visible),
+.filter-sheet__toggle:focus-visible .filter-chip,
+.filter-option:has(input:focus-visible),
+.filter-sheet__close:focus-visible {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: 0.2rem;
+  box-shadow: 0 0 0 0.4rem rgb(var(--color-background));
+}
+
+/* Popover */
+.filter-chip-disclosure {
+  position: relative;
+}
+
+.filter-chip__popover {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  min-width: 24rem;
+  max-width: 32rem;
+  max-height: 36rem;
+  overflow-y: auto;
+  padding: 0.6rem;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  border: 0.1rem solid rgba(var(--color-foreground), 0.12);
+  border-radius: 1.2rem;
+  box-shadow: 0 0.8rem 2.4rem rgba(var(--color-shadow), 0.14);
+  animation: genrePillIn var(--genre-pill-duration) ease;
+}
+
+.filter-chip__fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.filter-chip__list {
+  margin: 0;
+  padding: 0;
+}
+
+/* Option rows (popover and sheet) */
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 4rem;
+  padding: 0.4rem 1rem;
+  border-radius: 0.8rem;
+  font-size: 1.4rem;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .filter-option:hover {
+    background-color: rgba(var(--color-foreground), 0.05);
+  }
+}
+
+.filter-option input[type='checkbox'] {
+  position: static;
+  flex: 0 0 auto;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin: 0;
+  opacity: 1;
+  accent-color: var(--genre-pill-accent);
+  cursor: pointer;
+}
+
+.filter-option input[type='checkbox']:focus {
+  outline: none;
+}
+
+.filter-option__label {
+  flex: 1 1 auto;
+}
+
+.filter-option__count {
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Active filters under the row: compact removable pills */
+.filter-bar-container .active-facets {
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.filter-bar__active {
+  margin: 0 0 1.2rem;
+}
+
+.filter-bar-container .active-facets__button {
+  margin: 0;
+  padding: 0;
+}
+
+.filter-bar-container span.active-facets__button-inner {
+  min-height: 3.2rem;
+  padding: 0 0.6rem 0 1.2rem;
+  gap: 0.4rem;
+  font-size: 1.3rem;
+  color: var(--genre-pill-text);
+  background-color: var(--genre-pill-bg);
+  box-shadow: 0 0 0 0.1rem var(--genre-pill-border);
+  border-radius: 999px;
+}
+
+.filter-bar-container .active-facets__button:hover .active-facets__button-inner {
+  box-shadow: 0 0 0 0.1rem var(--genre-pill-text);
+}
+
+.filter-bar-container .active-facets__button-remove {
+  font-size: 1.3rem;
+}
+
+/* ===== Mobile: Filters button + bottom sheet ===== */
+.filter-sheet .mobile-facets__open-wrapper {
+  display: inline-flex;
+}
+
+.filter-sheet .mobile-facets__open {
+  width: auto;
+  padding: 0 1.2rem;
+}
+
+.filter-sheet .mobile-facets__open .svg-wrapper {
+  width: 1.8rem;
+}
+
+.filter-sheet .mobile-facets__open line,
+.filter-sheet .mobile-facets__open circle {
+  stroke: currentColor;
+}
+
+.filter-sheet .mobile-facets__open:hover .mobile-facets__open-label {
+  text-decoration: none;
+}
+
+.filter-sheet__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background-color: var(--genre-pill-accent-text);
+  color: var(--genre-pill-accent);
+  font-size: 1.2rem;
+  font-weight: var(--font-body-weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Dawn's floating close icon isn't used; the sheet has its own close button */
+.filter-sheet .mobile-facets__close {
+  display: none !important;
+}
+
+.filter-sheet__form.mobile-facets {
+  display: flex;
+  align-items: flex-end;
+}
+
+.filter-sheet__inner {
+  pointer-events: all;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(var(--viewport-height, 100vh) * 0.85);
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  border-radius: 1.6rem 1.6rem 0 0;
+  box-shadow: 0 -0.8rem 2.4rem rgba(var(--color-shadow), 0.16);
+  transform: translateY(100%);
+  transition: transform var(--duration-default) ease;
+}
+
+.filter-sheet details.menu-opening .filter-sheet__inner {
+  transform: none;
+}
+
+.filter-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1.2rem 0.8rem 2rem;
+  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+}
+
+.filter-sheet__title {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.filter-sheet__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgb(var(--color-foreground));
+  cursor: pointer;
+}
+
+.filter-sheet__close .svg-wrapper {
+  width: 2rem;
+  height: 2rem;
+}
+
+.filter-sheet__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 1.2rem;
+}
+
+.filter-sheet__item:not(:has(> *)) {
+  display: none;
+}
+
+.filter-sheet__group {
+  margin: 0;
+  padding: 1.6rem 0 1.2rem;
+  border: 0;
+  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  min-width: 0;
+}
+
+.filter-sheet__legend {
+  padding: 0 0.8rem;
+  margin-bottom: 0.6rem;
+  font-size: 1.5rem;
+  font-weight: var(--font-body-weight-bold);
+}
+
+.filter-sheet .filter-sheet__list {
+  overflow: visible;
+  margin: 0;
+  padding: 0;
+}
+
+.filter-sheet__list .filter-option {
+  min-height: 4.4rem;
+}
+
+.filter-sheet__list .filter-chip--toggle {
+  margin: 0.4rem 0.8rem;
+}
+
+.filter-sheet__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem;
+  padding: 1.2rem 2rem calc(1.2rem + env(safe-area-inset-bottom));
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
+}
+
+.filter-sheet__footer .mobile-facets__clear-wrapper {
+  display: flex;
+}
+
+.filter-sheet__apply {
+  flex: 1 1 auto;
+  max-width: 24rem;
+  min-height: 4.4rem;
+}
+
+/* Dawn styles .mobile-facets__count as muted body text; on the button it must take the button colour */
+.filter-sheet__apply .mobile-facets__count {
+  color: inherit;
+  font-size: inherit;
+  flex-grow: 0;
+}
+
+/* Dawn hides input.mobile-facets__checkbox (appearance: none, absolutely placed). The sheet uses
+   native checkboxes in option rows, and a full-cover invisible input on the In stock chip. */
+.filter-sheet .filter-option input.mobile-facets__checkbox {
+  position: static;
+  appearance: auto;
+  -webkit-appearance: checkbox;
+}
+
+.filter-chip--toggle {
+  position: relative;
+}
+
+.filter-sheet .filter-chip--toggle input.mobile-facets__checkbox {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-sheet__inner,
+  .filter-chip,
+  .filter-chip__caret {
+    transition: none;
+  }
+
+  .filter-chip__popover {
+    animation: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -10,7 +10,8 @@
   Accepts:
   - results: {Object} Collection object
   - param_name: {String} Param name of the genre filter, e.g. 'filter.p.m.custom.pattern_genre'
-  - show_sort: {Boolean} Render the sort control (snippets/pattern-sort.liquid) next to the count.
+  - show_sort: {Boolean} Render the record count and sort control (snippets/pattern-sort.liquid).
+    False when the Pattern filter bar shows them instead.
     Its select is in this form, so sort_by is submitted with the genres on every filter change.
 
   Usage:
@@ -168,6 +169,7 @@
                     </a>
                   </facet-remove>
                 </div>
+                {%- if show_sort -%}
                 <div class="genre-pills__meta">
                   <p class="genre-pills__count">
                     {{ 'products.facets.genre_pills.records' | t: count: results.products_count }}
@@ -179,6 +181,7 @@
                     </div>
                   {%- endif -%}
                 </div>
+                {%- endif -%}
               </div>
               {%- comment -%} Grid rows 0fr -> 1fr animates the height, so the grid below moves smoothly. {%- endcomment -%}
               <div class="genre-pills__children{% if visible_children > 0 %} is-open{% endif %}" data-genre-children>

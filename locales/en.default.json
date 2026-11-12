@@ -199,6 +199,15 @@
           "other": "{{ count }} records"
         }
       },
+      "filter_bar": {
+        "filters": "Filters",
+        "in_stock": "In stock",
+        "clear_all": "Clear all",
+        "show_records": {
+          "one": "Show {{ count }} record",
+          "other": "Show {{ count }} records"
+        }
+      },
       "pattern_sort": {
         "label": "Sort",
         "manual": "Featured",
