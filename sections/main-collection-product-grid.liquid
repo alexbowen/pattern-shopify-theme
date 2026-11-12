@@ -38,8 +38,32 @@
 
 <div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}">
   {%- paginate collection.products by section.settings.products_per_page -%}
+    {%- liquid
+      assign genre_param = 'filter.p.m.custom.pattern_genre'
+      assign genre_pills = false
+      assign genre_param_excluded = ''
+      if section.settings.enable_filtering and section.settings.show_genre_pills
+        assign genre_pills_filter = collection.filters | where: 'param_name', genre_param | first
+        if genre_pills_filter
+          assign genre_pills = true
+          assign genre_param_excluded = genre_param
+        endif
+      endif
+
+      # With the pill bar, sorting moves into it (snippets/pattern-sort.liquid): desktop control next
+      # to the record count, mobile copy next to the Filter button. The Dawn sort UI is switched off
+      # so sort_by is only submitted once.
+      assign sort_in_bar = false
+      if genre_pills and section.settings.enable_sorting
+        assign sort_in_bar = true
+      endif
+      assign facets_sorting = section.settings.enable_sorting
+      if sort_in_bar
+        assign facets_sorting = false
+      endif
+    -%}
     {% comment %} Sort is the first tabbable element when filter type is vertical {% endcomment %}
-    {%- if section.settings.enable_sorting and section.settings.filter_type == 'vertical' -%}
+    {%- if facets_sorting and section.settings.filter_type == 'vertical' -%}
       <facet-filters-form class="facets facets-vertical-sort page-width small-hide">
         <form class="facets-vertical-form" id="FacetSortForm">
           <div class="facet-filters sorting caption">
@@ -97,20 +121,8 @@
       </facet-filters-form>
     {%- endif -%}
 
-    {%- liquid
-      assign genre_param = 'filter.p.m.custom.pattern_genre'
-      assign genre_pills = false
-      assign genre_param_excluded = ''
-      if section.settings.enable_filtering and section.settings.show_genre_pills
-        assign genre_pills_filter = collection.filters | where: 'param_name', genre_param | first
-        if genre_pills_filter
-          assign genre_pills = true
-          assign genre_param_excluded = genre_param
-        endif
-      endif
-    -%}
     {%- if genre_pills -%}
-      {% render 'genre-pills', results: collection, param_name: genre_param %}
+      {% render 'genre-pills', results: collection, param_name: genre_param, show_sort: sort_in_bar %}
     {%- endif -%}
 
     <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
@@ -126,10 +138,11 @@
           {% render 'facets',
             results: collection,
             enable_filtering: section.settings.enable_filtering,
-            enable_sorting: section.settings.enable_sorting,
+            enable_sorting: facets_sorting,
             filter_type: section.settings.filter_type,
             paginate: paginate,
-            exclude_param: genre_param_excluded
+            exclude_param: genre_param_excluded,
+            sort_in_bar: sort_in_bar
           %}
         </aside>
       {%- endif -%}

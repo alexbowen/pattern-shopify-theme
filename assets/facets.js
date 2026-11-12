@@ -154,6 +154,37 @@ class FacetFiltersForm extends HTMLElement {
       FacetFiltersForm.renderPage(searchParams, null, false);
     };
     window.addEventListener('popstate', onHistoryChange);
+
+    // Sort control (snippets/pattern-sort.liquid). #PatternSort sits in the genre pills form, so its
+    // native 'input' event submits like any filter. The mobile copy has no name: copy its value
+    // across and fire 'input' on #PatternSort so sort_by is only sent once.
+    document.addEventListener('change', (event) => {
+      const select = event.target;
+      if (!select.matches || !select.matches('.pattern-sort__select')) return;
+      FacetFiltersForm.updateSortLabel(select);
+      if (select.hasAttribute('data-sort-proxy')) {
+        const main = document.getElementById('PatternSort');
+        if (!main) return;
+        main.value = select.value;
+        FacetFiltersForm.updateSortLabel(main);
+        main.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+  }
+
+  static updateSortLabel(select) {
+    const current = select.closest('.pattern-sort')?.querySelector('[data-sort-current]');
+    const option = select.options[select.selectedIndex];
+    if (current && option) current.textContent = option.textContent.trim();
+  }
+
+  static renderMobileSort(html) {
+    const source = html.getElementById('PatternSortMobile-wrapper');
+    const target = document.getElementById('PatternSortMobile-wrapper');
+    if (!source || !target) return;
+    const hadFocus = target.contains(document.activeElement);
+    target.innerHTML = source.innerHTML;
+    if (hadFocus) document.getElementById('PatternSortMobile')?.focus({ preventScroll: true });
   }
 
   static toggleActiveFacets(disable = true) {
@@ -289,6 +320,7 @@ class FacetFiltersForm extends HTMLElement {
     FacetFiltersForm.renderActiveFacets(parsedHTML);
     FacetFiltersForm.renderAdditionalElements(parsedHTML);
     FacetFiltersForm.renderGenrePills(parsedHTML);
+    FacetFiltersForm.renderMobileSort(parsedHTML);
 
     if (countsToRender) {
       const closestJSFilterID = event.target.closest('.js-filter').id;

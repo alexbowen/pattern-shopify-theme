@@ -10,6 +10,8 @@
   Accepts:
   - results: {Object} Collection object
   - param_name: {String} Param name of the genre filter, e.g. 'filter.p.m.custom.pattern_genre'
+  - show_sort: {Boolean} Render the sort control (snippets/pattern-sort.liquid) next to the count.
+    Its select is in this form, so sort_by is submitted with the genres on every filter change.
 
   Usage:
   {% render 'genre-pills', results: collection, param_name: 'filter.p.m.custom.pattern_genre' %}
@@ -125,7 +127,7 @@
     {%- assign parents_html = parents_html | append: pill -%}
   {%- endfor -%}
 
-  {%- if parents_html != blank or children_html != blank -%}
+  {%- if parents_html != blank or children_html != blank or show_sort -%}
     {%- assign any_active = false -%}
     {%- if genre_filter.active_values.size > 0 -%}{%- assign any_active = true -%}{%- endif -%}
     {{ 'component-genre-pills.css' | asset_url | stylesheet_tag }}
@@ -166,9 +168,17 @@
                     </a>
                   </facet-remove>
                 </div>
-                <p class="genre-pills__count">
-                  {{ 'products.facets.genre_pills.records' | t: count: results.products_count }}
-                </p>
+                <div class="genre-pills__meta">
+                  <p class="genre-pills__count">
+                    {{ 'products.facets.genre_pills.records' | t: count: results.products_count }}
+                  </p>
+                  {%- if show_sort -%}
+                    {%- comment -%} Hidden on mobile, where the copy next to the Filter button drives it. {%- endcomment -%}
+                    <div class="genre-pills__sort small-hide">
+                      {% render 'pattern-sort', results: results, id: 'PatternSort' %}
+                    </div>
+                  {%- endif -%}
+                </div>
               </div>
               {%- comment -%} Grid rows 0fr -> 1fr animates the height, so the grid below moves smoothly. {%- endcomment -%}
               <div class="genre-pills__children{% if visible_children > 0 %} is-open{% endif %}" data-genre-children>

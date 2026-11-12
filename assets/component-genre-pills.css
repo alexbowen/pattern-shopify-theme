@@ -3,7 +3,10 @@
    Palette: --pattern-opal / --pattern-sandstone / --pattern-charcoal (+ --pattern-opal-text for
    text on Opal) when the theme defines them. Until then they fall back to the section's colour
    scheme variables, so nothing here is a hard-coded colour. */
-.genre-pills {
+/* Tokens are shared with the sort control (snippets/pattern-sort.liquid), whose mobile copy sits
+   outside the pill bar, next to the Filter button. */
+.genre-pills,
+.pattern-sort {
   --genre-pill-accent: var(--pattern-opal, rgb(var(--color-button)));
   --genre-pill-accent-text: var(--pattern-opal-text, rgb(var(--color-button-text)));
   --genre-pill-bg: var(--pattern-sandstone, rgba(var(--color-foreground), 0.06));
@@ -11,6 +14,16 @@
   --genre-pill-border: rgba(var(--color-foreground), 0.15);
   --genre-pill-duration: 180ms;
   --genre-pill-height: 4.4rem; /* touch target on mobile */
+}
+
+@media screen and (min-width: 750px) {
+  .genre-pills,
+  .pattern-sort {
+    --genre-pill-height: 3.6rem;
+  }
+}
+
+.genre-pills {
 
   /* Sticky bar: sits under the header while the grid scrolls */
   position: sticky;
@@ -152,10 +165,6 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
 }
 
 @media screen and (min-width: 750px) {
-  .genre-pills {
-    --genre-pill-height: 3.6rem;
-  }
-
   .genre-pills__row {
     flex-wrap: wrap;
     overflow-x: visible;
@@ -255,6 +264,105 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
     opacity: 1;
     transform: none;
   }
+}
+
+/* Count + sort, right of the parent row */
+.genre-pills__meta {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+/* Sort control: pill-shaped "Sort: <current>" with a transparent native select over it */
+.pattern-sort {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: var(--genre-pill-height);
+  padding: 0 1.4rem 0 1.6rem;
+  border: 0.1rem solid var(--genre-pill-border);
+  border-radius: 999px;
+  background-color: var(--genre-pill-bg);
+  color: var(--genre-pill-text);
+  font-size: 1.4rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: border-color 0.15s ease;
+}
+
+.pattern-sort__label,
+.pattern-sort__caret {
+  pointer-events: none;
+}
+
+.pattern-sort__current {
+  font-weight: var(--font-body-weight-bold);
+}
+
+.pattern-sort__caret {
+  width: 1rem;
+  height: 1rem;
+}
+
+.pattern-sort__caret .icon {
+  width: 1rem;
+  height: 0.6rem;
+}
+
+.pattern-sort__select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  opacity: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  font-size: 1.6rem; /* 16px stops iOS zooming in on focus */
+}
+
+@media (hover: hover) {
+  .pattern-sort:hover {
+    border-color: var(--genre-pill-text);
+  }
+}
+
+.pattern-sort:has(.pattern-sort__select:focus-visible) {
+  outline: 0.2rem solid rgb(var(--color-foreground));
+  outline-offset: 0.2rem;
+  box-shadow: 0 0 0 0.4rem rgb(var(--color-background));
+}
+
+/* Mobile: sort on the Filter button row. Dawn's "N of M products" moves off-screen (the pill bar
+   shows the record count) but stays in the DOM as the live status facets.js updates. */
+.facets-container--bar-sort > menu-drawer {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.facets-container--bar-sort > .facets-mobile-sort {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  align-self: center;
+}
+
+.facets-container--bar-sort > .product-count {
+  position: absolute !important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  word-wrap: normal !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

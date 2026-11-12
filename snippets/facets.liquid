@@ -8,6 +8,7 @@
   - filter_type: {String} Type of filter
   - paginate: {Object}
   - exclude_param: {String} Optional. Param name of a filter rendered elsewhere (e.g. genre pills); left out of the filter dropdowns and drawer
+  - sort_in_bar: {Boolean} Optional. Sorting lives in the genre pill bar: renders its mobile copy next to the Filter button (pass enable_sorting: false so the Dawn sort UI is off)
 
   Usage:
   {% render 'facets', results: collection, enable_filtering: true, enable_sorting: true, filter_type: 'vertical', paginate: paginate %}
@@ -29,7 +30,7 @@
   endif
 -%}
 
-<div class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+<div class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if sort_in_bar %} facets-container--bar-sort{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
   {%- if filter_type == 'vertical' or filter_type == 'horizontal' -%}
     <facet-filters-form class="facets small-hide">
       <form
@@ -784,6 +785,13 @@
       </facet-filters-form>
     </details>
   </menu-drawer>
+
+  {%- if sort_in_bar -%}
+    {%- comment -%} Mobile: sort on the Filter button row. No name; facets.js copies it into #PatternSort. {%- endcomment -%}
+    <div class="facets-mobile-sort{% if filter_type == 'horizontal' or filter_type == 'vertical' %} medium-hide large-up-hide{% endif %}">
+      {% render 'pattern-sort', results: results, id: 'PatternSortMobile', proxy: true %}
+    </div>
+  {%- endif -%}
 
   <div class="active-facets active-facets-mobile medium-hide large-up-hide">
     {%- for filter in results.filters -%}

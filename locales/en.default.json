@@ -199,6 +199,17 @@
           "other": "{{ count }} records"
         }
       },
+      "pattern_sort": {
+        "label": "Sort",
+        "manual": "Featured",
+        "best_selling": "Popular",
+        "created_descending": "Newest arrivals",
+        "created_ascending": "Oldest first",
+        "title_ascending": "Artist A-Z",
+        "title_descending": "Artist Z-A",
+        "price_ascending": "Price: low to high",
+        "price_descending": "Price: high to low"
+      },
       "filter_and_operator_subtitle": "Match all",
       "apply": "Apply",
       "clear": "Clear",

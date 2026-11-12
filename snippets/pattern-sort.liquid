@@ -1,0 +1,89 @@
+{% comment %}
+  Compact sort control styled like the genre pills: a visible "Sort: <current>" label with a
+  transparent native <select> laid over it, so keyboard, screen readers and the native picker
+  all work as normal.
+
+  Option values are Shopify's own (sort_by); only the labels and the order change.
+  Order: Newest arrivals, Popular, Artist A-Z, Price low-high, Price high-low, then the rest.
+  Featured (manual) comes first only when it's the collection's default sort.
+
+  Accepts:
+  - results: {Object} Collection
+  - proxy: {Boolean} Mobile copy: no name attribute, facets.js copies its value into the main
+    control (#PatternSort) so sort_by is only submitted once
+  - id: {String} Element id
+
+  Usage:
+  {% render 'pattern-sort', results: collection, id: 'PatternSort' %}
+{% endcomment %}
+
+{%- liquid
+  assign sort_by = results.sort_by | default: results.default_sort_by
+  assign order = 'created-descending,best-selling,title-ascending,price-ascending,price-descending'
+  if results.default_sort_by == 'manual'
+    assign order = 'manual,' | append: order
+  endif
+  assign order_key = ',' | append: order | append: ','
+  for option in results.sort_options
+    assign option_key = ',' | append: option.value | append: ','
+    unless order_key contains option_key
+      assign order = order | append: ',' | append: option.value
+      assign order_key = order_key | append: option.value | append: ','
+    endunless
+  endfor
+  assign ordered_values = order | split: ','
+
+  assign known = ',manual,best-selling,created-descending,created-ascending,title-ascending,title-descending,price-ascending,price-descending,'
+  assign current_label = ''
+-%}
+
+{%- capture options_html -%}
+  {%- for value in ordered_values -%}
+    {%- for option in results.sort_options -%}
+      {%- if option.value == value -%}
+        {%- liquid
+          assign value_key = ',' | append: option.value | append: ','
+          if known contains value_key
+            assign label_key = 'products.facets.pattern_sort.' | append: option.value | replace: '-', '_'
+            assign label = label_key | t
+          else
+            assign label = option.name
+          endif
+          if option.value == sort_by
+            assign current_label = label
+          endif
+        -%}
+        <option
+          value="{{ option.value | escape }}"
+          {% if option.value == sort_by %}
+            selected="selected"
+          {% endif %}
+        >
+          {{- label | escape -}}
+        </option>
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+<div class="pattern-sort" id="{{ id }}-wrapper">
+  <span class="pattern-sort__label" aria-hidden="true">
+    {{- 'products.facets.pattern_sort.label' | t }}:
+    <span class="pattern-sort__current" data-sort-current>{{ current_label | escape }}</span>
+  </span>
+  <span class="pattern-sort__caret svg-wrapper" aria-hidden="true">
+    {{- 'icon-caret.svg' | inline_asset_content -}}
+  </span>
+  <select
+    class="pattern-sort__select"
+    id="{{ id }}"
+    aria-label="{{ 'products.facets.sort_by_label' | t | remove: ':' | strip | escape }}"
+    {% if proxy %}
+      data-sort-proxy
+    {% else %}
+      name="sort_by"
+    {% endif %}
+  >
+    {{- options_html -}}
+  </select>
+</div>
