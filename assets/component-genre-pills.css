@@ -1,16 +1,37 @@
 /* Genre pills above the collection grid (snippets/genre-pills.liquid).
-   Brand colours come from --pattern-opal / --pattern-sandstone / --pattern-charcoal when the theme
-   defines them. The fallbacks are the hex values used in sections/pattern-hero.liquid; Sandstone
-   has no value in the theme yet, so it falls back to a tint of the scheme foreground. */
-.genre-pills {
-  --genre-pill-active-bg: var(--pattern-opal, #e85c41);
-  --genre-pill-active-text: #ffffff;
-  --genre-pill-bg: var(--pattern-sandstone, rgba(var(--color-foreground), 0.06));
-  --genre-pill-text: var(--pattern-charcoal, #1c1c1c);
-  --genre-pill-border: rgba(var(--color-foreground), 0.15);
 
-  display: block;
+   Palette: --pattern-opal / --pattern-sandstone / --pattern-charcoal (+ --pattern-opal-text for
+   text on Opal) when the theme defines them. Until then they fall back to the section's colour
+   scheme variables, so nothing here is a hard-coded colour. */
+.genre-pills {
+  --genre-pill-accent: var(--pattern-opal, rgb(var(--color-button)));
+  --genre-pill-accent-text: var(--pattern-opal-text, rgb(var(--color-button-text)));
+  --genre-pill-bg: var(--pattern-sandstone, rgba(var(--color-foreground), 0.06));
+  --genre-pill-text: var(--pattern-charcoal, rgb(var(--color-foreground)));
+  --genre-pill-border: rgba(var(--color-foreground), 0.15);
+  --genre-pill-duration: 180ms;
+  --genre-pill-height: 4.4rem; /* touch target on mobile */
+
+  /* Sticky bar: sits under the header while the grid scrolls */
+  position: sticky;
+  top: 0;
+  z-index: 2; /* below the header (3) and drawers; the product grid isolates its own stacking */
   margin-bottom: 1.6rem;
+  background-color: rgb(var(--color-background));
+  border-bottom: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  transition: top 0.15s ease-out; /* same as .section-header.animate */
+}
+
+/* The header is visible and sticky (always-sticky, or revealed on scroll up): sit below it.
+   When it's hidden (scrolling down) or back in normal flow, top: 0 is right. */
+body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-header-hidden)) .genre-pills {
+  top: var(--header-height, 0px);
+}
+
+.genre-pills__inner {
+  display: block;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
 }
 
 .genre-pills__fieldset {
@@ -20,53 +41,104 @@
   min-width: 0;
 }
 
+.genre-pills__top {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.genre-pills__top .genre-pills__row {
+  flex: 1 1 auto;
+}
+
+.genre-pills__count {
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: 1.3rem;
+  color: rgba(var(--color-foreground), 0.7);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Rows: one scrolling line on mobile, no wrapping, hidden scrollbar */
 .genre-pills__row {
   display: flex;
+  align-items: center;
   gap: 0.8rem;
-  /* Mobile: one scrolling line, not wrapping */
+  min-width: 0;
   flex-wrap: nowrap;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 0.4rem 0.2rem;
+  /* Room for the focus outline, which overflow would otherwise clip */
+  padding: 0.4rem;
+  margin: -0.4rem;
 }
 
 .genre-pills__row::-webkit-scrollbar {
   display: none;
 }
 
-.genre-pills__row[hidden] {
-  display: none;
+/* Faint fade at the right edge while there are more pills to scroll to (set by facets.js) */
+.genre-pills__row--more {
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 4rem), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 4rem), transparent);
 }
 
-.genre-pills__row--children {
-  margin-top: 0.4rem;
+/* Child row: height animates from 0 via grid rows, so content below moves smoothly instead of jumping */
+.genre-pills__children {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transform: translateY(-0.4rem);
+  transition: grid-template-rows var(--genre-pill-duration) ease, opacity var(--genre-pill-duration) ease,
+    transform var(--genre-pill-duration) ease, visibility 0s linear var(--genre-pill-duration);
+  visibility: hidden;
 }
 
-@media screen and (min-width: 750px) {
-  .genre-pills__row {
-    flex-wrap: wrap;
-    overflow-x: visible;
-  }
+.genre-pills__children.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  transition: grid-template-rows var(--genre-pill-duration) ease, opacity var(--genre-pill-duration) ease,
+    transform var(--genre-pill-duration) ease, visibility 0s;
 }
 
+.genre-pills__children-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.genre-pills__children .genre-pills__row {
+  /* inner padding replaces the negative-margin trick so the clip box has room for outlines */
+  margin: 0;
+  padding: 0.8rem 0.4rem 0.4rem;
+}
+
+/* Pills */
 .genre-pill {
   position: relative;
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.7rem 1.4rem;
-  border: 1px solid var(--genre-pill-border);
+  min-height: var(--genre-pill-height);
+  margin: 0;
+  padding: 0 1.6rem;
+  border: 0.1rem solid var(--genre-pill-border);
   border-radius: 999px;
   background-color: var(--genre-pill-bg);
   color: var(--genre-pill-text);
+  font-family: inherit;
   font-size: 1.4rem;
   line-height: 1.2;
   white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
@@ -74,13 +146,34 @@
   display: none;
 }
 
-.genre-pills__row--children .genre-pill {
+.genre-pill--child {
   font-size: 1.3rem;
-  padding: 0.5rem 1.2rem;
+  padding: 0 1.4rem;
 }
 
-.genre-pill:hover {
-  border-color: var(--genre-pill-text);
+@media screen and (min-width: 750px) {
+  .genre-pills {
+    --genre-pill-height: 3.6rem;
+  }
+
+  .genre-pills__row {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .genre-pills__top {
+    align-items: flex-start;
+  }
+
+  .genre-pills__count {
+    line-height: var(--genre-pill-height);
+  }
+}
+
+@media (hover: hover) {
+  .genre-pill:hover {
+    border-color: var(--genre-pill-text);
+  }
 }
 
 .genre-pill__count {
@@ -88,27 +181,95 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Active: from the server class, or straight away from the checkbox before the AJAX response */
-.genre-pill--active,
-.genre-pill:has(.genre-pill__input:checked) {
-  background-color: var(--genre-pill-active-bg);
-  border-color: var(--genre-pill-active-bg);
-  color: var(--genre-pill-active-text);
+/* Active */
+.genre-pill--active {
+  background-color: var(--genre-pill-accent);
+  border-color: var(--genre-pill-accent);
+  color: var(--genre-pill-accent-text);
 }
 
-.genre-pill--active .genre-pill__count,
-.genre-pill:has(.genre-pill__input:checked) .genre-pill__count {
+.genre-pill--active .genre-pill__count {
   opacity: 0.85;
 }
 
-/* Unticked but the AJAX response hasn't arrived yet: drop the server's active styling */
-.genre-pill--active:not(:has(.genre-pill__input:checked)) {
+@media (hover: hover) {
+  .genre-pill--active:hover {
+    border-color: var(--genre-pill-accent);
+  }
+}
+
+/* Parent with a selected child: lighter version of the active state */
+.genre-pill--has-active-child {
+  border-color: var(--genre-pill-accent);
   background-color: var(--genre-pill-bg);
-  border-color: var(--genre-pill-border);
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--genre-pill-accent) 16%, transparent),
+    color-mix(in srgb, var(--genre-pill-accent) 16%, transparent)
+  );
   color: var(--genre-pill-text);
 }
 
-.genre-pill:has(.genre-pill__input:focus-visible) {
-  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+/* Keyboard focus */
+.genre-pill:focus {
+  outline: none;
+}
+
+.genre-pill:focus-visible,
+.genre-pills__clear:focus-visible {
+  outline: 0.2rem solid rgb(var(--color-foreground));
   outline-offset: 0.2rem;
+  box-shadow: 0 0 0 0.4rem rgb(var(--color-background));
+}
+
+/* facet-remove wrappers (All, Clear) */
+.genre-pills__remove {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.genre-pills__remove[hidden] {
+  display: none;
+}
+
+.genre-pills__clear {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--genre-pill-height);
+  padding: 0 0.8rem;
+  font-size: 1.3rem;
+  color: rgb(var(--color-foreground));
+  white-space: nowrap;
+}
+
+/* Child pills fade/slide in when revealed (class added by facets.js, not on re-render) */
+.genre-pill--entering {
+  animation: genrePillIn var(--genre-pill-duration) ease both;
+}
+
+@keyframes genrePillIn {
+  from {
+    opacity: 0;
+    transform: translateY(-0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .genre-pills,
+  .genre-pill,
+  .genre-pills__children,
+  .genre-pills__children.is-open {
+    transition: none;
+  }
+
+  .genre-pills__children {
+    transform: none;
+  }
+
+  .genre-pill--entering {
+    animation: none;
+  }
 }

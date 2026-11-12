@@ -192,6 +192,13 @@
       "label": "Media gallery"
     },
     "facets": {
+      "genre_pills": {
+        "all": "All",
+        "records": {
+          "one": "{{ count }} record",
+          "other": "{{ count }} records"
+        }
+      },
       "filter_and_operator_subtitle": "Match all",
       "apply": "Apply",
       "clear": "Clear",

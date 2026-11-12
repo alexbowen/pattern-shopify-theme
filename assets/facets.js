@@ -13,23 +13,133 @@ class FacetFiltersForm extends HTMLElement {
     const facetWrapper = this.querySelector('#FacetsWrapperDesktop');
     if (facetWrapper) facetWrapper.addEventListener('keyup', onKeyUpEscape);
 
-    // Genre pills: show/hide child pills straight away, before the AJAX response arrives.
-    if (facetForm.id === 'FacetGenrePillsForm') {
-      facetForm.addEventListener('change', () => FacetFiltersForm.syncGenreChildren(facetForm));
-    }
+    if (facetForm.id === 'FacetGenrePillsForm') FacetFiltersForm.initGenrePills(facetForm);
   }
 
-  static syncGenreChildren(form) {
-    const childRow = form.querySelector('[data-genre-row="children"]');
-    if (!childRow) return;
-    const isChecked = (handle) => Boolean(form.querySelector(`[data-genre-handle="${handle}"]:checked`));
-    let visibleCount = 0;
-    childRow.querySelectorAll('[data-genre-parent]').forEach((pill) => {
-      const visible = isChecked(pill.dataset.genreParent) || pill.querySelector('input').checked;
-      pill.hidden = !visible;
-      if (visible) visibleCount++;
+  // Genre pills (snippets/genre-pills.liquid). Pills are aria-pressed buttons, each with a hidden
+  // input that is disabled while the pill is off. Toggling one fires a normal 'input' event, so
+  // the debounced submit and AJAX render above handle the filtering.
+  static initGenrePills(form) {
+    form.addEventListener('click', (event) => {
+      const pill = event.target.closest('.genre-pill[data-genre-handle]');
+      if (pill) {
+        FacetFiltersForm.setGenrePillPressed(pill, pill.getAttribute('aria-pressed') !== 'true');
+        FacetFiltersForm.syncGenrePills(form);
+        pill.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+      }
+      // "All" and "Clear" are facet-remove links (url_to_remove), which do the AJAX render.
+      // Clear the pills here too so a pending debounced submit can't re-apply old genres.
+      if (event.target.closest('[data-genre-clear]')) {
+        form.querySelectorAll('.genre-pill[data-genre-handle]').forEach((p) => FacetFiltersForm.setGenrePillPressed(p, false));
+        FacetFiltersForm.syncGenrePills(form);
+      }
     });
-    childRow.hidden = visibleCount === 0;
+
+    // Scroll events don't bubble; capture them from the rows to update the edge fade.
+    form.addEventListener('scroll', (event) => {
+      if (event.target.matches && event.target.matches('[data-genre-row]')) FacetFiltersForm.updateGenreRowFade(event.target);
+    }, true);
+    window.addEventListener('resize', debounce(() => FacetFiltersForm.refreshGenreRows(form), 100));
+
+    requestAnimationFrame(() => FacetFiltersForm.refreshGenreRows(form, { scrollActive: true }));
+  }
+
+  static setGenrePillPressed(pill, pressed) {
+    pill.setAttribute('aria-pressed', String(pressed));
+    const input = pill.querySelector('input');
+    if (input) input.disabled = !pressed;
+  }
+
+  // Mirror the server-rendered state on the client straight away: active classes, the "All" pill,
+  // the Clear link and which child pills are shown.
+  static syncGenrePills(form) {
+    const pills = Array.from(form.querySelectorAll('.genre-pill[data-genre-handle]'));
+    const isPressed = (pill) => pill.getAttribute('aria-pressed') === 'true';
+    const pressedHandles = new Set(pills.filter(isPressed).map((pill) => pill.dataset.genreHandle));
+    const parentsOfPressedChildren = new Set(
+      pills.filter((pill) => pill.dataset.genreParent && isPressed(pill)).map((pill) => pill.dataset.genreParent)
+    );
+
+    pills.forEach((pill) => {
+      pill.classList.toggle('genre-pill--active', isPressed(pill));
+      if (!pill.dataset.genreParent) {
+        pill.classList.toggle(
+          'genre-pill--has-active-child',
+          !isPressed(pill) && parentsOfPressedChildren.has(pill.dataset.genreHandle)
+        );
+      }
+    });
+
+    const anyPressed = pressedHandles.size > 0;
+    const allPill = form.querySelector('.genre-pill--all');
+    if (allPill) {
+      allPill.classList.toggle('genre-pill--active', !anyPressed);
+      allPill.setAttribute('aria-pressed', String(!anyPressed));
+    }
+    const clear = form.querySelector('.genre-pills__clear-wrapper');
+    if (clear) clear.hidden = !anyPressed;
+
+    const childWrapper = form.querySelector('[data-genre-children]');
+    if (!childWrapper) return;
+    const children = pills.filter((pill) => pill.dataset.genreParent);
+    // Same rule as genre-pills.liquid: a parent's children stay open while the parent or any of them is selected.
+    const shouldShow = (pill) =>
+      pressedHandles.has(pill.dataset.genreParent) || parentsOfPressedChildren.has(pill.dataset.genreParent);
+
+    clearTimeout(FacetFiltersForm.genreCollapseTimer);
+    if (children.some(shouldShow)) {
+      children.forEach((pill) => {
+        const show = shouldShow(pill);
+        if (show && pill.hidden) {
+          pill.hidden = false;
+          pill.classList.add('genre-pill--entering');
+          pill.addEventListener('animationend', () => pill.classList.remove('genre-pill--entering'), { once: true });
+        } else if (!show) {
+          pill.hidden = true;
+        }
+      });
+      childWrapper.classList.add('is-open');
+    } else {
+      // Collapse with the pills still in place, then hide them once the row has closed.
+      childWrapper.classList.remove('is-open');
+      FacetFiltersForm.genreCollapseTimer = setTimeout(() => {
+        children.forEach((pill) => (pill.hidden = true));
+      }, FacetFiltersForm.prefersReducedMotion() ? 0 : 220);
+    }
+    FacetFiltersForm.refreshGenreRows(form);
+  }
+
+  static prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  static updateGenreRowFade(row) {
+    const moreToTheRight = row.scrollWidth - row.clientWidth - row.scrollLeft > 2;
+    row.classList.toggle('genre-pills__row--more', moreToTheRight);
+  }
+
+  // Scroll a row sideways (never the page) so its active pill is visible.
+  static scrollGenrePillIntoView(row, pill) {
+    if (!pill || row.scrollWidth <= row.clientWidth) return;
+    const rowRect = row.getBoundingClientRect();
+    const pillRect = pill.getBoundingClientRect();
+    const gutter = 24;
+    let left = null;
+    if (pillRect.left < rowRect.left + gutter) left = row.scrollLeft + pillRect.left - rowRect.left - gutter;
+    else if (pillRect.right > rowRect.right - gutter) left = row.scrollLeft + pillRect.right - rowRect.right + gutter;
+    if (left !== null) row.scrollTo({ left, behavior: FacetFiltersForm.prefersReducedMotion() ? 'auto' : 'smooth' });
+  }
+
+  static refreshGenreRows(form, { scrollActive = false, preferredPillId = null } = {}) {
+    form.querySelectorAll('[data-genre-row]').forEach((row) => {
+      if (scrollActive) {
+        const preferred = preferredPillId && row.querySelector(`#${CSS.escape(preferredPillId)}.genre-pill--active`);
+        const active = preferred || row.querySelector('.genre-pill--active:not([hidden])');
+        FacetFiltersForm.scrollGenrePillIntoView(row, active);
+      }
+      FacetFiltersForm.updateGenreRowFade(row);
+    });
   }
 
   static isDesktopFiltersVisible() {
@@ -241,9 +351,14 @@ class FacetFiltersForm extends HTMLElement {
       if (scrollPositions[row.dataset.genreRow]) row.scrollLeft = scrollPositions[row.dataset.genreRow];
     });
     if (focusedId) {
-      const focusTarget = document.getElementById(focusedId);
+      let focusTarget = document.getElementById(focusedId);
+      // Clear is hidden once nothing is selected; move focus to "All" instead of losing it.
+      if (!focusTarget || focusTarget.closest('[hidden]')) focusTarget = document.getElementById('GenrePill-all');
       if (focusTarget) focusTarget.focus({ preventScroll: true });
     }
+
+    const form = document.getElementById('FacetGenrePillsForm');
+    if (form) FacetFiltersForm.refreshGenreRows(form, { scrollActive: true, preferredPillId: focusedId });
   }
 
   static renderCounts(source, target) {

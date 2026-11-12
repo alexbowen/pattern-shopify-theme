@@ -34,13 +34,16 @@
     assign entries = genre_map | split: '|'
 
     # Parents whose children are shown: active parents, plus parents of active children.
+    # active_child_parents: parents with a selected child (lighter active state).
     assign expanded = ','
+    assign active_child_parents = ','
     for value in genre_filter.active_values
       assign key = '|' | append: value.label | append: '='
       if genre_map contains key
         assign pair = genre_map | split: key | last | split: '|' | first | split: '>'
         if pair[1] != blank
           assign expanded = expanded | append: pair[1] | append: ','
+          assign active_child_parents = active_child_parents | append: pair[1] | append: ','
         else
           assign expanded = expanded | append: pair[0] | append: ','
         endif
@@ -69,6 +72,13 @@
       endif
 
       assign is_hidden = false
+      assign has_active_child = false
+      if parent == blank and value.active == false
+        assign handle_key = ',' | append: handle | append: ','
+        if active_child_parents contains handle_key
+          assign has_active_child = true
+        endif
+      endif
       if parent != blank
         assign parent_key = ',' | append: parent | append: ','
         unless expanded contains parent_key or value.active
@@ -80,7 +90,13 @@
       endif
     -%}
     {%- capture pill -%}
-      {% render 'genre-pill', value: value, handle: handle, parent: parent, is_hidden: is_hidden %}
+      {% render 'genre-pill',
+        value: value,
+        handle: handle,
+        parent: parent,
+        is_hidden: is_hidden,
+        has_active_child: has_active_child
+      %}
     {%- endcapture -%}
     {%- liquid
       if parent != blank
@@ -110,27 +126,62 @@
   {%- endfor -%}
 
   {%- if parents_html != blank or children_html != blank -%}
+    {%- assign any_active = false -%}
+    {%- if genre_filter.active_values.size > 0 -%}{%- assign any_active = true -%}{%- endif -%}
     {{ 'component-genre-pills.css' | asset_url | stylesheet_tag }}
-    <facet-filters-form class="genre-pills page-width">
-      <form id="FacetGenrePillsForm">
-        <div id="GenrePills">
-          <fieldset class="genre-pills__fieldset">
-            <legend class="visually-hidden">{{ genre_filter.label | escape }}</legend>
-            <div class="genre-pills__row genre-pills__row--parents" data-genre-row="parents">
-              {{- parents_html -}}
-            </div>
-            <div
-              class="genre-pills__row genre-pills__row--children"
-              data-genre-row="children"
-              {% if visible_children == 0 %}
-                hidden
-              {% endif %}
-            >
-              {{- children_html -}}
-            </div>
-          </fieldset>
-        </div>
-      </form>
-    </facet-filters-form>
+    {%- comment -%} The outer div is the sticky bar (full-width background); content stays in page-width. {%- endcomment -%}
+    <div class="genre-pills">
+      <facet-filters-form class="genre-pills__inner page-width">
+        <form id="FacetGenrePillsForm">
+          <div id="GenrePills">
+            <fieldset class="genre-pills__fieldset">
+              <legend class="visually-hidden">{{ genre_filter.label | escape }}</legend>
+              <div class="genre-pills__top">
+                <div class="genre-pills__row genre-pills__row--parents" data-genre-row="parents">
+                  <facet-remove class="genre-pills__remove">
+                    <a
+                      href="{{ genre_filter.url_to_remove }}"
+                      id="GenrePill-all"
+                      class="genre-pill genre-pill--all{% unless any_active %} genre-pill--active{% endunless %}"
+                      aria-pressed="{% if any_active %}false{% else %}true{% endif %}"
+                      data-genre-clear
+                    >
+                      <span class="genre-pill__label">{{ 'products.facets.genre_pills.all' | t }}</span>
+                    </a>
+                  </facet-remove>
+                  {{- parents_html -}}
+                  <facet-remove
+                    class="genre-pills__remove genre-pills__clear-wrapper"
+                    {% unless any_active %}
+                      hidden
+                    {% endunless %}
+                  >
+                    <a
+                      href="{{ genre_filter.url_to_remove }}"
+                      id="GenrePillsClear"
+                      class="genre-pills__clear link underlined-link"
+                      data-genre-clear
+                    >
+                      {{- 'products.facets.clear' | t -}}
+                    </a>
+                  </facet-remove>
+                </div>
+                <p class="genre-pills__count">
+                  {{ 'products.facets.genre_pills.records' | t: count: results.products_count }}
+                </p>
+              </div>
+              {%- comment -%} Grid rows 0fr -> 1fr animates the height, so the grid below moves smoothly. {%- endcomment -%}
+              <div class="genre-pills__children{% if visible_children > 0 %} is-open{% endif %}" data-genre-children>
+                <div class="genre-pills__children-inner">
+                  <div class="genre-pills__row genre-pills__row--children" data-genre-row="children">
+                    {{- children_html -}}
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+        </form>
+      </facet-filters-form>
+    </div>
   {%- endif -%}
 {%- endif -%}
