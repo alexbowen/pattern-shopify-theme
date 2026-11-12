@@ -97,6 +97,22 @@
       </facet-filters-form>
     {%- endif -%}
 
+    {%- liquid
+      assign genre_param = 'filter.p.m.custom.pattern_genre'
+      assign genre_pills = false
+      assign genre_param_excluded = ''
+      if section.settings.enable_filtering and section.settings.show_genre_pills
+        assign genre_pills_filter = collection.filters | where: 'param_name', genre_param | first
+        if genre_pills_filter
+          assign genre_pills = true
+          assign genre_param_excluded = genre_param
+        endif
+      endif
+    -%}
+    {%- if genre_pills -%}
+      {% render 'genre-pills', results: collection, param_name: genre_param %}
+    {%- endif -%}
+
     <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
       {{ 'component-facets.css' | asset_url | stylesheet_tag }}
       <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
@@ -112,7 +128,8 @@
             enable_filtering: section.settings.enable_filtering,
             enable_sorting: section.settings.enable_sorting,
             filter_type: section.settings.filter_type,
-            paginate: paginate
+            paginate: paginate,
+            exclude_param: genre_param_excluded
           %}
         </aside>
       {%- endif -%}
@@ -380,6 +397,13 @@
       "id": "enable_sorting",
       "default": true,
       "label": "t:sections.main-collection-product-grid.settings.enable_sorting.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_genre_pills",
+      "default": true,
+      "label": "Show genre pills",
+      "info": "Shows the Pattern genre filter as pills above the grid instead of in the filter menu. Needs filtering enabled."
     },
     {
       "type": "header",

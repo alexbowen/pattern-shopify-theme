@@ -1,0 +1,42 @@
+{% comment %}
+  One genre pill: a filter checkbox styled as a pill. Used by genre-pills.liquid.
+
+  Accepts:
+  - value: {Object} Filter value
+  - handle: {String} Genre handle, used for the input id
+  - parent: {String} Parent genre handle, blank for top-level genres
+  - is_hidden: {Boolean} Child pill whose parent isn't expanded
+{% endcomment %}
+<label
+  for="GenrePill-{{ handle }}"
+  class="genre-pill{% if value.active %} genre-pill--active{% endif %}"
+  {% if parent != blank %}
+    data-genre-parent="{{ parent }}"
+  {% endif %}
+  {% if is_hidden %}
+    hidden
+  {% endif %}
+>
+  <input
+    type="checkbox"
+    class="genre-pill__input visually-hidden"
+    id="GenrePill-{{ handle }}"
+    name="{{ value.param_name }}"
+    value="{{ value.value }}"
+    data-genre-handle="{{ handle }}"
+    {% if value.active %}
+      checked
+    {% endif %}
+  >
+  <span class="genre-pill__label">{{ value.label | escape }}</span>
+  <span class="genre-pill__count" aria-hidden="true">{{ value.count }}</span>
+  <span class="visually-hidden">
+    (
+    {%- if value.count == 1 -%}
+      {{- 'products.facets.product_count_simple.one' | t: count: value.count -}}
+    {%- else -%}
+      {{- 'products.facets.product_count_simple.other' | t: count: value.count -}}
+    {%- endif -%}
+    )
+  </span>
+</label>

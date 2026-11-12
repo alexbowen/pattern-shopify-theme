@@ -1,0 +1,136 @@
+{% comment %}
+  Renders the genre filter as two rows of pills: parent genres, then the children of the
+  expanded parents. The inputs are ordinary Shopify filter checkboxes inside a
+  facet-filters-form, so facets.js handles the AJAX update like any other filter.
+
+  The genre tree comes from snippets/pattern-genres.liquid (generated from
+  pattern-scripts/genres.json). Values are matched to it by label. Labels that aren't in it
+  are shown as top-level pills at the end.
+
+  Accepts:
+  - results: {Object} Collection object
+  - param_name: {String} Param name of the genre filter, e.g. 'filter.p.m.custom.pattern_genre'
+
+  Usage:
+  {% render 'genre-pills', results: collection, param_name: 'filter.p.m.custom.pattern_genre' %}
+{% endcomment %}
+
+{%- liquid
+  assign genre_filter = null
+  for filter in results.filters
+    if filter.param_name == param_name
+      assign genre_filter = filter
+      break
+    endif
+  endfor
+-%}
+
+{%- if genre_filter -%}
+  {%- liquid
+    capture genre_map
+      render 'pattern-genres'
+    endcapture
+    assign genre_map = genre_map | strip
+    assign entries = genre_map | split: '|'
+
+    # Parents whose children are shown: active parents, plus parents of active children.
+    assign expanded = ','
+    for value in genre_filter.active_values
+      assign key = '|' | append: value.label | append: '='
+      if genre_map contains key
+        assign pair = genre_map | split: key | last | split: '|' | first | split: '>'
+        if pair[1] != blank
+          assign expanded = expanded | append: pair[1] | append: ','
+        else
+          assign expanded = expanded | append: pair[0] | append: ','
+        endif
+      endif
+    endfor
+
+    assign parents_html = ''
+    assign children_html = ''
+    assign visible_children = 0
+  -%}
+
+  {%- for entry in entries -%}
+    {%- if entry == blank -%}{%- continue -%}{%- endif -%}
+    {%- liquid
+      assign label = entry | split: '=' | first
+      assign pair = entry | split: '=' | last | split: '>'
+      assign handle = pair[0]
+      assign parent = pair[1]
+      assign value = genre_filter.values | where: 'label', label | first
+      if value == null
+        continue
+      endif
+      # Hide genres with no results here, but keep active ones so they can be deselected.
+      if value.count == 0 and value.active == false
+        continue
+      endif
+
+      assign is_hidden = false
+      if parent != blank
+        assign parent_key = ',' | append: parent | append: ','
+        unless expanded contains parent_key or value.active
+          assign is_hidden = true
+        endunless
+        unless is_hidden
+          assign visible_children = visible_children | plus: 1
+        endunless
+      endif
+    -%}
+    {%- capture pill -%}
+      {% render 'genre-pill', value: value, handle: handle, parent: parent, is_hidden: is_hidden %}
+    {%- endcapture -%}
+    {%- liquid
+      if parent != blank
+        assign children_html = children_html | append: pill
+      else
+        assign parents_html = parents_html | append: pill
+      endif
+    -%}
+  {%- endfor -%}
+
+  {%- comment -%} Values not in the genre tree: show as top-level pills so nothing disappears. {%- endcomment -%}
+  {%- for value in genre_filter.values -%}
+    {%- liquid
+      assign key = '|' | append: value.label | append: '='
+      if genre_map contains key
+        continue
+      endif
+      if value.count == 0 and value.active == false
+        continue
+      endif
+      assign handle = 'other-' | append: forloop.index
+    -%}
+    {%- capture pill -%}
+      {% render 'genre-pill', value: value, handle: handle, parent: '', is_hidden: false %}
+    {%- endcapture -%}
+    {%- assign parents_html = parents_html | append: pill -%}
+  {%- endfor -%}
+
+  {%- if parents_html != blank or children_html != blank -%}
+    {{ 'component-genre-pills.css' | asset_url | stylesheet_tag }}
+    <facet-filters-form class="genre-pills page-width">
+      <form id="FacetGenrePillsForm">
+        <div id="GenrePills">
+          <fieldset class="genre-pills__fieldset">
+            <legend class="visually-hidden">{{ genre_filter.label | escape }}</legend>
+            <div class="genre-pills__row genre-pills__row--parents" data-genre-row="parents">
+              {{- parents_html -}}
+            </div>
+            <div
+              class="genre-pills__row genre-pills__row--children"
+              data-genre-row="children"
+              {% if visible_children == 0 %}
+                hidden
+              {% endif %}
+            >
+              {{- children_html -}}
+            </div>
+          </fieldset>
+        </div>
+      </form>
+    </facet-filters-form>
+  {%- endif -%}
+{%- endif -%}

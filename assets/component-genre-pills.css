@@ -1,0 +1,114 @@
+/* Genre pills above the collection grid (snippets/genre-pills.liquid).
+   Brand colours come from --pattern-opal / --pattern-sandstone / --pattern-charcoal when the theme
+   defines them. The fallbacks are the hex values used in sections/pattern-hero.liquid; Sandstone
+   has no value in the theme yet, so it falls back to a tint of the scheme foreground. */
+.genre-pills {
+  --genre-pill-active-bg: var(--pattern-opal, #e85c41);
+  --genre-pill-active-text: #ffffff;
+  --genre-pill-bg: var(--pattern-sandstone, rgba(var(--color-foreground), 0.06));
+  --genre-pill-text: var(--pattern-charcoal, #1c1c1c);
+  --genre-pill-border: rgba(var(--color-foreground), 0.15);
+
+  display: block;
+  margin-bottom: 1.6rem;
+}
+
+.genre-pills__fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.genre-pills__row {
+  display: flex;
+  gap: 0.8rem;
+  /* Mobile: one scrolling line, not wrapping */
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0.4rem 0.2rem;
+}
+
+.genre-pills__row::-webkit-scrollbar {
+  display: none;
+}
+
+.genre-pills__row[hidden] {
+  display: none;
+}
+
+.genre-pills__row--children {
+  margin-top: 0.4rem;
+}
+
+@media screen and (min-width: 750px) {
+  .genre-pills__row {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}
+
+.genre-pill {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--genre-pill-border);
+  border-radius: 999px;
+  background-color: var(--genre-pill-bg);
+  color: var(--genre-pill-text);
+  font-size: 1.4rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.genre-pill[hidden] {
+  display: none;
+}
+
+.genre-pills__row--children .genre-pill {
+  font-size: 1.3rem;
+  padding: 0.5rem 1.2rem;
+}
+
+.genre-pill:hover {
+  border-color: var(--genre-pill-text);
+}
+
+.genre-pill__count {
+  opacity: 0.6;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Active: from the server class, or straight away from the checkbox before the AJAX response */
+.genre-pill--active,
+.genre-pill:has(.genre-pill__input:checked) {
+  background-color: var(--genre-pill-active-bg);
+  border-color: var(--genre-pill-active-bg);
+  color: var(--genre-pill-active-text);
+}
+
+.genre-pill--active .genre-pill__count,
+.genre-pill:has(.genre-pill__input:checked) .genre-pill__count {
+  opacity: 0.85;
+}
+
+/* Unticked but the AJAX response hasn't arrived yet: drop the server's active styling */
+.genre-pill--active:not(:has(.genre-pill__input:checked)) {
+  background-color: var(--genre-pill-bg);
+  border-color: var(--genre-pill-border);
+  color: var(--genre-pill-text);
+}
+
+.genre-pill:has(.genre-pill__input:focus-visible) {
+  outline: 0.2rem solid rgba(var(--color-foreground), 0.5);
+  outline-offset: 0.2rem;
+}

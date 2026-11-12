@@ -12,6 +12,29 @@ class FacetFiltersForm extends HTMLElement {
 
     const facetWrapper = this.querySelector('#FacetsWrapperDesktop');
     if (facetWrapper) facetWrapper.addEventListener('keyup', onKeyUpEscape);
+
+    // Genre pills: show/hide child pills straight away, before the AJAX response arrives.
+    if (facetForm.id === 'FacetGenrePillsForm') {
+      facetForm.addEventListener('change', () => FacetFiltersForm.syncGenreChildren(facetForm));
+    }
+  }
+
+  static syncGenreChildren(form) {
+    const childRow = form.querySelector('[data-genre-row="children"]');
+    if (!childRow) return;
+    const isChecked = (handle) => Boolean(form.querySelector(`[data-genre-handle="${handle}"]:checked`));
+    let visibleCount = 0;
+    childRow.querySelectorAll('[data-genre-parent]').forEach((pill) => {
+      const visible = isChecked(pill.dataset.genreParent) || pill.querySelector('input').checked;
+      pill.hidden = !visible;
+      if (visible) visibleCount++;
+    });
+    childRow.hidden = visibleCount === 0;
+  }
+
+  static isDesktopFiltersVisible() {
+    const desktopForm = document.getElementById('FacetFiltersForm');
+    return Boolean(desktopForm && desktopForm.offsetParent !== null);
   }
 
   static setListeners() {
@@ -155,6 +178,7 @@ class FacetFiltersForm extends HTMLElement {
 
     FacetFiltersForm.renderActiveFacets(parsedHTML);
     FacetFiltersForm.renderAdditionalElements(parsedHTML);
+    FacetFiltersForm.renderGenrePills(parsedHTML);
 
     if (countsToRender) {
       const closestJSFilterID = event.target.closest('.js-filter').id;
@@ -197,6 +221,29 @@ class FacetFiltersForm extends HTMLElement {
     });
 
     document.getElementById('FacetFiltersFormMobile').closest('menu-drawer').bindEvents();
+  }
+
+  static renderGenrePills(html) {
+    const target = document.getElementById('GenrePills');
+    const source = html.getElementById('GenrePills');
+    if (!target || !source) return;
+
+    // Keep focus and each row's horizontal scroll position across the re-render.
+    const focusedId = target.contains(document.activeElement) ? document.activeElement.id : null;
+    const scrollPositions = {};
+    target.querySelectorAll('[data-genre-row]').forEach((row) => {
+      scrollPositions[row.dataset.genreRow] = row.scrollLeft;
+    });
+
+    target.innerHTML = source.innerHTML;
+
+    target.querySelectorAll('[data-genre-row]').forEach((row) => {
+      if (scrollPositions[row.dataset.genreRow]) row.scrollLeft = scrollPositions[row.dataset.genreRow];
+    });
+    if (focusedId) {
+      const focusTarget = document.getElementById(focusedId);
+      if (focusTarget) focusTarget.focus({ preventScroll: true });
+    }
   }
 
   static renderCounts(source, target) {
@@ -262,12 +309,15 @@ class FacetFiltersForm extends HTMLElement {
   onSubmitHandler(event) {
     event.preventDefault();
     const sortFilterForms = document.querySelectorAll('facet-filters-form form');
+    const sourceForm = event.target.closest('form');
+    const forms = [];
     if (event.srcElement.className == 'mobile-facets__checkbox') {
-      const searchParams = this.createSearchParams(event.target.closest('form'));
-      this.onSubmitForm(searchParams, event);
+      forms.push(this.createSearchParams(sourceForm));
     } else {
-      const forms = [];
-      const isMobile = event.target.closest('form').id === 'FacetFiltersFormMobile';
+      // Genre pills sit outside both filter forms, so pair them with whichever set is on screen.
+      const isGenrePills = sourceForm.id === 'FacetGenrePillsForm';
+      const isMobile =
+        sourceForm.id === 'FacetFiltersFormMobile' || (isGenrePills && !FacetFiltersForm.isDesktopFiltersVisible());
 
       sortFilterForms.forEach((form) => {
         if (!isMobile) {
@@ -278,8 +328,13 @@ class FacetFiltersForm extends HTMLElement {
           forms.push(this.createSearchParams(form));
         }
       });
-      this.onSubmitForm(forms.join('&'), event);
     }
+
+    // The genre filter lives only in the pills form, so add it to every submission.
+    const genrePillsForm = document.getElementById('FacetGenrePillsForm');
+    if (genrePillsForm) forms.push(this.createSearchParams(genrePillsForm));
+
+    this.onSubmitForm(forms.filter(Boolean).join('&'), event);
   }
 
   onActiveFilterClick(event) {
