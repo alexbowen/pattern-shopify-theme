@@ -1,93 +1,191 @@
 {%- comment -%}
-  Pattern feature split: image on one side, text on the other (side set in the editor), or text
-  over the image with a charcoal overlay. Optional small label, display heading, rich text and a
-  square, low-key button. On mobile it always stacks with the image first.
+  Pattern feature split ("We buy & exchange"): full-bleed image half and a coloured text half
+  (label, heading with an italic accent word, text, button). Image side is a setting so stacked
+  feature splits can alternate. Without an image the half shows the striped placeholder. On
+  mobile it stacks with the image first.
 {%- endcomment -%}
-{{ 'section-pattern-supporting.css' | asset_url | stylesheet_tag }}
-
 {%- liquid
   # A url setting can't default to a page, so the button falls back to the sell page when the
   # link is left empty. Clear the button label to hide the button.
   assign button_link = section.settings.button_link | default: '/pages/sell-your-records'
-  assign is_overlay = false
-  if section.settings.layout == 'overlay' and section.settings.image != blank
-    assign is_overlay = true
+  assign button_class = 'pattern-button pattern-button--paper'
+  if section.settings.tone == 'clay'
+    assign button_class = 'pattern-button'
   endif
 -%}
 
-{%- style -%}
-  .section-{{ section.id }}-padding {
-    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+<section
+  class="pattern-section pattern-split pattern-split--image-{{ section.settings.image_position }} pattern-split--{{ section.settings.tone }}"
+  aria-labelledby="PatternSplitHeading-{{ section.id }}"
+>
+  <div class="pattern-split__media{% if section.settings.image == blank %} pattern-placeholder{% endif %}">
+    {%- if section.settings.image != blank -%}
+      {%- liquid
+        assign focal_point = section.settings.image.presentation.focal_point | default: 'center'
+        assign image_style = 'object-position: ' | append: focal_point | append: ';'
+      -%}
+      {{
+        section.settings.image
+        | image_url: width: 1800
+        | image_tag:
+          loading: 'lazy',
+          widths: '375, 550, 750, 1100, 1500, 1800',
+          sizes: '(min-width: 900px) 50vw, 100vw',
+          alt: section.settings.image.alt,
+          class: 'pattern-split__image',
+          style: image_style
+      }}
+    {%- endif -%}
+  </div>
+
+  <div class="pattern-split__text">
+    {%- if section.settings.label != blank -%}
+      <p class="pattern-label pattern-split__label">{{ section.settings.label | escape }}</p>
+    {%- endif -%}
+    <h2 class="pattern-display pattern-split__heading" id="PatternSplitHeading-{{ section.id }}">
+      {%- render 'pattern-heading-text',
+        start: section.settings.heading,
+        accent: section.settings.heading_accent,
+        end: section.settings.heading_end
+      -%}
+    </h2>
+    {%- if section.settings.text != blank -%}
+      <div class="pattern-split__body rte">{{ section.settings.text }}</div>
+    {%- endif -%}
+    {%- if section.settings.button_label != blank -%}
+      <div>
+        <a href="{{ button_link }}" class="{{ button_class }}">
+          {{- section.settings.button_label | escape -}}
+          {% render 'pattern-arrow' %}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .pattern-split {
+    display: flex;
+    flex-wrap: wrap;
   }
 
-  @media screen and (min-width: 750px) {
-    .section-{{ section.id }}-padding {
-      padding-top: {{ section.settings.padding_top }}px;
-      padding-bottom: {{ section.settings.padding_bottom }}px;
+  .pattern-split__media {
+    position: relative;
+    flex: 1 1 42rem;
+    min-width: 0;
+    min-height: 64rem;
+    overflow: hidden;
+  }
+
+  .pattern-split__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .pattern-split__text {
+    flex: 1 1 42rem;
+    min-width: 0;
+    box-sizing: border-box;
+    min-height: 64rem;
+    padding: 7.2rem 5.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2.8rem;
+  }
+
+  /* Tones */
+  .pattern-split--accent .pattern-split__text {
+    background-color: var(--pattern-accent);
+    color: var(--pattern-on-accent);
+  }
+
+  .pattern-split--ink .pattern-split__text {
+    background-color: var(--pattern-ink);
+    color: var(--pattern-paper);
+  }
+
+  .pattern-split--clay .pattern-split__text {
+    background-color: var(--pattern-clay);
+    color: var(--pattern-ink);
+  }
+
+  .pattern-split__label {
+    opacity: 0.9;
+  }
+
+  .pattern-split__heading {
+    font-size: clamp(4.4rem, 5.4vw, 8rem);
+    line-height: 0.95;
+    overflow-wrap: break-word;
+  }
+
+  .pattern-split__body {
+    max-width: 48rem;
+    font-size: 1.8rem;
+    line-height: 1.55;
+    color: inherit;
+  }
+
+  .pattern-split__body p {
+    margin: 0;
+  }
+
+  .pattern-split__body p + p {
+    margin-top: 1.2rem;
+  }
+
+  .pattern-split__body a {
+    color: inherit;
+  }
+
+  /* Image on the right: desktop only (image stays first when stacked) */
+  @media screen and (min-width: 900px) {
+    .pattern-split--image-right .pattern-split__media {
+      order: 2;
     }
   }
-{%- endstyle -%}
 
-<div class="pattern-section pattern-supporting pattern-supporting--{{ section.settings.background }}">
-  <div class="section-{{ section.id }}-padding page-width">
-    <div
-      class="pattern-feature-split pattern-feature-split--image-{{ section.settings.image_position }} pattern-feature-split--ratio-{{ section.settings.image_ratio }}{% if is_overlay %} pattern-feature-split--overlay{% endif %}{% if section.settings.image == blank %} pattern-feature-split--no-image{% endif %}"
-      style="--overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
-    >
-      <div class="pattern-feature-split__media">
-        {%- if section.settings.image != blank -%}
-          {{
-            section.settings.image
-            | image_url: width: 1800
-            | image_tag:
-              loading: 'lazy',
-              widths: '375, 550, 750, 1100, 1500, 1800',
-              sizes: '(min-width: 750px) 50vw, 100vw',
-              alt: section.settings.image.alt,
-              class: 'pattern-feature-split__image'
-          }}
-        {%- else -%}
-          {{ 'image' | placeholder_svg_tag: 'pattern-feature-split__placeholder' }}
-        {%- endif -%}
-      </div>
+  @media screen and (max-width: 899px) {
+    .pattern-split__media {
+      flex-basis: 100%;
+      min-height: 0;
+      aspect-ratio: 4 / 5;
+      max-height: 80vh;
+    }
 
-      <div class="pattern-feature-split__content">
-        {%- if section.settings.label != blank -%}
-          <p class="pattern-feature-split__label">{{ section.settings.label | escape }}</p>
-        {%- endif -%}
-        {%- if section.settings.heading != blank -%}
-          <h2 class="pattern-feature-split__heading">{{ section.settings.heading | escape }}</h2>
-        {%- endif -%}
-        {%- if section.settings.text != blank -%}
-          <div class="pattern-feature-split__text rte">{{ section.settings.text }}</div>
-        {%- endif -%}
-        {%- if section.settings.button_label != blank -%}
-          <a href="{{ button_link }}" class="pattern-feature-split__button">
-            {{- section.settings.button_label | escape -}}
-          </a>
-        {%- endif -%}
-      </div>
-    </div>
-  </div>
-</div>
+    .pattern-split__text {
+      flex-basis: 100%;
+      min-height: 0;
+      padding: 5.6rem var(--pattern-gutter);
+      gap: 2.4rem;
+    }
+
+    .pattern-split__body {
+      font-size: 1.7rem;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "Pattern feature split",
-  "tag": "section",
-  "class": "section",
+  "tag": "div",
   "settings": [
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Image"
+      "label": "Image",
+      "info": "Set a focal point to control the crop. Without an image the half shows a striped placeholder."
     },
     {
       "type": "select",
       "id": "image_position",
       "label": "Image side",
-      "info": "On mobile the image is always first.",
+      "info": "Alternate between sections. On mobile the image is always first.",
       "options": [
         { "value": "left", "label": "Left" },
         { "value": "right", "label": "Right" }
@@ -96,47 +194,14 @@
     },
     {
       "type": "select",
-      "id": "image_ratio",
-      "label": "Image ratio",
+      "id": "tone",
+      "label": "Text panel colour",
       "options": [
-        { "value": "3-2", "label": "3:2" },
-        { "value": "4-5", "label": "4:5" },
-        { "value": "1-1", "label": "1:1" }
+        { "value": "accent", "label": "Accent" },
+        { "value": "ink", "label": "Ink" },
+        { "value": "clay", "label": "Clay" }
       ],
-      "default": "4-5"
-    },
-    {
-      "type": "select",
-      "id": "layout",
-      "label": "Text position",
-      "options": [
-        { "value": "split", "label": "Beside the image" },
-        { "value": "overlay", "label": "Over the image" }
-      ],
-      "default": "split",
-      "info": "\"Over the image\" applies on desktop; on mobile the text sits under the image."
-    },
-    {
-      "type": "range",
-      "id": "overlay_opacity",
-      "min": 0,
-      "max": 80,
-      "step": 5,
-      "unit": "%",
-      "label": "Charcoal overlay strength",
-      "info": "Used when the text is over the image.",
-      "default": 45
-    },
-    {
-      "type": "select",
-      "id": "background",
-      "label": "Background",
-      "options": [
-        { "value": "transparent", "label": "None" },
-        { "value": "sandstone", "label": "Sandstone" },
-        { "value": "charcoal", "label": "Charcoal" }
-      ],
-      "default": "transparent"
+      "default": "accent"
     },
     {
       "type": "header",
@@ -146,63 +211,48 @@
       "type": "text",
       "id": "label",
       "label": "Label",
-      "info": "Optional small line above the heading.",
-      "default": "Sell to us"
+      "default": "We buy & exchange"
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
-      "default": "We buy and exchange records"
+      "label": "Heading: before the accent word",
+      "default": "Bring us your"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading: accent word (italic)",
+      "default": "records"
+    },
+    {
+      "type": "text",
+      "id": "heading_end",
+      "label": "Heading: after the accent word",
+      "default": "."
     },
     {
       "type": "richtext",
       "id": "text",
       "label": "Text",
-      "default": "<p>Clearing shelves or reshaping a collection? Bring your records to the shop in Alcântara and we'll take a look and make you an offer, or swap them for something new to you.</p>"
+      "default": "<p>We actively buy and exchange records. Bring a crate to the shop in Alcântara or send us a list, and we'll make you an offer or swap them for something new to you.</p>"
     },
     {
       "type": "text",
       "id": "button_label",
       "label": "Button label",
       "info": "Clear to hide the button.",
-      "default": "How selling works"
+      "default": "Read our policy"
     },
     {
       "type": "url",
       "id": "button_link",
       "label": "Button link",
       "info": "Leave empty to link to /pages/sell-your-records."
-    },
-    {
-      "type": "header",
-      "content": "Section padding"
-    },
-    {
-      "type": "range",
-      "id": "padding_top",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "Top padding",
-      "default": 48
-    },
-    {
-      "type": "range",
-      "id": "padding_bottom",
-      "min": 0,
-      "max": 100,
-      "step": 4,
-      "unit": "px",
-      "label": "Bottom padding",
-      "default": 48
     }
   ],
   "presets": [
-    {
-      "name": "Pattern feature split"
-    }
+    { "name": "Pattern feature split" }
   ]
 }
 {% endschema %}

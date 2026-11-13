@@ -1,0 +1,33 @@
+{%- comment -%}
+  Heading text with an optional italic accent word: "{start} *{accent}* {end}".
+  No space is added before an end that starts with punctuation ("Come and *listen*.").
+
+  Accepts:
+  - start: {String} text before the accent word
+  - accent: {String} the italic accent word (optional)
+  - end: {String} text after the accent word (optional)
+
+  Usage:
+  {% render 'pattern-heading-text', start: section.settings.heading, accent: section.settings.heading_accent, end: section.settings.heading_end %}
+{%- endcomment -%}
+{%- liquid
+  assign end_text = end | strip
+  assign end_space = ' '
+  if end_text != blank
+    assign end_first = end_text | slice: 0
+    assign punctuation = '.,;:!?)…'
+    if punctuation contains end_first
+      assign end_space = ''
+    endif
+  endif
+-%}
+{{- start | strip | escape -}}
+{%- if accent != blank -%}
+  {%- comment -%} Output the space as a value: Liquid drops an if-block whose body is only whitespace. {%- endcomment -%}
+  {%- if start != blank -%}{{ ' ' }}{%- endif -%}
+  <span class="pattern-accent-word">{{ accent | strip | escape }}</span>
+{%- endif -%}
+{%- if end_text != blank -%}
+  {%- if start != blank or accent != blank -%}{{ end_space }}{%- endif -%}
+  {{- end_text | escape -}}
+{%- endif -%}

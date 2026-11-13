@@ -102,16 +102,13 @@
       "type": "pattern-feature-split",
       "settings": {
         "image_position": "left",
-        "image_ratio": "4-5",
-        "layout": "split",
-        "overlay_opacity": 45,
-        "background": "transparent",
-        "label": "Sell to us",
-        "heading": "We buy and exchange records",
-        "text": "<p>Clearing shelves or reshaping a collection? Bring your records to the shop in Alcântara and we'll take a look and make you an offer, or swap them for something new to you.</p>",
-        "button_label": "How selling works",
-        "padding_top": 48,
-        "padding_bottom": 48
+        "tone": "accent",
+        "label": "We buy & exchange",
+        "heading": "Bring us your",
+        "heading_accent": "records",
+        "heading_end": ".",
+        "text": "<p>We actively buy and exchange records. Bring a crate to the shop in Alcântara or send us a list, and we&#39;ll make you an offer or swap them for something new to you.</p>",
+        "button_label": "Read our policy"
       }
     },
     "pattern_new_in": {
@@ -276,6 +273,109 @@
         "origins": "Portugal\nBrazil\nJapan",
         "origins_all_label": "All origins +"
       }
+    },
+    "pattern_space_band": {
+      "type": "pattern-space-band",
+      "blocks": {
+        "event_1": {
+          "type": "event",
+          "settings": {
+            "date": "[DD MMM]",
+            "name": "[Event name] — [time]"
+          }
+        },
+        "event_2": {
+          "type": "event",
+          "settings": {
+            "date": "[DD MMM]",
+            "name": "[Event name] — [time]"
+          }
+        },
+        "event_3": {
+          "type": "event",
+          "settings": {
+            "date": "[DD MMM]",
+            "name": "[Event name] — [time]"
+          }
+        }
+      },
+      "block_order": [
+        "event_1",
+        "event_2",
+        "event_3"
+      ],
+      "settings": {
+        "overlay_opacity": 70,
+        "label": "The space",
+        "heading": "A room for records, and for",
+        "heading_accent": "people",
+        "heading_end": ".",
+        "events_label": "What’s on",
+        "link_label": "See everything coming up"
+      }
+    },
+    "pattern_editorial_row": {
+      "type": "pattern-editorial-row",
+      "blocks": {
+        "story_mix": {
+          "type": "story",
+          "settings": {
+            "tag": "Mix",
+            "title": "[Mix title]",
+            "blurb": "[One line on the mix and who made it.]"
+          }
+        },
+        "story_label": {
+          "type": "story",
+          "settings": {
+            "tag": "Label spotlight",
+            "title": "[Label name]",
+            "blurb": "[One line on why this label matters right now.]"
+          }
+        },
+        "story_pick": {
+          "type": "story",
+          "settings": {
+            "tag": "Staff pick",
+            "title": "[Artist] — [Release title]",
+            "blurb": "[One line from whoever picked it.]"
+          }
+        }
+      },
+      "block_order": [
+        "story_mix",
+        "story_label",
+        "story_pick"
+      ],
+      "settings": {
+        "heading": "From the",
+        "heading_accent": "shop",
+        "heading_end": "",
+        "link_label": "All stories",
+        "link": "/blogs/news"
+      }
+    },
+    "pattern_visit": {
+      "type": "pattern-visit",
+      "settings": {
+        "label": "Visit",
+        "heading": "Come and",
+        "heading_accent": "listen",
+        "heading_end": ".",
+        "address": "[Street address]\nAlcântara, Lisboa",
+        "hours": "[Opening hours]",
+        "maps_label": "Open in Maps",
+        "show_newsletter": true,
+        "newsletter_label": "Newsletter",
+        "newsletter_heading": "New arrivals, first.",
+        "newsletter_text": "A short note when fresh crates land. No noise.",
+        "email_label": "Email address",
+        "email_placeholder": "you@example.com",
+        "button_label": "Subscribe",
+        "success_message": "Thanks, you’re on the list.",
+        "copyright": "© Pattern Records · Alcântara, Lisboa",
+        "menu": "footer"
+      }
     }
   },
   "order": [
@@ -284,6 +384,9 @@
     "pattern_genre_tiles",
     "pattern_service_row",
     "pattern_feature_split",
+    "pattern_space_band",
+    "pattern_editorial_row",
+    "pattern_visit",
     "featured_collection"
   ]
 }

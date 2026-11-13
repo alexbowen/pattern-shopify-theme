@@ -1,6 +1,12 @@
 /* Pattern base: shared building blocks for the Pattern sections. Values come from the tokens in
    snippets/pattern-tokens.liquid. */
 
+/* Pattern sections default to full ink (Dawn's body text is ink at 75%). Zero specificity, so a
+   section's own colour (hero, space band, visit) always wins. */
+:where(.pattern-section) {
+  color: var(--pattern-ink);
+}
+
 /* Content width: 1440px max, 48px gutters (20px on small screens) */
 .pattern-wrap {
   width: 100%;
@@ -37,6 +43,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: -0.045em;
+  color: inherit; /* Dawn colours h1-h6 with the scheme foreground; follow the section instead */
 }
 
 /* Square accent button */

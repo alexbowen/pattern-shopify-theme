@@ -1,0 +1,431 @@
+{%- comment -%}
+  Pattern visit + newsletter: ink band with the shop's address, hours and a maps link on one
+  side and a newsletter sign-up on the other (Shopify customer form, tagged "newsletter"), then a
+  bottom bar with a copyright line and a menu.
+
+  The maps link falls back to a Google Maps search for the address when left empty.
+{%- endcomment -%}
+{%- liquid
+  assign address_one_line = section.settings.address | newline_to_br | split: '<br />' | join: ', ' | strip_newlines
+  assign maps_url = section.settings.maps_link
+  if maps_url == blank and section.settings.address != blank
+    assign maps_query = address_one_line | url_encode
+    assign maps_url = 'https://www.google.com/maps/search/?api=1&query=' | append: maps_query
+  endif
+-%}
+
+<section class="pattern-section pattern-visit" aria-labelledby="PatternVisitHeading-{{ section.id }}">
+  <div class="pattern-wrap pattern-visit__main">
+    <div class="pattern-visit__col">
+      {%- if section.settings.label != blank -%}
+        <p class="pattern-label pattern-visit__label">{{ section.settings.label | escape }}</p>
+      {%- endif -%}
+      <h2 class="pattern-display pattern-visit__heading" id="PatternVisitHeading-{{ section.id }}">
+        {%- render 'pattern-heading-text',
+          start: section.settings.heading,
+          accent: section.settings.heading_accent,
+          end: section.settings.heading_end
+        -%}
+      </h2>
+      {%- if section.settings.address != blank or section.settings.hours != blank -%}
+        <div class="pattern-visit__details">
+          {%- if section.settings.address != blank -%}
+            <address class="pattern-visit__address">{{ section.settings.address | escape | newline_to_br }}</address>
+          {%- endif -%}
+          {%- if section.settings.hours != blank -%}
+            <p class="pattern-visit__hours">{{ section.settings.hours | escape | newline_to_br }}</p>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      {%- if section.settings.maps_label != blank and maps_url != blank -%}
+        <div>
+          <a href="{{ maps_url }}" class="pattern-link pattern-visit__maps" target="_blank" rel="noopener">
+            {{- section.settings.maps_label | escape -}}
+            <span class="visually-hidden"> (opens in a new tab)</span>
+            {% render 'pattern-arrow' %}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.show_newsletter -%}
+      <div class="pattern-visit__col pattern-visit__newsletter">
+        {%- if section.settings.newsletter_label != blank -%}
+          <p class="pattern-label pattern-visit__label">{{ section.settings.newsletter_label | escape }}</p>
+        {%- endif -%}
+        {%- if section.settings.newsletter_heading != blank -%}
+          <h3 class="pattern-display pattern-visit__subheading">{{ section.settings.newsletter_heading | escape }}</h3>
+        {%- endif -%}
+        {%- if section.settings.newsletter_text != blank -%}
+          <p class="pattern-visit__text">{{ section.settings.newsletter_text | escape }}</p>
+        {%- endif -%}
+
+        {%- assign form_id = 'PatternNewsletter-' | append: section.id -%}
+        {%- form 'customer', id: form_id, class: 'pattern-visit__form' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <label for="PatternNewsletterEmail-{{ section.id }}" class="pattern-visit__input-label">
+            {{- section.settings.email_label | default: 'Email address' | escape -}}
+          </label>
+          <div class="pattern-visit__field">
+            <input
+              id="PatternNewsletterEmail-{{ section.id }}"
+              class="pattern-visit__input"
+              type="email"
+              name="contact[email]"
+              value="{{ form.email }}"
+              autocomplete="email"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              required
+              {% if section.settings.email_placeholder != blank %}
+                placeholder="{{ section.settings.email_placeholder | escape }}"
+              {% endif %}
+              {% if form.errors %}
+                aria-invalid="true"
+                aria-describedby="PatternNewsletterMessage-{{ section.id }}"
+              {% endif %}
+            >
+            <button type="submit" class="pattern-button pattern-visit__submit" name="commit">
+              {{- section.settings.button_label | default: 'Subscribe' | escape -}}
+            </button>
+          </div>
+          {%- if form.errors -%}
+            <p class="pattern-visit__message" id="PatternNewsletterMessage-{{ section.id }}" role="alert">
+              {{- form.errors.translated_fields.email | capitalize }}
+              {{ form.errors.messages.email -}}
+            </p>
+          {%- elsif form.posted_successfully? -%}
+            <p class="pattern-visit__message" id="PatternNewsletterMessage-{{ section.id }}" role="status">
+              {{- section.settings.success_message | escape -}}
+            </p>
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- assign bar_menu = linklists[section.settings.menu] -%}
+  {%- if section.settings.copyright != blank or bar_menu.links.size > 0 -%}
+    <div class="pattern-wrap pattern-visit__bar">
+      {%- if section.settings.copyright != blank -%}
+        <p class="pattern-visit__copyright">{{ section.settings.copyright | escape }}</p>
+      {%- endif -%}
+      {%- if bar_menu.links.size > 0 -%}
+        <nav aria-label="{{ bar_menu.title | escape }}">
+          <ul class="pattern-visit__menu" role="list">
+            {%- for link in bar_menu.links -%}
+              <li>
+                <a href="{{ link.url }}" class="pattern-visit__menu-link"{% if link.current %} aria-current="page"{% endif %}>
+                  {{- link.title | escape -}}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+  .pattern-visit {
+    background-color: var(--pattern-ink);
+    color: var(--pattern-paper);
+  }
+
+  .pattern-visit__main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 5.6rem 9.6rem;
+    padding-top: var(--pattern-section-space);
+    padding-bottom: 8rem;
+  }
+
+  .pattern-visit__col {
+    flex: 1 1 36rem;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2.4rem;
+  }
+
+  .pattern-visit__newsletter {
+    max-width: 56rem;
+    gap: 2rem;
+  }
+
+  .pattern-visit__label,
+  .pattern-visit__input-label {
+    color: var(--pattern-paper-dim);
+  }
+
+  .pattern-visit__heading {
+    font-size: clamp(4rem, 5vw, 7.2rem);
+    line-height: 0.95;
+  }
+
+  .pattern-visit__subheading {
+    font-size: 3.6rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .pattern-visit__details {
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+    font-size: 1.8rem;
+    line-height: 1.6;
+    color: var(--pattern-paper-soft);
+  }
+
+  .pattern-visit__address {
+    font-style: normal;
+  }
+
+  .pattern-visit__hours,
+  .pattern-visit__text {
+    margin: 0;
+  }
+
+  .pattern-visit__text {
+    font-size: 1.6rem;
+    line-height: 1.5;
+    color: var(--pattern-paper-soft);
+  }
+
+  .pattern-visit__maps {
+    font-weight: 600;
+  }
+
+  .pattern-visit__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .pattern-visit__input-label {
+    font-size: 1.4rem;
+  }
+
+  .pattern-visit__field {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+  }
+
+  .pattern-visit .pattern-visit__input {
+    flex: 1 1 22rem;
+    min-width: 0;
+    height: 5.2rem;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 1.6rem;
+    border: 0.1rem solid var(--pattern-paper);
+    border-radius: 0;
+    background: transparent;
+    color: var(--pattern-paper);
+    font-family: var(--font-body);
+    font-size: 1.6rem;
+    box-shadow: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .pattern-visit__input::placeholder {
+    color: var(--pattern-paper-dim);
+    opacity: 1;
+  }
+
+  .pattern-visit__submit {
+    flex: 0 0 auto;
+  }
+
+  .pattern-visit__message {
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1.5;
+    color: var(--pattern-paper);
+  }
+
+  .pattern-visit__bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem 3.2rem;
+    padding-top: 1.6rem;
+    padding-bottom: 2.4rem;
+    border-top: 0.1rem solid color-mix(in srgb, var(--pattern-paper) 20%, transparent);
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    letter-spacing: 0.04em;
+    color: var(--pattern-paper-dim);
+  }
+
+  .pattern-visit__copyright {
+    margin: 0;
+    padding: 0.8rem 0;
+  }
+
+  .pattern-visit__menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 2.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pattern-visit__menu-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 4.4rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .pattern-visit__menu-link:hover {
+    color: var(--pattern-paper);
+    text-decoration: underline;
+    text-underline-offset: 0.4rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Pattern visit footer",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Visit"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Visit"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading: before the accent word",
+      "default": "Come and"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading: accent word (italic)",
+      "default": "listen"
+    },
+    {
+      "type": "text",
+      "id": "heading_end",
+      "label": "Heading: after the accent word",
+      "default": "."
+    },
+    {
+      "type": "textarea",
+      "id": "address",
+      "label": "Address",
+      "default": "Street address\nAlcântara, Lisboa"
+    },
+    {
+      "type": "textarea",
+      "id": "hours",
+      "label": "Opening hours",
+      "default": "Tue–Sat 12:00–20:00"
+    },
+    {
+      "type": "text",
+      "id": "maps_label",
+      "label": "Maps link label",
+      "default": "Open in Maps"
+    },
+    {
+      "type": "url",
+      "id": "maps_link",
+      "label": "Maps link",
+      "info": "Paste a Google or Apple Maps share link. Leave empty to search Google Maps for the address."
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Show newsletter sign-up",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "newsletter_label",
+      "label": "Label",
+      "default": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Heading",
+      "default": "New arrivals, first."
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "Text",
+      "default": "A short note when fresh crates land. No noise."
+    },
+    {
+      "type": "text",
+      "id": "email_label",
+      "label": "Email field label",
+      "default": "Email address"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email field placeholder",
+      "default": "you@example.com"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thanks, you're on the list."
+    },
+    {
+      "type": "paragraph",
+      "content": "Sign-ups are added to Customers with email marketing consent and the tag \"newsletter\"."
+    },
+    {
+      "type": "header",
+      "content": "Bottom bar"
+    },
+    {
+      "type": "text",
+      "id": "copyright",
+      "label": "Copyright line",
+      "default": "© Pattern Records · Alcântara, Lisboa"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "footer"
+    }
+  ],
+  "presets": [
+    { "name": "Pattern visit footer" }
+  ]
+}
+{% endschema %}
