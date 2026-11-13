@@ -5,7 +5,7 @@
    Bakemono, --pattern-sandstone / --pattern-charcoal / --pattern-on-charcoal, --pattern-space-*).
    Until then each falls back to the theme's heading font and colour scheme variables, so nothing
    here is a hard-coded colour. Hairlines use currentColor, so they work on every background. */
-.pattern-section {
+.pattern-supporting {
   --ps-font-display: var(--pattern-font-display, var(--font-heading-family));
   --ps-font-display-weight: var(--pattern-font-display-weight, var(--font-heading-weight));
   --ps-sandstone: var(--pattern-sandstone, rgba(var(--color-foreground), 0.06));
@@ -21,16 +21,16 @@
   color: var(--ps-charcoal);
 }
 
-.pattern-section--sandstone {
+.pattern-supporting--sandstone {
   background-color: var(--ps-sandstone);
 }
 
-.pattern-section--charcoal {
+.pattern-supporting--charcoal {
   background-color: var(--ps-charcoal);
   color: var(--ps-on-charcoal);
 }
 
-.pattern-section__heading {
+.pattern-supporting__heading {
   margin: 0 0 var(--ps-space-m);
   font-family: var(--ps-font-display);
   font-weight: var(--ps-font-display-weight);
@@ -39,19 +39,19 @@
   color: inherit;
 }
 
-.pattern-section .rte {
+.pattern-supporting .rte {
   color: inherit;
 }
 
-.pattern-section .rte p {
+.pattern-supporting .rte p {
   margin: 0;
 }
 
-.pattern-section .rte p + p {
+.pattern-supporting .rte p + p {
   margin-top: var(--ps-space-xs);
 }
 
-.pattern-section .rte a {
+.pattern-supporting .rte a {
   color: inherit;
 }
 
@@ -281,7 +281,7 @@
   color: var(--ps-on-charcoal);
 }
 
-.pattern-section--charcoal .pattern-feature-split__button:hover,
+.pattern-supporting--charcoal .pattern-feature-split__button:hover,
 .pattern-feature-split--overlay .pattern-feature-split__button:hover {
   background-color: var(--ps-on-charcoal);
   border-color: var(--ps-on-charcoal);

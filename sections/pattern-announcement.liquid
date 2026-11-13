@@ -1,0 +1,68 @@
+{%- comment -%}
+  Pattern announcement bar: one line of small mono text on ink, optionally linked.
+{%- endcomment -%}
+{%- if section.settings.text != blank -%}
+  <div class="pattern-section pattern-announcement">
+    <p class="pattern-announcement__text">
+      {%- if section.settings.link != blank -%}
+        <a href="{{ section.settings.link }}" class="pattern-announcement__link">{{ section.settings.text | escape }}</a>
+      {%- else -%}
+        {{ section.settings.text | escape }}
+      {%- endif -%}
+    </p>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .pattern-announcement {
+    background-color: var(--pattern-ink);
+    color: color-mix(in srgb, var(--pattern-paper) 92%, var(--pattern-ink));
+  }
+
+  .pattern-announcement__text {
+    margin: 0;
+    padding: 1.2rem 2rem;
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .pattern-announcement__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .pattern-announcement__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.3rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Pattern announcement",
+  "class": "pattern-announcement-section",
+  "enabled_on": { "groups": ["header"] },
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "info": "Leave empty to hide the bar.",
+      "default": "Flat-rate shipping to Portugal & Spain · Collect in store · Lisbon delivery in 24h"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "info": "Optional. Makes the whole line a link."
+    }
+  ],
+  "presets": [
+    { "name": "Pattern announcement" }
+  ]
+}
+{% endschema %}

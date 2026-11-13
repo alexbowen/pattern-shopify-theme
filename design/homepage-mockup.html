@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pattern Records — Homepage</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&amp;family=DM+Mono:wght@400;500&amp;family=Instrument+Serif:ital@0;1&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+.lk:hover{text-decoration:underline;text-underline-offset:4px}
+.wrap{max-width:1440px;margin:0 auto;padding-left:48px;padding-right:48px;box-sizing:border-box}
+.gt{transition:transform .2s ease}
+.gt:hover{transform:translateY(-3px)}
+.s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}
+@media (max-width:900px){.s2,.s3,.s4,.s5{grid-column:span 6}.wrap{padding-left:20px;padding-right:20px}}
+@media (max-width:560px){.s2,.s3,.s4,.s5{grid-column:span 12}}
+</style>
+</helmet>
+
+<div style="background:#F2EEE5;color:#141413;font-family:'Bricolage Grotesque',system-ui,sans-serif;min-width:0">
+
+<!-- Announcement bar -->
+<div style="background:#141413;color:#E9E3D6;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-align:center;padding:12px 20px;line-height:1.5">Flat-rate shipping to Portugal &amp; Spain · Collect in store · Lisbon delivery in 24h</div>
+
+<!-- Header -->
+<header class="wrap" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 32px;padding-top:12px;padding-bottom:12px;border-bottom:1px solid rgba(20,20,19,.16)">
+  <a href="#" style="font-weight:800;font-size:28px;letter-spacing:-.04em;text-decoration:none;line-height:1;padding:12px 0">pattern<span style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em"> records</span></a>
+  <nav aria-label="Main" style="display:flex;flex-wrap:wrap;gap:0 32px;font-size:15px;font-weight:500">
+    <a class="lk" href="#" style="text-decoration:none;padding:14px 0">New arrivals</a>
+    <a class="lk" href="#" style="text-decoration:none;padding:14px 0">Shop</a>
+    <a class="lk" href="#" style="text-decoration:none;padding:14px 0">Genres</a>
+    <a class="lk" href="#" style="text-decoration:none;padding:14px 0">Sell your records</a>
+    <a class="lk" href="#" style="text-decoration:none;padding:14px 0">Visit</a>
+  </nav>
+  <div style="display:flex;gap:28px;font-size:15px;font-weight:500">
+    <a class="lk" href="#" style="text-decoration:none;padding:14px 0">Search</a>
+    <a class="lk" href="#" style="text-decoration:none;padding:14px 0">Cart (0)</a>
+  </div>
+</header>
+
+<!-- Hero -->
+<section style="display:flex;flex-wrap:wrap;background:#141413;color:#F2EEE5">
+  <div style="flex:1 1 560px;box-sizing:border-box;padding:56px 48px 40px;min-height:680px;display:flex;flex-direction:column;justify-content:space-between;gap:48px">
+    <p style="margin:0;font-family:'DM Mono',monospace;font-weight:500;font-size:12px;line-height:1.5;letter-spacing:.08em;text-transform:uppercase;color:#B9B2A3">Record shop &amp; cultural space — Alcântara, Lisboa</p>
+    <div style="display:flex;flex-direction:column;gap:32px">
+      <h1 style="margin:0;font-weight:700;font-size:clamp(56px,8.4vw,128px);line-height:.9;letter-spacing:-.045em">New cuts <span style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.02em">for</span> curious listeners</h1>
+      <p style="margin:0;max-width:470px;font-size:18px;line-height:1.5;color:#D8D2C4">Fresh arrivals from the crates — house, jazz, disco, dub and everything in between. New and used vinyl, in Lisbon and online.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px 28px;align-items:center">
+        <a href="#" style="display:inline-flex;align-items:center;gap:12px;height:52px;padding:0 26px;background:{{accent}};color:#FFFFFF;font-weight:600;font-size:16px;text-decoration:none">Shop new arrivals <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+        <a class="lk" href="#" style="display:inline-block;padding:14px 0;font-weight:500;font-size:16px;color:#F2EEE5">Browse by genre</a>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 24px;border-top:1px solid rgba(242,238,229,.25);padding-top:20px">
+      <span style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#B9B2A3">This week</span>
+      <span style="font-weight:600;font-size:16px">[Artist] — [Release title]</span>
+      <a class="lk" href="#" style="display:inline-flex;align-items:center;gap:8px;padding:12px 0;font-size:15px;font-weight:500;color:#F2EEE5">Listen <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+    </div>
+  </div>
+  <div style="flex:1 1 380px;min-height:560px;position:relative;background:repeating-linear-gradient(135deg,#D3C8B3 0 12px,#DCD2BF 12px 24px)">
+    <span style="position:absolute;left:20px;top:20px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#4F4B44">Photo — hero · shop interior · 4:5</span>
+  </div>
+</section>
+
+<!-- New in -->
+<section class="wrap" style="padding-top:96px;padding-bottom:96px;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px">
+    <h2 style="margin:0;font-weight:700;font-size:clamp(40px,5vw,72px);line-height:1;letter-spacing:-.04em">New in</h2>
+    <a class="lk" href="#" style="display:inline-flex;align-items:center;gap:8px;padding:12px 0;font-size:15px;font-weight:500">All new arrivals <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:40px 20px">
+    <sc-for list="{{newIn}}" as="r" hint-placeholder-count="6">
+      <article style="display:flex;flex-direction:column;gap:6px;min-width:0">
+        <div style="position:relative;margin-bottom:8px">
+          <a href="#" aria-label="{{r.label}}" style="display:block"><div style="{{r.sleeve}}"></div></a>
+          <button type="button" aria-label="Play preview" style="position:absolute;left:12px;bottom:12px;width:44px;height:44px;border-radius:50%;border:0;background:#F2EEE5;color:#141413;display:grid;place-items:center;cursor:pointer"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M3 1.5v11l9-5.5z"/></svg></button>
+        </div>
+        <a class="lk" href="#" style="font-weight:700;font-size:17px;line-height:1.2;text-decoration:none">{{r.artist}}</a>
+        <span style="font-size:15px;line-height:1.3;color:#4F4B44">{{r.title}}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.02em;color:#4F4B44;margin-top:4px">{{r.meta}}</span>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px">
+          <span style="font-weight:600;font-size:16px">€[price]</span>
+          <span style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#4F4B44">{{r.cond}}</span>
+        </div>
+      </article>
+    </sc-for>
+  </div>
+</section>
+
+<!-- Browse by genre -->
+<section class="wrap" style="padding-top:24px;padding-bottom:96px;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <h2 style="margin:0;font-weight:700;font-size:clamp(40px,5vw,72px);line-height:1;letter-spacing:-.04em">Browse by <span style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.02em">genre</span></h2>
+      <p style="margin:0;max-width:520px;font-size:17px;line-height:1.5;color:#4F4B44">Seventeen starting points. Pick one and the sub-genres open up once you are inside.</p>
+    </div>
+    <a class="lk" href="#" style="display:inline-flex;align-items:center;gap:8px;padding:12px 0;font-size:15px;font-weight:500">All records <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px">
+    <sc-for list="{{genres}}" as="g" hint-placeholder-count="17">
+      <a class="gt {{g.cls}}" href="#" style="{{g.style}}">
+        <span style="display:flex;justify-content:space-between;align-items:flex-start;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.85"><span>{{g.count}}</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12L12 4M5 4h7v7"/></svg></span>
+        <span style="font-weight:700;line-height:.95;letter-spacing:-.04em;font-size:inherit">{{g.name}}</span>
+      </a>
+    </sc-for>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+    <span style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#4F4B44;margin-right:8px">Or start from a place</span>
+    <sc-for list="{{origins}}" as="o" hint-placeholder-count="4">
+      <a class="lk" href="#" style="display:inline-flex;align-items:center;height:44px;padding:0 20px;border:1px solid #141413;font-family:'DM Mono',monospace;font-size:13px;text-decoration:none">{{o}}</a>
+    </sc-for>
+    <a class="lk" href="#" style="display:inline-flex;align-items:center;height:44px;padding:0 20px;border:1px dashed #141413;font-family:'DM Mono',monospace;font-size:13px;text-decoration:none">All origins +</a>
+  </div>
+</section>
+
+<!-- Service row -->
+<section class="wrap" style="padding-top:16px;padding-bottom:96px">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:48px 40px">
+    <div style="border-top:2px solid #141413;padding-top:20px;display:flex;flex-direction:column;gap:12px">
+      <h3 style="margin:0;font-weight:700;font-size:28px;letter-spacing:-.03em;line-height:1.1">Postage</h3>
+      <p style="margin:0;font-size:16px;line-height:1.55;color:#4F4B44">Flat-rate shipping to Portugal and Spain. Order on the website, we pack it with care.</p>
+      <a class="lk" href="#" style="display:inline-block;padding:10px 0;font-size:15px;font-weight:600">Shipping details</a>
+    </div>
+    <div style="border-top:2px solid #141413;padding-top:20px;display:flex;flex-direction:column;gap:12px">
+      <h3 style="margin:0;font-weight:700;font-size:28px;letter-spacing:-.03em;line-height:1.1">Collect in store</h3>
+      <p style="margin:0;font-size:16px;line-height:1.55;color:#4F4B44">Order online and collect from the shop in Alcântara. Come early, stay for a listen.</p>
+      <a class="lk" href="#" style="display:inline-block;padding:10px 0;font-size:15px;font-weight:600">How collection works</a>
+    </div>
+    <div style="border-top:2px solid #141413;padding-top:20px;display:flex;flex-direction:column;gap:12px">
+      <h3 style="margin:0;font-weight:700;font-size:28px;letter-spacing:-.03em;line-height:1.1">Lisbon in 24 hours</h3>
+      <p style="margin:0;font-size:16px;line-height:1.55;color:#4F4B44">Flat-fee delivery within Lisbon postcodes. Order today, spin it tomorrow.</p>
+      <a class="lk" href="#" style="display:inline-block;padding:10px 0;font-size:15px;font-weight:600">Delivery zones</a>
+    </div>
+  </div>
+</section>
+
+<!-- Buy and exchange -->
+<section style="display:flex;flex-wrap:wrap">
+  <div style="flex:1 1 420px;min-height:640px;position:relative;background:repeating-linear-gradient(135deg,#D3C8B3 0 12px,#DCD2BF 12px 24px)">
+    <span style="position:absolute;left:20px;top:20px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#4F4B44">Photo — crates or counter · 4:5</span>
+  </div>
+  <div style="flex:1 1 420px;box-sizing:border-box;background:{{accent}};color:#FFFFFF;padding:72px 56px;display:flex;flex-direction:column;justify-content:center;gap:28px;min-height:640px">
+    <span style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.9">We buy &amp; exchange</span>
+    <h2 style="margin:0;font-weight:700;font-size:clamp(44px,5.4vw,80px);line-height:.95;letter-spacing:-.045em">Bring us your <span style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.02em">records</span>.</h2>
+    <p style="margin:0;max-width:480px;font-size:18px;line-height:1.55">We actively buy and exchange records — bring a crate in, or send us a list. [One or two lines on what you are looking for and how offers work.]</p>
+    <div>
+      <a href="#" style="display:inline-flex;align-items:center;gap:12px;height:52px;padding:0 26px;background:#F2EEE5;color:#141413;font-weight:600;font-size:16px;text-decoration:none">Read our policy <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- The space band -->
+<section style="position:relative;min-height:620px;background:repeating-linear-gradient(135deg,#2E2C29 0 12px,#292724 12px 24px);color:#F2EEE5;display:flex;flex-direction:column;justify-content:flex-end">
+  <span style="position:absolute;right:48px;top:24px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#B9B2A3">Photo — the space, wide · 3:2</span>
+  <div class="wrap" style="width:100%;padding-top:64px;padding-bottom:56px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:40px 64px">
+    <div style="flex:1 1 480px;display:flex;flex-direction:column;gap:20px">
+      <span style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#B9B2A3">The space</span>
+      <h2 style="margin:0;font-weight:700;font-size:clamp(44px,6vw,96px);line-height:.92;letter-spacing:-.045em">A room for records, and for <span style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.02em">people</span>.</h2>
+    </div>
+    <div style="flex:0 1 420px;display:flex;flex-direction:column">
+      <span style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#B9B2A3;padding-bottom:12px">What's on</span>
+      <sc-for list="{{events}}" as="e" hint-placeholder-count="3">
+        <a class="lk" href="#" style="display:flex;gap:24px;align-items:baseline;padding:16px 0;border-top:1px solid rgba(242,238,229,.25);text-decoration:none">
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:#B9B2A3;min-width:72px">{{e.date}}</span>
+          <span style="font-size:17px;font-weight:500">{{e.name}}</span>
+        </a>
+      </sc-for>
+      <a class="lk" href="#" style="display:inline-flex;align-items:center;gap:8px;padding:16px 0 0;font-size:15px;font-weight:600;color:#F2EEE5">See everything coming up <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- Editorial row -->
+<section class="wrap" style="padding-top:96px;padding-bottom:96px;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px">
+    <h2 style="margin:0;font-weight:700;font-size:clamp(40px,5vw,72px);line-height:1;letter-spacing:-.04em">From the <span style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.02em">shop</span></h2>
+    <a class="lk" href="#" style="display:inline-flex;align-items:center;gap:8px;padding:12px 0;font-size:15px;font-weight:500">All stories <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px 24px">
+    <sc-for list="{{stories}}" as="s" hint-placeholder-count="3">
+      <article style="display:flex;flex-direction:column;gap:14px">
+        <a href="#" aria-label="{{s.title}}" style="display:block">
+          <div style="aspect-ratio:4 / 3;position:relative;background:repeating-linear-gradient(135deg,#D3C8B3 0 12px,#DCD2BF 12px 24px)">
+            <span style="position:absolute;left:16px;top:16px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#4F4B44">{{s.cap}}</span>
+          </div>
+        </a>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:{{accent}}">{{s.tag}}</span>
+        <a class="lk" href="#" style="font-weight:700;font-size:26px;line-height:1.1;letter-spacing:-.03em;text-decoration:none">{{s.title}}</a>
+        <p style="margin:0;font-size:16px;line-height:1.5;color:#4F4B44">{{s.blurb}}</p>
+      </article>
+    </sc-for>
+  </div>
+</section>
+
+<!-- Visit + newsletter -->
+<section style="background:#141413;color:#F2EEE5">
+  <div class="wrap" style="padding-top:96px;padding-bottom:80px;display:flex;flex-wrap:wrap;gap:56px 96px;justify-content:space-between">
+    <div style="flex:1 1 360px;display:flex;flex-direction:column;gap:24px">
+      <span style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#B9B2A3">Visit</span>
+      <h2 style="margin:0;font-weight:700;font-size:clamp(40px,5vw,72px);line-height:.95;letter-spacing:-.045em">Come and <span style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.02em">listen</span>.</h2>
+      <p style="margin:0;font-size:18px;line-height:1.6;color:#D8D2C4">[Street address]<br>Alcântara, Lisboa<br><br>[Opening hours]</p>
+      <div>
+        <a class="lk" href="#" style="display:inline-flex;align-items:center;gap:8px;padding:12px 0;font-size:15px;font-weight:600;color:#F2EEE5">Open in Maps <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+      </div>
+    </div>
+    <div style="flex:1 1 360px;display:flex;flex-direction:column;gap:20px;max-width:560px">
+      <span style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#B9B2A3">Newsletter</span>
+      <h3 style="margin:0;font-weight:700;font-size:36px;line-height:1;letter-spacing:-.04em">New arrivals, first.</h3>
+      <p style="margin:0;font-size:16px;line-height:1.5;color:#D8D2C4">A short note when fresh crates land. No noise.</p>
+      <label for="pattern-email" style="font-size:14px;color:#B9B2A3">Email address</label>
+      <div style="display:flex;flex-wrap:wrap;gap:12px">
+        <input id="pattern-email" type="email" placeholder="you@example.com" style="flex:1 1 220px;height:52px;box-sizing:border-box;padding:0 16px;background:transparent;border:1px solid #F2EEE5;color:#F2EEE5;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:16px">
+        <button type="button" style="height:52px;padding:0 26px;border:0;background:{{accent}};color:#FFFFFF;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:600;font-size:16px;cursor:pointer">Subscribe</button>
+      </div>
+    </div>
+  </div>
+  <div class="wrap" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 32px;padding-top:24px;padding-bottom:32px;border-top:1px solid rgba(242,238,229,.2);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.04em;color:#B9B2A3">
+    <span style="padding:8px 0">© Pattern Records · Alcântara, Lisboa</span>
+    <span style="display:flex;flex-wrap:wrap;gap:0 24px">
+      <a class="lk" href="#" style="padding:8px 0;text-decoration:none">Shipping</a>
+      <a class="lk" href="#" style="padding:8px 0;text-decoration:none">Sell your records</a>
+      <a class="lk" href="#" style="padding:8px 0;text-decoration:none">Contact</a>
+      <a class="lk" href="#" style="padding:8px 0;text-decoration:none">Instagram</a>
+    </span>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2433D6","options":["#2433D6","#C65A32","#34503F","#141413"],"section":"Look"},"$preview":{"width":1440,"height":5700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const accent = this.props.accent ?? '#2433D6';
+    const ink = '#141413', paper = '#F2EEE5', clay = '#DCD2BF', sand = '#E9E1CF', terra = '#C65A32', moss = '#34503F';
+
+    const sleeve = (c1, c2, pos) =>
+      'width:100%;aspect-ratio:1 / 1;background:radial-gradient(circle at ' + pos + ', ' + c1 + ' 0 5%, ' + c2 + ' 5.5% 34%, ' + c1 + ' 34.5% 100%);';
+
+    const rec = [
+      ['2LP', 'Jazz', 'Used', ink, clay, '50% 50%'],
+      ['12"', 'House', 'New', accent, paper, '30% 65%'],
+      ['LP', 'Disco', 'Used', terra, sand, '68% 38%'],
+      ['7"', 'Dub', 'New', moss, sand, '50% 50%'],
+      ['LP', 'Soul', 'Used', clay, ink, '36% 36%'],
+      ['2×12"', 'World Music', 'New', sand, accent, '62% 62%']
+    ];
+    const newIn = rec.map((r) => ({
+      label: '[Artist] — [Release title]',
+      artist: '[Artist]',
+      title: '[Release title]',
+      meta: '[Label] · ' + r[0] + ' · ' + r[1],
+      cond: r[2],
+      sleeve: sleeve(r[3], r[4], r[5])
+    }));
+
+    // name, count, span class, min height, font size, background, text colour
+    const G = [
+      ['House', 614, 's5', 300, 80, accent, '#FFFFFF'],
+      ['Jazz', 513, 's4', 300, 64, ink, paper],
+      ['Techno', 370, 's3', 300, 44, 'transparent', ink],
+      ['Disco', 303, 's3', 220, 40, clay, ink],
+      ['World Music', 277, 's3', 220, 40, 'transparent', ink],
+      ['Rock', 232, 's3', 220, 40, 'transparent', ink],
+      ['Funk', 207, 's3', 220, 40, 'transparent', ink],
+      ['Soul', 188, 's3', 200, 36, 'transparent', ink],
+      ['Electronica', 139, 's3', 200, 36, ink, paper],
+      ['Electro', 102, 's2', 200, 28, 'transparent', ink],
+      ['Dub', 102, 's2', 200, 28, 'transparent', ink],
+      ['Reggae', 81, 's2', 200, 28, 'transparent', ink],
+      ['Hip Hop', 80, 's2', 200, 28, 'transparent', ink],
+      ['Folk', 55, 's2', 200, 28, clay, ink],
+      ['Blues', 24, 's2', 200, 28, 'transparent', ink],
+      ['Soundtrack', 9, 's3', 200, 36, 'transparent', ink],
+      ['Classical', 5, 's3', 200, 36, 'transparent', ink]
+    ];
+    const genres = G.map((g) => ({
+      name: g[0],
+      count: g[1] + ' records',
+      cls: g[2],
+      style:
+        'display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;padding:20px 22px;text-decoration:none;' +
+        'min-height:' + g[3] + 'px;font-size:' + g[4] + 'px;background:' + g[5] + ';color:' + g[6] + ';' +
+        'border:1px solid ' + (g[5] === 'transparent' ? 'rgba(20,20,19,.22)' : g[5]) + ';'
+    }));
+
+    const stripes = 'repeating-linear-gradient(135deg,#D3C8B3 0 12px,#DCD2BF 12px 24px)';
+    return {
+      accent,
+      newIn,
+      genres,
+      origins: ['Portugal', 'Brazil', 'African', 'Cuba'],
+      events: [
+        { date: '[DD MMM]', name: '[Event name] — [time]' },
+        { date: '[DD MMM]', name: '[Event name] — [time]' },
+        { date: '[DD MMM]', name: '[Event name] — [time]' }
+      ],
+      stories: [
+        { tag: 'Mix', title: '[Mix title]', blurb: '[One line on the mix and who made it.]', cap: 'Photo — mix · 4:3', stripes },
+        { tag: 'Label spotlight', title: '[Label name]', blurb: '[One line on why this label matters right now.]', cap: 'Photo — label · 4:3', stripes },
+        { tag: 'Staff pick', title: '[Artist] — [Release title]', blurb: '[One line from whoever picked it.]', cap: 'Photo — record · 4:3', stripes }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

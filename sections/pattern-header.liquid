@@ -1,0 +1,258 @@
+{%- comment -%}
+  Pattern header: wordmark ("pattern" + italic "records", or a logo image), main menu, Search and
+  Cart (N) as text links. Keeps Dawn's cart notification working: it renders <cart-notification>
+  and the #cart-icon-bubble element cart-notification.js updates, and refreshes the visible count
+  on Dawn's cart-update event.
+
+  Menu items come from the menu picked in the editor (Online Store > Navigation); top-level links
+  only.
+{%- endcomment -%}
+{%- if settings.cart_type == 'notification' -%}
+  {{ 'component-cart-notification.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- assign menu_links = linklists[section.settings.menu].links -%}
+
+<div class="pattern-section pattern-header">
+  <header class="pattern-wrap pattern-header__inner">
+    <a href="{{ routes.root_url }}" class="pattern-header__wordmark">
+      {%- if section.settings.logo != blank -%}
+        {{
+          section.settings.logo
+          | image_url: width: 600
+          | image_tag:
+            widths: '150, 300, 450, 600',
+            sizes: '(min-width: 750px) 220px, 160px',
+            alt: shop.name,
+            class: 'pattern-header__logo',
+            loading: 'eager'
+        }}
+      {%- else -%}
+        {{- section.settings.wordmark | escape -}}
+        {%- if section.settings.wordmark_accent != blank -%}
+          <span class="pattern-accent-word"> {{ section.settings.wordmark_accent | escape }}</span>
+        {%- endif -%}
+      {%- endif -%}
+    </a>
+
+    {%- if menu_links.size > 0 -%}
+      <nav class="pattern-header__nav" aria-label="Main">
+        <ul class="pattern-header__menu" role="list">
+          {%- for link in menu_links -%}
+            <li>
+              <a
+                href="{{ link.url }}"
+                class="pattern-header__link"
+                {% if link.current %}
+                  aria-current="page"
+                {% endif %}
+              >
+                {{- link.title | escape -}}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+
+    <div class="pattern-header__actions">
+      <a href="{{ routes.search_url }}" class="pattern-header__link">{{ section.settings.search_label | escape }}</a>
+      <a
+        href="{{ routes.cart_url }}"
+        class="pattern-header__link"
+        aria-label="{{ section.settings.cart_label | escape }}, {{ 'sections.header.cart_count' | t: count: cart.item_count }}"
+      >
+        {{- section.settings.cart_label | escape }} (<span data-pattern-cart-count>{{ cart.item_count }}</span>)
+      </a>
+    </div>
+  </header>
+
+  {%- comment -%} cart-notification.js renders Dawn's cart bubble into this after an add; it stays hidden. {%- endcomment -%}
+  <div id="cart-icon-bubble" hidden></div>
+
+  {%- if settings.cart_type == 'notification' -%}
+    {%- render 'cart-notification', color_scheme: 'scheme-1', desktop_menu_type: 'dropdown' -%}
+  {%- endif -%}
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof subscribe !== 'function' || typeof PUB_SUB_EVENTS === 'undefined') return;
+    subscribe(PUB_SUB_EVENTS.cartUpdate, function () {
+      fetch(window.routes.cart_url + '.js', { headers: { Accept: 'application/json' } })
+        .then(function (response) { return response.json(); })
+        .then(function (cart) {
+          document.querySelectorAll('[data-pattern-cart-count]').forEach(function (el) {
+            el.textContent = cart.item_count;
+          });
+        })
+        .catch(function () {});
+    });
+  });
+</script>
+
+{% stylesheet %}
+  .pattern-header {
+    position: relative;
+    background-color: var(--pattern-paper);
+    color: var(--pattern-ink);
+    border-bottom: 0.1rem solid var(--pattern-hairline);
+  }
+
+  .pattern-header__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem 3.2rem;
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+  }
+
+  .pattern-header__wordmark {
+    display: inline-flex;
+    align-items: center;
+    min-height: 4.4rem;
+    padding: 1.2rem 0;
+    color: inherit;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2.8rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .pattern-header__wordmark .pattern-accent-word {
+    letter-spacing: -0.01em;
+    white-space: pre;
+  }
+
+  .pattern-header__logo {
+    display: block;
+    width: auto;
+    max-width: 22rem;
+    max-height: 4.4rem;
+    object-fit: contain;
+  }
+
+  .pattern-header__menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 3.2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pattern-header__actions {
+    display: flex;
+    gap: 2.8rem;
+  }
+
+  .pattern-header__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 4.4rem;
+    color: inherit;
+    font-family: var(--font-body);
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .pattern-header__link:hover,
+  .pattern-header__link[aria-current='page'] {
+    text-decoration: underline;
+    text-underline-offset: 0.4rem;
+  }
+
+  /* Mobile: wordmark and Search / Cart on the first row; the menu scrolls sideways underneath */
+  @media screen and (max-width: 749px) {
+    .pattern-header__inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0 1.6rem;
+      padding-top: 0.4rem;
+      padding-bottom: 0;
+    }
+
+    .pattern-header__wordmark {
+      font-size: 2.4rem;
+    }
+
+    .pattern-header__actions {
+      gap: 2rem;
+    }
+
+    .pattern-header__nav {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      margin: 0 calc(-1 * var(--pattern-gutter));
+      border-top: 0.1rem solid var(--pattern-hairline);
+    }
+
+    .pattern-header__menu {
+      flex-wrap: nowrap;
+      gap: 0 2.4rem;
+      padding: 0 var(--pattern-gutter);
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .pattern-header__menu::-webkit-scrollbar {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Pattern header",
+  "class": "section-header",
+  "enabled_on": { "groups": ["header"] },
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image",
+      "info": "Optional. Replaces the text wordmark."
+    },
+    {
+      "type": "text",
+      "id": "wordmark",
+      "label": "Wordmark",
+      "default": "pattern"
+    },
+    {
+      "type": "text",
+      "id": "wordmark_accent",
+      "label": "Wordmark accent (italic)",
+      "default": "records"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu",
+      "info": "Top-level links are shown."
+    },
+    {
+      "type": "text",
+      "id": "search_label",
+      "label": "Search label",
+      "default": "Search"
+    },
+    {
+      "type": "text",
+      "id": "cart_label",
+      "label": "Cart label",
+      "default": "Cart"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,133 @@
+/* Pattern base: shared building blocks for the Pattern sections. Values come from the tokens in
+   snippets/pattern-tokens.liquid. */
+
+/* Content width: 1440px max, 48px gutters (20px on small screens) */
+.pattern-wrap {
+  width: 100%;
+  max-width: var(--pattern-wrap-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--pattern-gutter);
+  padding-right: var(--pattern-gutter);
+  box-sizing: border-box;
+}
+
+/* Small uppercase mono label (eyebrows, "This week", "What's on"…) */
+.pattern-label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* The italic serif word inside a heading ("New cuts *for* curious listeners") */
+.pattern-accent-word {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* Display headings */
+.pattern-display {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+
+/* Square accent button */
+.pattern-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+  min-height: 5.2rem;
+  padding: 0 2.6rem;
+  border: 0;
+  background-color: var(--pattern-accent);
+  color: var(--pattern-on-accent);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.6rem;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.pattern-button:hover {
+  filter: brightness(1.12);
+}
+
+.pattern-button--paper {
+  background-color: var(--pattern-paper);
+  color: var(--pattern-ink);
+}
+
+/* Text link with an arrow; underline on hover */
+.pattern-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 4.4rem;
+  color: inherit;
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.pattern-link:hover,
+.pattern-link--underline {
+  text-decoration: underline;
+  text-underline-offset: 0.4rem;
+}
+
+.pattern-arrow {
+  flex: 0 0 auto;
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.pattern-button .pattern-arrow {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+/* Striped placeholder when an image setting is empty */
+.pattern-placeholder {
+  background: repeating-linear-gradient(135deg, var(--pattern-stripe) 0 12px, var(--pattern-clay) 12px 24px);
+}
+
+/* Dawn hides every empty div (base.css div:empty); a placeholder panel is empty on purpose */
+.pattern-placeholder:empty,
+.pattern-placeholder--dark:empty {
+  display: block;
+}
+
+.pattern-placeholder--dark {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--pattern-stripe-dark-a) 0 12px,
+    var(--pattern-stripe-dark-b) 12px 24px
+  );
+}
+
+/* Visible keyboard focus everywhere in Pattern sections */
+.pattern-section a:focus-visible,
+.pattern-section button:focus-visible,
+.pattern-section input:focus-visible,
+.pattern-section select:focus-visible,
+.pattern-section summary:focus-visible {
+  outline: 0.2rem solid currentColor;
+  outline-offset: 0.3rem;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pattern-button {
+    transition: none;
+  }
+}

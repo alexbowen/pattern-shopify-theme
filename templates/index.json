@@ -10,7 +10,22 @@
 {
   "sections": {
     "pattern_hero": {
-      "type": "pattern-hero"
+      "type": "pattern-hero",
+      "settings": {
+        "eyebrow": "Record shop & cultural space — Alcântara, Lisboa",
+        "headline_start": "New cuts",
+        "headline_accent": "for",
+        "headline_end": "curious listeners",
+        "body": "Fresh arrivals from the crates — house, jazz, disco, dub and everything in between. New and used vinyl, in Lisbon and online.",
+        "primary_label": "Shop new arrivals",
+        "primary_link": "/collections/all",
+        "secondary_label": "Browse by genre",
+        "feature_label": "This week",
+        "feature_product": "aaron-carl-down",
+        "feature_link_label": "Listen",
+        "image_position": "right",
+        "overlay_opacity": 0
+      }
     },
     "featured_collection": {
       "type": "featured-collection",

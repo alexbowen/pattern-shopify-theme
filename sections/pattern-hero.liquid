@@ -1,216 +1,351 @@
+{%- comment -%}
+  Pattern hero: ink text panel (eyebrow, headline with an italic accent word, body, two calls to
+  action, "This week" strip) beside an image panel. The image uses its focal point; without one
+  the panel shows the striped placeholder. Image side and an optional charcoal overlay are
+  settings. Stacks on mobile with the text first.
+{%- endcomment -%}
+{%- liquid
+  assign secondary_link = section.settings.secondary_link | default: routes.all_products_collection_url
+
+  assign feature_product = section.settings.feature_product
+  assign feature_title = section.settings.feature_text | strip
+  assign feature_url = section.settings.feature_link
+  if feature_product != blank
+    if feature_title == blank
+      assign feature_title = feature_product.title | replace_first: ' - ', ' — '
+    endif
+    if feature_url == blank
+      assign feature_url = feature_product.url
+    endif
+  endif
+-%}
+
+<section
+  class="pattern-section pattern-hero pattern-hero--image-{{ section.settings.image_position }}"
+  aria-labelledby="PatternHeroHeading-{{ section.id }}"
+>
+  <div class="pattern-hero__text">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="pattern-label pattern-hero__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+    {%- endif -%}
+
+    <div class="pattern-hero__main">
+      <h1 class="pattern-display pattern-hero__headline" id="PatternHeroHeading-{{ section.id }}">
+        {{- section.settings.headline_start | escape -}}
+        {%- if section.settings.headline_accent != blank %}
+          <span class="pattern-accent-word">{{ section.settings.headline_accent | escape }}</span>
+        {%- endif -%}
+        {%- if section.settings.headline_end != blank %}
+          {{ section.settings.headline_end | escape }}
+        {%- endif -%}
+      </h1>
+
+      {%- if section.settings.body != blank -%}
+        <p class="pattern-hero__body">{{ section.settings.body | escape | newline_to_br }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.primary_label != blank or section.settings.secondary_label != blank -%}
+        <div class="pattern-hero__ctas">
+          {%- if section.settings.primary_label != blank -%}
+            <a href="{{ section.settings.primary_link | default: routes.all_products_collection_url }}" class="pattern-button">
+              {{- section.settings.primary_label | escape -}}
+              {% render 'pattern-arrow' %}
+            </a>
+          {%- endif -%}
+          {%- if section.settings.secondary_label != blank -%}
+            <a href="{{ secondary_link }}" class="pattern-link pattern-hero__secondary">
+              {{- section.settings.secondary_label | escape -}}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- if feature_title != blank -%}
+      <div class="pattern-hero__feature">
+        {%- if section.settings.feature_label != blank -%}
+          <span class="pattern-label pattern-hero__feature-label">{{ section.settings.feature_label | escape }}</span>
+        {%- endif -%}
+        <span class="pattern-hero__feature-title">{{ feature_title | escape }}</span>
+        {%- if feature_url != blank and section.settings.feature_link_label != blank -%}
+          <a href="{{ feature_url }}" class="pattern-link pattern-hero__feature-link">
+            {{- section.settings.feature_link_label | escape -}}
+            <span class="visually-hidden">: {{ feature_title | escape }}</span>
+            {% render 'pattern-arrow' %}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="pattern-hero__media{% if section.settings.image == blank %} pattern-placeholder{% endif %}">
+    {%- if section.settings.image != blank -%}
+      {%- liquid
+        assign hero_focal_point = section.settings.image.presentation.focal_point | default: 'center'
+        assign hero_image_style = 'object-position: ' | append: hero_focal_point | append: ';'
+      -%}
+      {%- comment -%} Above the fold: load eagerly with high priority. {%- endcomment -%}
+      {{
+        section.settings.image
+        | image_url: width: 2400
+        | image_tag:
+          loading: 'eager',
+          fetchpriority: 'high',
+          widths: '375, 550, 750, 1100, 1500, 1800, 2400',
+          sizes: '(min-width: 990px) 45vw, 100vw',
+          alt: section.settings.image.alt,
+          class: 'pattern-hero__image',
+          style: hero_image_style
+      }}
+    {%- endif -%}
+  </div>
+</section>
+
 {%- style -%}
-  #PatternHero-{{ section.id }} {
+  #shopify-section-{{ section.id }} .pattern-hero__media::after {
+    opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+  }
+{%- endstyle -%}
+
+{% stylesheet %}
+  .pattern-hero {
     display: flex;
-    width: 100%;
-    height: 100vh;
-    font-family: 'Urbanist', sans-serif;
+    flex-wrap: wrap;
+    background-color: var(--pattern-ink);
+    color: var(--pattern-paper);
   }
 
-  #PatternHero-{{ section.id }} .pattern-hero__column {
+  .pattern-hero__text {
+    flex: 1 1 56rem;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 68rem;
+    padding: 5.6rem var(--pattern-gutter) 4rem;
     display: flex;
     flex-direction: column;
-    width: 50%;
-    height: 100%;
-  }
-
-  #PatternHero-{{ section.id }} .pattern-hero__left {
-    background-color: #1c1c1c;
     justify-content: space-between;
-    padding: 4rem 3rem;
-    box-sizing: border-box;
+    gap: 4.8rem;
   }
 
-  #PatternHero-{{ section.id }} .pattern-hero__eyebrow {
-    color: #e85c41;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    font-weight: 600;
-    margin: 0;
+  .pattern-hero__eyebrow,
+  .pattern-hero__feature-label {
+    color: var(--pattern-paper-dim);
   }
 
-  #PatternHero-{{ section.id }} .pattern-hero__content {
+  .pattern-hero__main {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 3.2rem;
   }
 
-  #PatternHero-{{ section.id }} .pattern-hero__headline {
-    color: #ffffff;
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    line-height: 1.1;
+  .pattern-hero__headline {
+    font-size: clamp(5.6rem, 8.4vw, 12.8rem);
+    line-height: 0.9;
+    color: inherit;
+    overflow-wrap: break-word;
+  }
+
+  .pattern-hero__body {
     margin: 0;
-    font-weight: 700;
-  }
-
-  #PatternHero-{{ section.id }} .pattern-hero__headline em {
-    font-style: italic;
-    font-weight: 700;
-  }
-
-  #PatternHero-{{ section.id }} .pattern-hero__subheading {
-    color: #cccccc;
-    font-size: 1.125rem;
+    max-width: 47rem;
+    font-size: 1.8rem;
     line-height: 1.5;
-    max-width: 30ch;
-    margin: 0;
-    font-weight: 400;
+    color: var(--pattern-paper-soft);
   }
 
-  #PatternHero-{{ section.id }} .pattern-hero__cta {
-    display: inline-flex;
+  .pattern-hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    width: fit-content;
-    padding: 0.9rem 1.75rem;
-    border: 1px solid #ffffff;
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    gap: 0.8rem 2.8rem;
+  }
+
+  .pattern-hero__secondary {
+    font-size: 1.6rem;
+    color: var(--pattern-paper);
+  }
+
+  .pattern-hero__feature {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem 2.4rem;
+    padding-top: 2rem;
+    border-top: 0.1rem solid var(--pattern-hairline-on-dark);
+  }
+
+  .pattern-hero__feature-title {
     font-weight: 600;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: 1.6rem;
   }
 
-  #PatternHero-{{ section.id }} .pattern-hero__cta:hover {
-    background-color: #ffffff;
-    color: #1c1c1c;
+  .pattern-hero__feature-link {
+    color: var(--pattern-paper);
   }
 
-  #PatternHero-{{ section.id }} .pattern-hero__tags {
-    color: #e85c41;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  #PatternHero-{{ section.id }} .pattern-hero__right {
+  .pattern-hero__media {
     position: relative;
-    background-color: #3a3a3a;
-    justify-content: flex-end;
-    align-items: flex-end;
-    padding: 2rem;
-    box-sizing: border-box;
-    background-size: cover;
-    background-position: center;
-  }
-
-  /* Image side: right by default (DOM order); "left" swaps the columns on desktop only */
-  @media screen and (min-width: 750px) {
-    #PatternHero-{{ section.id }}.pattern-hero--image-left .pattern-hero__right {
-      order: -1;
-    }
-  }
-
-  /* Hero image fills the panel; the grey panel background stays as the fallback */
-  #PatternHero-{{ section.id }} .pattern-hero__media {
-    position: absolute;
-    inset: 0;
+    flex: 1 1 38rem;
+    min-width: 0;
+    min-height: 56rem;
     overflow: hidden;
   }
 
-  #PatternHero-{{ section.id }} .pattern-hero__image {
-    display: block;
+  .pattern-hero__image {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  #PatternHero-{{ section.id }} .pattern-hero__media::after {
+  .pattern-hero__media::after {
     content: '';
     position: absolute;
     inset: 0;
-    background-color: var(--pattern-charcoal, #1c1c1c);
-    opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    background-color: var(--pattern-ink);
+    opacity: 0;
     pointer-events: none;
   }
 
-  #PatternHero-{{ section.id }} .pattern-hero__right-caption {
-    position: relative;
-    z-index: 1;
-    color: #ffffff;
-    font-size: 0.75rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    text-align: right;
-    max-width: 22ch;
-    margin: 0;
-    font-weight: 500;
+  /* Image on the left: desktop only (text stays first on mobile) */
+  @media screen and (min-width: 990px) {
+    .pattern-hero--image-left .pattern-hero__media {
+      order: -1;
+    }
   }
 
   @media screen and (max-width: 749px) {
-    #PatternHero-{{ section.id }} {
-      flex-direction: column;
-      height: auto;
-      min-height: 100vh;
+    .pattern-hero__text {
+      min-height: 0;
+      padding-top: 4rem;
+      padding-bottom: 3.2rem;
+      gap: 4rem;
     }
 
-    #PatternHero-{{ section.id }} .pattern-hero__column {
-      width: 100%;
+    .pattern-hero__body {
+      font-size: 1.7rem;
     }
 
-    #PatternHero-{{ section.id }} .pattern-hero__left {
-      padding: 2.5rem 1.5rem;
-    }
-
-    #PatternHero-{{ section.id }} .pattern-hero__right {
-      min-height: 40vh;
-      padding: 1.5rem;
+    .pattern-hero__media {
+      flex-basis: 100%;
+      min-height: 0;
+      aspect-ratio: 4 / 5;
     }
   }
-{%- endstyle -%}
-
-<div id="PatternHero-{{ section.id }}" class="pattern-hero pattern-hero--image-{{ section.settings.image_position }}">
-  <div class="pattern-hero__column pattern-hero__left">
-    <p class="pattern-hero__eyebrow">Independent Record Shop</p>
-
-    <div class="pattern-hero__content">
-      <h1 class="pattern-hero__headline"><strong>New cuts</strong> <em>for</em> <strong>curious listeners.</strong></h1>
-      <p class="pattern-hero__subheading">Carefully selected electronic, jazz, house and second-hand vinyl from a room in Lisbon.</p>
-      <a href="/collections/all" class="pattern-hero__cta">Hear What Just Landed &rarr;</a>
-    </div>
-
-    <p class="pattern-hero__tags">House / Jazz / Electro</p>
-  </div>
-
-  <div class="pattern-hero__column pattern-hero__right">
-    {%- if section.settings.image != blank -%}
-      {%- comment -%} Above the fold: load eagerly with high priority. object-position follows the focal point set on the image. {%- endcomment -%}
-      {%- liquid
-        assign hero_focal_point = section.settings.image.presentation.focal_point | default: 'center'
-        assign hero_image_style = 'object-position: ' | append: hero_focal_point | append: ';'
-      -%}
-      <div class="pattern-hero__media">
-        {{
-          section.settings.image
-          | image_url: width: 2400
-          | image_tag:
-            loading: 'eager',
-            fetchpriority: 'high',
-            widths: '375, 550, 750, 1100, 1500, 1800, 2400',
-            sizes: '(min-width: 750px) 50vw, 100vw',
-            alt: section.settings.image.alt,
-            class: 'pattern-hero__image',
-            style: hero_image_style
-        }}
-      </div>
-    {%- endif -%}
-    <p class="pattern-hero__right-caption">Listen closer. Browse slower. Take the long way home.</p>
-  </div>
-</div>
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "Pattern Hero",
+  "name": "Pattern hero",
+  "tag": "div",
   "settings": [
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Record shop & cultural space — Alcântara, Lisboa"
+    },
+    {
+      "type": "text",
+      "id": "headline_start",
+      "label": "Headline: before the accent word",
+      "default": "New cuts"
+    },
+    {
+      "type": "text",
+      "id": "headline_accent",
+      "label": "Headline: accent word (italic)",
+      "default": "for"
+    },
+    {
+      "type": "text",
+      "id": "headline_end",
+      "label": "Headline: after the accent word",
+      "default": "curious listeners"
+    },
+    {
+      "type": "textarea",
+      "id": "body",
+      "label": "Body",
+      "default": "Fresh arrivals from the crates — house, jazz, disco, dub and everything in between. New and used vinyl, in Lisbon and online."
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "Button label",
+      "default": "Shop new arrivals"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "Button link",
+      "default": "/collections/all"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Secondary link label",
+      "default": "Browse by genre"
+    },
+    {
+      "type": "url",
+      "id": "secondary_link",
+      "label": "Secondary link",
+      "info": "Leave empty to link to all products."
+    },
+    {
+      "type": "header",
+      "content": "This week strip"
+    },
+    {
+      "type": "text",
+      "id": "feature_label",
+      "label": "Label",
+      "default": "This week"
+    },
+    {
+      "type": "product",
+      "id": "feature_product",
+      "label": "Featured record",
+      "info": "Shows \"Artist — Title\" and links to the record."
+    },
+    {
+      "type": "text",
+      "id": "feature_text",
+      "label": "Text",
+      "info": "Optional. Overrides the record title, or use it without a record. The strip hides when both are empty."
+    },
+    {
+      "type": "text",
+      "id": "feature_link_label",
+      "label": "Link label",
+      "default": "Listen"
+    },
+    {
+      "type": "url",
+      "id": "feature_link",
+      "label": "Link",
+      "info": "Leave empty to link to the featured record."
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
     {
       "type": "image_picker",
       "id": "image",
       "label": "Hero image",
-      "info": "Shown in the image panel. Set a focal point on the image to control the crop. Without an image the panel stays grey."
+      "info": "Set a focal point on the image to control the crop. Without an image the panel shows a striped placeholder."
     },
     {
       "type": "select",
@@ -231,9 +366,11 @@
       "step": 5,
       "unit": "%",
       "label": "Charcoal overlay strength",
-      "info": "Darkens the image so the caption stays readable. 0% for no overlay.",
       "default": 0
     }
+  ],
+  "presets": [
+    { "name": "Pattern hero" }
   ]
 }
 {% endschema %}

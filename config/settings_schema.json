@@ -8,6 +8,27 @@
     "theme_support_url": "https://support.shopify.com/"
   },
   {
+    "name": "Pattern design",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Colours and type for the Pattern sections. Paper, ink, clay, sand and muted text are fixed design tokens (snippets/pattern-tokens.liquid); the accent can be changed here."
+      },
+      {
+        "type": "color",
+        "id": "pattern_accent",
+        "label": "Accent colour",
+        "default": "#2433D6"
+      },
+      {
+        "type": "color",
+        "id": "pattern_on_accent",
+        "label": "Text on accent",
+        "default": "#FFFFFF"
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.logo.name",
     "settings": [
       {

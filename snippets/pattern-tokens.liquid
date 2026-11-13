@@ -1,0 +1,82 @@
+{%- comment -%}
+  Pattern design tokens: the one place colours, fonts and layout measures are defined.
+  Rendered in layout/theme.liquid after base.css so these win over Dawn's defaults.
+
+  - Accent: theme setting (Theme settings > Pattern design), everything else fixed here.
+  - Fonts: --font-display / --font-body / --font-mono / --font-accent. To swap in Urbanist or
+    Bakemono later, change the family names below (and the Google Fonts link in theme.liquid,
+    or add @font-face rules). Dawn's own font variables point at these, so the whole theme follows.
+  - Older Pattern variable names (--pattern-charcoal, --pattern-sandstone, --pattern-opal) are
+    aliases, so components built before the tokens existed pick them up.
+{%- endcomment -%}
+<style>
+  :root {
+    /* Palette */
+    --pattern-paper: #F2EEE5;
+    --pattern-ink: #141413;
+    --pattern-clay: #DCD2BF;
+    --pattern-sand: #E9E1CF;
+    --pattern-muted: #4F4B44;
+    --pattern-accent: {{ settings.pattern_accent | default: '#2433D6' }};
+    --pattern-on-accent: {{ settings.pattern_on_accent | default: '#FFFFFF' }};
+
+    /* Tints used on dark (ink) backgrounds, and placeholder stripes */
+    --pattern-paper-dim: #B9B2A3;
+    --pattern-paper-soft: #D8D2C4;
+    --pattern-stripe: #D3C8B3;
+    --pattern-stripe-dark-a: #2E2C29;
+    --pattern-stripe-dark-b: #292724;
+    --pattern-hairline: color-mix(in srgb, var(--pattern-ink) 16%, transparent);
+    --pattern-hairline-on-dark: color-mix(in srgb, var(--pattern-paper) 25%, transparent);
+
+    /* Type: swap families here */
+    --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+    --font-body: 'Bricolage Grotesque', system-ui, sans-serif;
+    --font-mono: 'DM Mono', ui-monospace, monospace;
+    --font-accent: 'Instrument Serif', Georgia, serif;
+
+    /* Dawn reads these, so every theme component follows the tokens */
+    --font-body-family: var(--font-body);
+    --font-heading-family: var(--font-display);
+
+    /* Layout */
+    --pattern-wrap-max: 144rem;
+    --pattern-gutter: 4.8rem;
+    --pattern-section-space: 9.6rem;
+
+    /* Aliases for components built before the tokens */
+    --pattern-charcoal: var(--pattern-ink);
+    --pattern-sandstone: var(--pattern-sand);
+    --pattern-opal: var(--pattern-accent);
+    --pattern-opal-text: var(--pattern-on-accent);
+    --pattern-on-charcoal: var(--pattern-paper);
+    --pattern-font-display: var(--font-display);
+    --pattern-font-display-weight: 700;
+  }
+
+  @media screen and (max-width: 900px) {
+    :root {
+      --pattern-gutter: 2rem;
+      --pattern-section-space: 6.4rem;
+    }
+  }
+
+  /* Default colour scheme on paper and ink. Set here rather than in config/settings_data.json so
+     editing tokens never overwrites settings made in the theme editor (app embeds etc.). */
+  :root,
+  .color-scheme-1 {
+    --color-background: 242, 238, 229;
+    --gradient-background: var(--pattern-paper);
+    --color-foreground: 20, 20, 19;
+    --color-background-contrast: 196, 186, 166;
+    --color-shadow: 20, 20, 19;
+    --color-button: 20, 20, 19;
+    --color-button-text: 242, 238, 229;
+    --color-secondary-button: 242, 238, 229;
+    --color-secondary-button-text: 20, 20, 19;
+    --color-link: 20, 20, 19;
+    --color-badge-foreground: 20, 20, 19;
+    --color-badge-background: 242, 238, 229;
+    --color-badge-border: 20, 20, 19;
+  }
+</style>
