@@ -16,9 +16,13 @@ a{color:inherit}
 .wrap{max-width:1440px;margin:0 auto;padding-left:48px;padding-right:48px;box-sizing:border-box}
 .gt{transition:transform .2s ease}
 .gt:hover{transform:translateY(-3px)}
-.s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}
-@media (max-width:900px){.s2,.s3,.s4,.s5{grid-column:span 6}.wrap{padding-left:20px;padding-right:20px}}
-@media (max-width:560px){.s2,.s3,.s4,.s5{grid-column:span 12}}
+.gr{display:grid;gap:16px}
+.gr3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.gr4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.gr5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.gt:hover .gn{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:6px}
+@media (max-width:900px){.gr4{grid-template-columns:repeat(2,minmax(0,1fr))}.gr5{grid-template-columns:repeat(3,minmax(0,1fr))}.wrap{padding-left:20px;padding-right:20px}}
+@media (max-width:560px){.gr3{grid-template-columns:repeat(1,minmax(0,1fr))}.gr5{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </helmet>
 
@@ -100,12 +104,16 @@ a{color:inherit}
     </div>
     <a class="lk" href="#" style="display:inline-flex;align-items:center;gap:8px;padding:12px 0;font-size:15px;font-weight:500">All records <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px">
-    <sc-for list="{{genres}}" as="g" hint-placeholder-count="17">
-      <a class="gt {{g.cls}}" href="#" style="{{g.style}}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <sc-for list="{{rows}}" as="row" hint-placeholder-count="4">
+      <div class="gr {{row.cls}}">
+        <sc-for list="{{row.tiles}}" as="g" hint-placeholder-count="5">
+      <a class="gt" href="#" style="{{g.style}}">
         <span style="display:flex;justify-content:space-between;align-items:flex-start;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.85"><span>{{g.count}}</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12L12 4M5 4h7v7"/></svg></span>
-        <span style="font-weight:700;line-height:.95;letter-spacing:-.04em;font-size:inherit">{{g.name}}</span>
+        <span class="gn" style="font-weight:700;line-height:.95;letter-spacing:-.04em;font-size:inherit">{{g.name}}</span>
       </a>
+        </sc-for>
+      </div>
     </sc-for>
   </div>
   <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
@@ -257,41 +265,29 @@ class Component extends DCLogic {
       sleeve: sleeve(r[3], r[4], r[5])
     }));
 
-    // name, count, span class, min height, font size, background, text colour
-    const G = [
-      ['House', 614, 's5', 300, 80, accent, '#FFFFFF'],
-      ['Jazz', 513, 's4', 300, 64, ink, paper],
-      ['Techno', 370, 's3', 300, 44, 'transparent', ink],
-      ['Disco', 303, 's3', 220, 40, clay, ink],
-      ['World Music', 277, 's3', 220, 40, 'transparent', ink],
-      ['Rock', 232, 's3', 220, 40, 'transparent', ink],
-      ['Funk', 207, 's3', 220, 40, 'transparent', ink],
-      ['Soul', 188, 's3', 200, 36, 'transparent', ink],
-      ['Electronica', 139, 's3', 200, 36, ink, paper],
-      ['Electro', 102, 's2', 200, 28, 'transparent', ink],
-      ['Dub', 102, 's2', 200, 28, 'transparent', ink],
-      ['Reggae', 81, 's2', 200, 28, 'transparent', ink],
-      ['Hip Hop', 80, 's2', 200, 28, 'transparent', ink],
-      ['Folk', 55, 's2', 200, 28, clay, ink],
-      ['Blues', 24, 's2', 200, 28, 'transparent', ink],
-      ['Soundtrack', 9, 's3', 200, 36, 'transparent', ink],
-      ['Classical', 5, 's3', 200, 36, 'transparent', ink]
+    // Ordered by record count. Rows hold 3, 4, 5, 5 tiles; size and tone step down row by row.
+    const tiers = [
+      { cls: 'gr3', h: 320, size: 'clamp(44px,6.67vw,96px)', bg: ink, fg: paper, line: ink, items: [['House', 614], ['Jazz', 513], ['Techno', 370]] },
+      { cls: 'gr4', h: 240, size: 'clamp(28px,3.6vw,52px)', bg: ink, fg: paper, line: ink, items: [['Disco', 303], ['World Music', 277], ['Rock', 232], ['Funk', 207]] },
+      { cls: 'gr5', h: 190, size: 'clamp(22px,2.36vw,34px)', bg: clay, fg: ink, line: clay, items: [['Soul', 188], ['Electronica', 139], ['Electro', 102], ['Dub', 102], ['Reggae', 81]] },
+      { cls: 'gr5', h: 190, size: 'clamp(22px,2.36vw,34px)', bg: clay, fg: ink, line: clay, items: [['Hip Hop', 80], ['Folk', 55], ['Blues', 24], ['Soundtrack', 9], ['Classical', 5]] }
     ];
-    const genres = G.map((g) => ({
-      name: g[0],
-      count: g[1] + ' records',
-      cls: g[2],
-      style:
-        'display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;padding:20px 22px;text-decoration:none;' +
-        'min-height:' + g[3] + 'px;font-size:' + g[4] + 'px;background:' + g[5] + ';color:' + g[6] + ';' +
-        'border:1px solid ' + (g[5] === 'transparent' ? 'rgba(20,20,19,.22)' : g[5]) + ';'
+    const rows = tiers.map((t) => ({
+      cls: t.cls,
+      tiles: t.items.map((it) => ({
+        name: it[0],
+        count: it[1] + ' records',
+        style:
+          'display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;padding:20px 22px;text-decoration:none;' +
+          'min-height:' + t.h + 'px;font-size:' + t.size + ';background:' + t.bg + ';color:' + t.fg + ';border:1px solid ' + t.line + ';'
+      }))
     }));
 
     const stripes = 'repeating-linear-gradient(135deg,#D3C8B3 0 12px,#DCD2BF 12px 24px)';
     return {
       accent,
       newIn,
-      genres,
+      rows,
       origins: ['Portugal', 'Brazil', 'African', 'Cuba'],
       events: [
         { date: '[DD MMM]', name: '[Event name] — [time]' },

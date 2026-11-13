@@ -202,6 +202,12 @@
     transform: translateY(-0.3rem);
   }
 
+  .pattern-genre-tile:hover .pattern-genre-tile__name {
+    text-decoration: underline;
+    text-decoration-thickness: 0.3rem;
+    text-underline-offset: 0.6rem;
+  }
+
   /* Tone by row: 1-2 ink, 3-4 clay */
   .pattern-genre-tile--row-1,
   .pattern-genre-tile--row-2 {
@@ -242,15 +248,15 @@
     overflow-wrap: break-word;
   }
 
-  /* Size by row, stepping down */
-  .pattern-genre-tile--row-1 { min-height: 30rem; }
-  .pattern-genre-tile--row-1 .pattern-genre-tile__name { font-size: clamp(5.6rem, 6vw, 8.8rem); }
-  .pattern-genre-tile--row-2 { min-height: 22rem; }
-  .pattern-genre-tile--row-2 .pattern-genre-tile__name { font-size: clamp(3.6rem, 3.6vw, 5.2rem); }
-  .pattern-genre-tile--row-3 { min-height: 17rem; }
-  .pattern-genre-tile--row-3 .pattern-genre-tile__name { font-size: clamp(2.8rem, 2.5vw, 3.6rem); }
-  .pattern-genre-tile--row-4 { min-height: 14rem; }
-  .pattern-genre-tile--row-4 .pattern-genre-tile__name { font-size: clamp(2.4rem, 2vw, 2.8rem); }
+  /* Size by row, stepping down (rows 3 and 4 share a size), from the mockup */
+  .pattern-genre-tile--row-1 { min-height: 32rem; }
+  .pattern-genre-tile--row-1 .pattern-genre-tile__name { font-size: clamp(4.4rem, 6.67vw, 9.6rem); }
+  .pattern-genre-tile--row-2 { min-height: 24rem; }
+  .pattern-genre-tile--row-2 .pattern-genre-tile__name { font-size: clamp(2.8rem, 3.6vw, 5.2rem); }
+  .pattern-genre-tile--row-3,
+  .pattern-genre-tile--row-4 { min-height: 19rem; }
+  .pattern-genre-tile--row-3 .pattern-genre-tile__name,
+  .pattern-genre-tile--row-4 .pattern-genre-tile__name { font-size: clamp(2.2rem, 2.36vw, 3.4rem); }
 
   /* Origin line */
   .pattern-genres__origins {
@@ -301,10 +307,11 @@
     .pattern-genres__row--3,
     .pattern-genres__row--4 { --genre-cols: 3; }
 
+    /* Shorter tiles than the mockup's fixed heights, so the stacked grid isn't overly long */
     .pattern-genre-tile--row-1 { min-height: 22rem; }
     .pattern-genre-tile--row-2 { min-height: 17rem; }
-    .pattern-genre-tile--row-3 { min-height: 14rem; }
-    .pattern-genre-tile--row-4 { min-height: 12rem; }
+    .pattern-genre-tile--row-3,
+    .pattern-genre-tile--row-4 { min-height: 14rem; }
   }
 
   /* Phone: row 1 one column, row 2 and rows 3-4 two */
@@ -320,13 +327,9 @@
     .pattern-genre-tile { padding: 1.6rem 1.8rem; gap: 1.2rem; }
 
     .pattern-genre-tile--row-1 { min-height: 16rem; }
-    .pattern-genre-tile--row-1 .pattern-genre-tile__name { font-size: 5.6rem; }
     .pattern-genre-tile--row-2 { min-height: 13rem; }
-    .pattern-genre-tile--row-2 .pattern-genre-tile__name { font-size: 3.2rem; }
-    .pattern-genre-tile--row-3 { min-height: 11rem; }
-    .pattern-genre-tile--row-3 .pattern-genre-tile__name { font-size: 2.6rem; }
-    .pattern-genre-tile--row-4 { min-height: 10rem; }
-    .pattern-genre-tile--row-4 .pattern-genre-tile__name { font-size: 2.2rem; }
+    .pattern-genre-tile--row-3,
+    .pattern-genre-tile--row-4 { min-height: 11rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
