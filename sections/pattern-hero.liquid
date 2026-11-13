@@ -5,7 +5,8 @@
   settings. Stacks on mobile with the text first.
 {%- endcomment -%}
 {%- liquid
-  assign secondary_link = section.settings.secondary_link | default: routes.all_products_collection_url
+  # Empty: jump to the genre tiles further down the homepage (sections/pattern-genre-tiles.liquid).
+  assign secondary_link = section.settings.secondary_link | default: '#browse-by-genre'
 
   assign feature_product = section.settings.feature_product
   assign feature_title = section.settings.feature_text | strip
@@ -301,7 +302,7 @@
       "type": "url",
       "id": "secondary_link",
       "label": "Secondary link",
-      "info": "Leave empty to link to all products."
+      "info": "Leave empty to jump to the genre tiles on the homepage."
     },
     {
       "type": "header",

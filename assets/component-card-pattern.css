@@ -5,7 +5,7 @@
    Palette: --pattern-charcoal when the theme defines it, else the scheme foreground. */
 .card-wrapper {
   --card-text: var(--pattern-charcoal, rgb(var(--color-foreground)));
-  --card-muted: color-mix(in srgb, var(--card-text) 62%, transparent);
+  --card-muted: var(--pattern-muted, color-mix(in srgb, var(--card-text) 62%, transparent));
   --card-line: 1.35;
 }
 
@@ -33,6 +33,8 @@
 }
 
 .card-pattern__title {
+  color: var(--card-muted);
+  font-size: 0.9em;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -42,8 +44,9 @@
   overflow-wrap: anywhere;
 }
 
-/* Meta: label · format · genre, one line, always reserves its height */
+/* Meta: label · format · genre, one line, always reserves its height (mono, per the v2 mockup) */
 .card-pattern__meta {
+  font-family: var(--font-mono, inherit);
   margin: 0.4rem 0 0;
   min-height: calc(1em * 1.4);
   font-size: 1.2rem;
@@ -80,6 +83,9 @@
 
 .card-pattern__condition {
   flex: 0 0 auto;
+  font-family: var(--font-mono, inherit);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   font-size: 1.2rem;
   line-height: 1.4;
   color: var(--card-muted);

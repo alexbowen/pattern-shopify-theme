@@ -53,7 +53,8 @@
         "columns_mobile": "2",
         "padding_top": 44,
         "padding_bottom": 36
-      }
+      },
+      "disabled": true
     },
     "pattern_service_row": {
       "type": "pattern-service-row",
@@ -62,24 +63,25 @@
           "type": "service",
           "settings": {
             "heading": "Postage",
-            "text": "<p>Flat-rate shipping to Portugal and Spain. Order on the website.</p>",
-            "link_label": ""
+            "text": "<p>Flat-rate shipping to Portugal and Spain. Order on the website, we pack it with care.</p>",
+            "link_label": "Shipping details",
+            "link_url": "/policies/shipping-policy"
           }
         },
         "service_collect": {
           "type": "service",
           "settings": {
             "heading": "Collect in store",
-            "text": "<p>Order online and collect from the shop in Alcântara.</p>",
-            "link_label": ""
+            "text": "<p>Order online and collect from the shop in Alcântara. Come early, stay for a listen.</p>",
+            "link_label": "How collection works"
           }
         },
         "service_lisbon": {
           "type": "service",
           "settings": {
             "heading": "Lisbon in 24 hours",
-            "text": "<p>Flat-fee delivery within Lisbon postcodes.</p>",
-            "link_label": ""
+            "text": "<p>Flat-fee delivery within Lisbon postcodes. Order today, spin it tomorrow.</p>",
+            "link_label": "Delivery zones"
           }
         }
       },
@@ -92,8 +94,8 @@
         "heading": "",
         "background": "transparent",
         "full_width": false,
-        "padding_top": 48,
-        "padding_bottom": 48
+        "padding_top": 16,
+        "padding_bottom": 96
       }
     },
     "pattern_feature_split": {
@@ -111,12 +113,245 @@
         "padding_top": 48,
         "padding_bottom": 48
       }
+    },
+    "pattern_new_in": {
+      "type": "pattern-new-in",
+      "settings": {
+        "heading": "New in",
+        "collection": "all",
+        "products_to_show": 6,
+        "image_ratio": "square",
+        "link_label": "All new arrivals",
+        "link": "/collections/all?sort_by=created-descending"
+      }
+    },
+    "pattern_genre_tiles": {
+      "type": "pattern-genre-tiles",
+      "blocks": {
+        "genre_house": {
+          "type": "genre",
+          "settings": {
+            "label": "House",
+            "genre_handle": "house",
+            "count": "614 records",
+            "width": "5",
+            "size": "hero",
+            "style": "accent"
+          }
+        },
+        "genre_jazz": {
+          "type": "genre",
+          "settings": {
+            "label": "Jazz",
+            "genre_handle": "jazz",
+            "count": "513 records",
+            "width": "4",
+            "size": "xlarge",
+            "style": "ink"
+          }
+        },
+        "genre_techno": {
+          "type": "genre",
+          "settings": {
+            "label": "Techno",
+            "genre_handle": "techno",
+            "count": "370 records",
+            "width": "3",
+            "size": "large",
+            "style": "outline"
+          }
+        },
+        "genre_disco": {
+          "type": "genre",
+          "settings": {
+            "label": "Disco",
+            "genre_handle": "disco",
+            "count": "303 records",
+            "width": "3",
+            "size": "medium",
+            "style": "clay"
+          }
+        },
+        "genre_world_music": {
+          "type": "genre",
+          "settings": {
+            "label": "World Music",
+            "genre_handle": "world-music",
+            "count": "277 records",
+            "width": "3",
+            "size": "medium",
+            "style": "outline"
+          }
+        },
+        "genre_rock": {
+          "type": "genre",
+          "settings": {
+            "label": "Rock",
+            "genre_handle": "rock",
+            "count": "232 records",
+            "width": "3",
+            "size": "medium",
+            "style": "outline"
+          }
+        },
+        "genre_funk": {
+          "type": "genre",
+          "settings": {
+            "label": "Funk",
+            "genre_handle": "funk",
+            "count": "207 records",
+            "width": "3",
+            "size": "medium",
+            "style": "outline"
+          }
+        },
+        "genre_soul": {
+          "type": "genre",
+          "settings": {
+            "label": "Soul",
+            "genre_handle": "soul",
+            "count": "188 records",
+            "width": "3",
+            "size": "regular",
+            "style": "outline"
+          }
+        },
+        "genre_electronica": {
+          "type": "genre",
+          "settings": {
+            "label": "Electronica",
+            "genre_handle": "electronica",
+            "count": "139 records",
+            "width": "3",
+            "size": "regular",
+            "style": "ink"
+          }
+        },
+        "genre_electro": {
+          "type": "genre",
+          "settings": {
+            "label": "Electro",
+            "genre_handle": "electro",
+            "count": "102 records",
+            "width": "2",
+            "size": "compact",
+            "style": "outline"
+          }
+        },
+        "genre_dub": {
+          "type": "genre",
+          "settings": {
+            "label": "Dub",
+            "genre_handle": "dub",
+            "count": "102 records",
+            "width": "2",
+            "size": "compact",
+            "style": "outline"
+          }
+        },
+        "genre_reggae": {
+          "type": "genre",
+          "settings": {
+            "label": "Reggae",
+            "genre_handle": "reggae",
+            "count": "81 records",
+            "width": "2",
+            "size": "compact",
+            "style": "outline"
+          }
+        },
+        "genre_hip_hop": {
+          "type": "genre",
+          "settings": {
+            "label": "Hip Hop",
+            "genre_handle": "hip-hop",
+            "count": "80 records",
+            "width": "2",
+            "size": "compact",
+            "style": "outline"
+          }
+        },
+        "genre_folk": {
+          "type": "genre",
+          "settings": {
+            "label": "Folk",
+            "genre_handle": "folk",
+            "count": "55 records",
+            "width": "2",
+            "size": "compact",
+            "style": "clay"
+          }
+        },
+        "genre_blues": {
+          "type": "genre",
+          "settings": {
+            "label": "Blues",
+            "genre_handle": "blues",
+            "count": "24 records",
+            "width": "2",
+            "size": "compact",
+            "style": "outline"
+          }
+        },
+        "genre_soundtrack": {
+          "type": "genre",
+          "settings": {
+            "label": "Soundtrack",
+            "genre_handle": "soundtrack",
+            "count": "9 records",
+            "width": "3",
+            "size": "regular",
+            "style": "outline"
+          }
+        },
+        "genre_classical": {
+          "type": "genre",
+          "settings": {
+            "label": "Classical",
+            "genre_handle": "classical",
+            "count": "5 records",
+            "width": "3",
+            "size": "regular",
+            "style": "outline"
+          }
+        }
+      },
+      "block_order": [
+        "genre_house",
+        "genre_jazz",
+        "genre_techno",
+        "genre_disco",
+        "genre_world_music",
+        "genre_rock",
+        "genre_funk",
+        "genre_soul",
+        "genre_electronica",
+        "genre_electro",
+        "genre_dub",
+        "genre_reggae",
+        "genre_hip_hop",
+        "genre_folk",
+        "genre_blues",
+        "genre_soundtrack",
+        "genre_classical"
+      ],
+      "settings": {
+        "heading": "Browse by",
+        "heading_accent": "genre",
+        "text": "Seventeen starting points. Pick one and the sub-genres open up once you are inside.",
+        "link_label": "All records",
+        "origins_label": "Or start from a place",
+        "origins": "Portugal\nBrazil\nJapan",
+        "origins_all_label": "All origins +"
+      }
     }
   },
   "order": [
     "pattern_hero",
-    "featured_collection",
+    "pattern_new_in",
+    "pattern_genre_tiles",
     "pattern_service_row",
-    "pattern_feature_split"
+    "pattern_feature_split",
+    "featured_collection"
   ]
 }

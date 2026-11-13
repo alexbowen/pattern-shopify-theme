@@ -20,7 +20,7 @@
 {%- endstyle -%}
 
 <div class="pattern-section pattern-supporting pattern-supporting--{{ section.settings.background }}">
-  <div class="pattern-service-row section-{{ section.id }}-padding{% unless section.settings.full_width %} page-width{% endunless %}{% if section.settings.full_width %} pattern-service-row--full{% endif %}">
+  <div class="pattern-service-row pattern-wrap section-{{ section.id }}-padding{% if section.settings.full_width %} pattern-service-row--full{% endif %}">
     {%- if section.settings.heading != blank -%}
       <h2 class="pattern-supporting__heading">{{ section.settings.heading | escape }}</h2>
     {%- endif -%}
@@ -55,7 +55,6 @@
             {%- if block.settings.link_label != blank and block.settings.link_url != blank -%}
               <a href="{{ block.settings.link_url }}" class="pattern-service-row__link">
                 {{- block.settings.link_label | escape -}}
-                <span aria-hidden="true"> →</span>
               </a>
             {%- endif -%}
           </li>

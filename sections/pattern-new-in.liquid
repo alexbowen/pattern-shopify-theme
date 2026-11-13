@@ -1,0 +1,173 @@
+{%- comment -%}
+  Pattern "New in": heading, link to all new arrivals, and a grid of products from a collection,
+  rendered with the shared product card (snippets/card-product.liquid). Uses Dawn's grid /
+  grid__item list markup so card behaviour (and Audioly's play buttons) works as on collections.
+{%- endcomment -%}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign new_in = section.settings.collection
+  assign view_all_url = section.settings.link | default: new_in.url | default: routes.all_products_collection_url
+-%}
+
+<section class="pattern-section pattern-new-in" aria-labelledby="PatternNewInHeading-{{ section.id }}">
+  <div class="pattern-wrap pattern-new-in__inner">
+    <div class="pattern-new-in__head">
+      <h2 class="pattern-display pattern-new-in__heading" id="PatternNewInHeading-{{ section.id }}">
+        {{- section.settings.heading | escape -}}
+        {%- if section.settings.heading_accent != blank %}
+          <span class="pattern-accent-word">{{ section.settings.heading_accent | escape }}</span>
+        {%- endif -%}
+      </h2>
+      {%- if section.settings.link_label != blank -%}
+        <a href="{{ view_all_url }}" class="pattern-link">
+          {{- section.settings.link_label | escape -}}
+          {% render 'pattern-arrow' %}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <ul class="grid product-grid pattern-new-in__grid" role="list">
+      {%- if new_in != blank and new_in.products_count > 0 -%}
+        {%- for product in new_in.products limit: section.settings.products_to_show -%}
+          {%- liquid
+            assign skip_card_styles = true
+            if forloop.first
+              assign skip_card_styles = false
+            endif
+          -%}
+          <li class="grid__item">
+            {% render 'card-product',
+              card_product: product,
+              media_aspect_ratio: section.settings.image_ratio,
+              image_shape: 'default',
+              show_secondary_image: false,
+              show_vendor: false,
+              show_rating: false,
+              lazy_load: true,
+              skip_styles: skip_card_styles,
+              quick_add: 'none',
+              section_id: section.id
+            %}
+          </li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- comment -%} No collection picked yet: placeholder cards so the layout shows in the editor. {%- endcomment -%}
+        {%- for i in (1..section.settings.products_to_show) -%}
+          <li class="grid__item">
+            {% render 'card-product', show_vendor: false %}
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+  </div>
+</section>
+
+{% stylesheet %}
+  .pattern-new-in__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    padding-top: var(--pattern-section-space);
+    padding-bottom: var(--pattern-section-space);
+  }
+
+  .pattern-new-in__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.2rem;
+  }
+
+  .pattern-new-in__heading {
+    font-size: clamp(4rem, 5vw, 7.2rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  /* Dawn's .grid is a flex row with fixed column widths; here it's an auto-fit grid like the mockup */
+  .pattern-new-in .pattern-new-in__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    gap: 4rem 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pattern-new-in .pattern-new-in__grid > .grid__item {
+    width: auto;
+    max-width: none;
+    padding: 0;
+  }
+
+  @media screen and (max-width: 560px) {
+    .pattern-new-in .pattern-new-in__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 3.2rem 1.2rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Pattern new in",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "New in"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading accent word (italic)",
+      "info": "Optional. Added after the heading."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "label": "Number of products",
+      "default": 6
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "square", "label": "Square" },
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "All new arrivals"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "info": "Leave empty to link to the collection."
+    }
+  ],
+  "presets": [
+    { "name": "Pattern new in" }
+  ]
+}
+{% endschema %}
