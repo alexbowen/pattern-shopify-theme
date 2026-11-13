@@ -132,187 +132,119 @@
           "type": "genre",
           "settings": {
             "label": "House",
-            "genre_handle": "house",
-            "count": "614 records",
-            "width": "5",
-            "size": "hero",
-            "style": "accent"
+            "count": "614 records"
           }
         },
         "genre_jazz": {
           "type": "genre",
           "settings": {
             "label": "Jazz",
-            "genre_handle": "jazz",
-            "count": "513 records",
-            "width": "4",
-            "size": "xlarge",
-            "style": "ink"
+            "count": "513 records"
           }
         },
         "genre_techno": {
           "type": "genre",
           "settings": {
             "label": "Techno",
-            "genre_handle": "techno",
-            "count": "370 records",
-            "width": "3",
-            "size": "large",
-            "style": "outline"
+            "count": "370 records"
           }
         },
         "genre_disco": {
           "type": "genre",
           "settings": {
             "label": "Disco",
-            "genre_handle": "disco",
-            "count": "303 records",
-            "width": "3",
-            "size": "medium",
-            "style": "clay"
+            "count": "303 records"
           }
         },
         "genre_world_music": {
           "type": "genre",
           "settings": {
             "label": "World Music",
-            "genre_handle": "world-music",
-            "count": "277 records",
-            "width": "3",
-            "size": "medium",
-            "style": "outline"
+            "count": "277 records"
           }
         },
         "genre_rock": {
           "type": "genre",
           "settings": {
             "label": "Rock",
-            "genre_handle": "rock",
-            "count": "232 records",
-            "width": "3",
-            "size": "medium",
-            "style": "outline"
+            "count": "232 records"
           }
         },
         "genre_funk": {
           "type": "genre",
           "settings": {
             "label": "Funk",
-            "genre_handle": "funk",
-            "count": "207 records",
-            "width": "3",
-            "size": "medium",
-            "style": "outline"
+            "count": "207 records"
           }
         },
         "genre_soul": {
           "type": "genre",
           "settings": {
             "label": "Soul",
-            "genre_handle": "soul",
-            "count": "188 records",
-            "width": "3",
-            "size": "regular",
-            "style": "outline"
+            "count": "188 records"
           }
         },
         "genre_electronica": {
           "type": "genre",
           "settings": {
             "label": "Electronica",
-            "genre_handle": "electronica",
-            "count": "139 records",
-            "width": "3",
-            "size": "regular",
-            "style": "ink"
+            "count": "139 records"
           }
         },
         "genre_electro": {
           "type": "genre",
           "settings": {
             "label": "Electro",
-            "genre_handle": "electro",
-            "count": "102 records",
-            "width": "2",
-            "size": "compact",
-            "style": "outline"
+            "count": "102 records"
           }
         },
         "genre_dub": {
           "type": "genre",
           "settings": {
             "label": "Dub",
-            "genre_handle": "dub",
-            "count": "102 records",
-            "width": "2",
-            "size": "compact",
-            "style": "outline"
+            "count": "102 records"
           }
         },
         "genre_reggae": {
           "type": "genre",
           "settings": {
             "label": "Reggae",
-            "genre_handle": "reggae",
-            "count": "81 records",
-            "width": "2",
-            "size": "compact",
-            "style": "outline"
+            "count": "81 records"
           }
         },
         "genre_hip_hop": {
           "type": "genre",
           "settings": {
             "label": "Hip Hop",
-            "genre_handle": "hip-hop",
-            "count": "80 records",
-            "width": "2",
-            "size": "compact",
-            "style": "outline"
+            "count": "80 records"
           }
         },
         "genre_folk": {
           "type": "genre",
           "settings": {
             "label": "Folk",
-            "genre_handle": "folk",
-            "count": "55 records",
-            "width": "2",
-            "size": "compact",
-            "style": "clay"
+            "count": "55 records"
           }
         },
         "genre_blues": {
           "type": "genre",
           "settings": {
             "label": "Blues",
-            "genre_handle": "blues",
-            "count": "24 records",
-            "width": "2",
-            "size": "compact",
-            "style": "outline"
+            "count": "24 records"
           }
         },
         "genre_soundtrack": {
           "type": "genre",
           "settings": {
             "label": "Soundtrack",
-            "genre_handle": "soundtrack",
-            "count": "9 records",
-            "width": "3",
-            "size": "regular",
-            "style": "outline"
+            "count": "9 records"
           }
         },
         "genre_classical": {
           "type": "genre",
           "settings": {
             "label": "Classical",
-            "genre_handle": "classical",
-            "count": "5 records",
-            "width": "3",
-            "size": "regular",
-            "style": "outline"
+            "count": "5 records"
           }
         }
       },
