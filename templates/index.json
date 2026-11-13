@@ -39,10 +39,69 @@
         "padding_top": 44,
         "padding_bottom": 36
       }
+    },
+    "pattern_service_row": {
+      "type": "pattern-service-row",
+      "blocks": {
+        "service_postage": {
+          "type": "service",
+          "settings": {
+            "heading": "Postage",
+            "text": "<p>Flat-rate shipping to Portugal and Spain. Order on the website.</p>",
+            "link_label": ""
+          }
+        },
+        "service_collect": {
+          "type": "service",
+          "settings": {
+            "heading": "Collect in store",
+            "text": "<p>Order online and collect from the shop in Alcântara.</p>",
+            "link_label": ""
+          }
+        },
+        "service_lisbon": {
+          "type": "service",
+          "settings": {
+            "heading": "Lisbon in 24 hours",
+            "text": "<p>Flat-fee delivery within Lisbon postcodes.</p>",
+            "link_label": ""
+          }
+        }
+      },
+      "block_order": [
+        "service_postage",
+        "service_collect",
+        "service_lisbon"
+      ],
+      "settings": {
+        "heading": "",
+        "background": "transparent",
+        "full_width": false,
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "pattern_feature_split": {
+      "type": "pattern-feature-split",
+      "settings": {
+        "image_position": "left",
+        "image_ratio": "4-5",
+        "layout": "split",
+        "overlay_opacity": 45,
+        "background": "transparent",
+        "label": "Sell to us",
+        "heading": "We buy and exchange records",
+        "text": "<p>Clearing shelves or reshaping a collection? Bring your records to the shop in Alcântara and we'll take a look and make you an offer, or swap them for something new to you.</p>",
+        "button_label": "How selling works",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
     }
   },
   "order": [
     "pattern_hero",
-    "featured_collection"
+    "featured_collection",
+    "pattern_service_row",
+    "pattern_feature_split"
   ]
 }

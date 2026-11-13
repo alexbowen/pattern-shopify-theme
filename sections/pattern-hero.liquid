@@ -98,7 +98,39 @@
     background-position: center;
   }
 
+  /* Image side: right by default (DOM order); "left" swaps the columns on desktop only */
+  @media screen and (min-width: 750px) {
+    #PatternHero-{{ section.id }}.pattern-hero--image-left .pattern-hero__right {
+      order: -1;
+    }
+  }
+
+  /* Hero image fills the panel; the grey panel background stays as the fallback */
+  #PatternHero-{{ section.id }} .pattern-hero__media {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #PatternHero-{{ section.id }} .pattern-hero__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--pattern-charcoal, #1c1c1c);
+    opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    pointer-events: none;
+  }
+
   #PatternHero-{{ section.id }} .pattern-hero__right-caption {
+    position: relative;
+    z-index: 1;
     color: #ffffff;
     font-size: 0.75rem;
     letter-spacing: 0.1em;
@@ -131,7 +163,7 @@
   }
 {%- endstyle -%}
 
-<div id="PatternHero-{{ section.id }}" class="pattern-hero">
+<div id="PatternHero-{{ section.id }}" class="pattern-hero pattern-hero--image-{{ section.settings.image_position }}">
   <div class="pattern-hero__column pattern-hero__left">
     <p class="pattern-hero__eyebrow">Independent Record Shop</p>
 
@@ -145,6 +177,27 @@
   </div>
 
   <div class="pattern-hero__column pattern-hero__right">
+    {%- if section.settings.image != blank -%}
+      {%- comment -%} Above the fold: load eagerly with high priority. object-position follows the focal point set on the image. {%- endcomment -%}
+      {%- liquid
+        assign hero_focal_point = section.settings.image.presentation.focal_point | default: 'center'
+        assign hero_image_style = 'object-position: ' | append: hero_focal_point | append: ';'
+      -%}
+      <div class="pattern-hero__media">
+        {{
+          section.settings.image
+          | image_url: width: 2400
+          | image_tag:
+            loading: 'eager',
+            fetchpriority: 'high',
+            widths: '375, 550, 750, 1100, 1500, 1800, 2400',
+            sizes: '(min-width: 750px) 50vw, 100vw',
+            alt: section.settings.image.alt,
+            class: 'pattern-hero__image',
+            style: hero_image_style
+        }}
+      </div>
+    {%- endif -%}
     <p class="pattern-hero__right-caption">Listen closer. Browse slower. Take the long way home.</p>
   </div>
 </div>
@@ -152,6 +205,35 @@
 {% schema %}
 {
   "name": "Pattern Hero",
-  "settings": []
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Hero image",
+      "info": "Shown in the image panel. Set a focal point on the image to control the crop. Without an image the panel stays grey."
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image side",
+      "info": "Desktop only. On mobile the image sits below the text.",
+      "options": [
+        { "value": "right", "label": "Right" },
+        { "value": "left", "label": "Left" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Charcoal overlay strength",
+      "info": "Darkens the image so the caption stays readable. 0% for no overlay.",
+      "default": 0
+    }
+  ]
 }
 {% endschema %}

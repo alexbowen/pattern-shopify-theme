@@ -1,0 +1,362 @@
+/* Pattern supporting-content sections: sections/pattern-service-row.liquid and
+   sections/pattern-feature-split.liquid.
+
+   Tokens: Pattern design tokens when the theme defines them (--pattern-font-display for
+   Bakemono, --pattern-sandstone / --pattern-charcoal / --pattern-on-charcoal, --pattern-space-*).
+   Until then each falls back to the theme's heading font and colour scheme variables, so nothing
+   here is a hard-coded colour. Hairlines use currentColor, so they work on every background. */
+.pattern-section {
+  --ps-font-display: var(--pattern-font-display, var(--font-heading-family));
+  --ps-font-display-weight: var(--pattern-font-display-weight, var(--font-heading-weight));
+  --ps-sandstone: var(--pattern-sandstone, rgba(var(--color-foreground), 0.06));
+  --ps-charcoal: var(--pattern-charcoal, rgb(var(--color-foreground)));
+  --ps-on-charcoal: var(--pattern-on-charcoal, rgb(var(--color-background)));
+  --ps-space-xs: var(--pattern-space-xs, 0.6rem);
+  --ps-space-s: var(--pattern-space-s, 1.2rem);
+  --ps-space-m: var(--pattern-space-m, 2.4rem);
+  --ps-space-l: var(--pattern-space-l, 4rem);
+  --ps-hairline: color-mix(in srgb, currentColor 18%, transparent);
+  --ps-muted: color-mix(in srgb, currentColor 72%, transparent);
+
+  color: var(--ps-charcoal);
+}
+
+.pattern-section--sandstone {
+  background-color: var(--ps-sandstone);
+}
+
+.pattern-section--charcoal {
+  background-color: var(--ps-charcoal);
+  color: var(--ps-on-charcoal);
+}
+
+.pattern-section__heading {
+  margin: 0 0 var(--ps-space-m);
+  font-family: var(--ps-font-display);
+  font-weight: var(--ps-font-display-weight);
+  font-size: calc(var(--font-heading-scale) * 2.2rem);
+  line-height: 1.2;
+  color: inherit;
+}
+
+.pattern-section .rte {
+  color: inherit;
+}
+
+.pattern-section .rte p {
+  margin: 0;
+}
+
+.pattern-section .rte p + p {
+  margin-top: var(--ps-space-xs);
+}
+
+.pattern-section .rte a {
+  color: inherit;
+}
+
+/* ===== Service row ===== */
+.pattern-service-row--full {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media screen and (min-width: 750px) {
+  .pattern-service-row--full {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+}
+
+.pattern-service-row__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Mobile: stacked, hairline between items */
+.pattern-service-row__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ps-space-xs);
+  min-width: 0;
+  padding: var(--ps-space-m) 0;
+}
+
+.pattern-service-row__item + .pattern-service-row__item {
+  border-top: 0.1rem solid var(--ps-hairline);
+}
+
+.pattern-service-row__item:first-child {
+  padding-top: 0;
+}
+
+.pattern-service-row__item:last-child {
+  padding-bottom: 0;
+}
+
+/* Desktop: one column per block, vertical hairlines between columns */
+@media screen and (min-width: 750px) {
+  .pattern-service-row__list {
+    grid-template-columns: repeat(min(var(--columns, 3), 2), minmax(0, 1fr));
+  }
+
+  .pattern-service-row__item,
+  .pattern-service-row__item:first-child,
+  .pattern-service-row__item:last-child {
+    padding: var(--ps-space-s) var(--ps-space-m);
+  }
+
+  .pattern-service-row__item + .pattern-service-row__item {
+    border-top: 0;
+  }
+
+  .pattern-service-row__item:not(:nth-child(2n + 1)) {
+    border-left: 0.1rem solid var(--ps-hairline);
+  }
+
+  .pattern-service-row__item:nth-child(2n + 1) {
+    padding-left: 0;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .pattern-service-row__list {
+    grid-template-columns: repeat(var(--columns, 3), minmax(0, 1fr));
+  }
+
+  .pattern-service-row__item:nth-child(2n + 1) {
+    padding-left: var(--ps-space-m);
+  }
+
+  .pattern-service-row__item:not(:nth-child(2n + 1)) {
+    border-left: 0;
+  }
+
+  .pattern-service-row__item + .pattern-service-row__item {
+    border-left: 0.1rem solid var(--ps-hairline);
+  }
+
+  .pattern-service-row__item:first-child {
+    padding-left: 0;
+  }
+
+  .pattern-service-row__item:last-child {
+    padding-right: 0;
+  }
+}
+
+.pattern-service-row__media {
+  margin-bottom: var(--ps-space-xs);
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+}
+
+.pattern-service-row__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pattern-service-row__title {
+  margin: 0;
+  font-family: var(--ps-font-display);
+  font-weight: var(--ps-font-display-weight);
+  font-size: calc(var(--font-heading-scale) * 1.6rem);
+  line-height: 1.25;
+  color: inherit;
+}
+
+.pattern-service-row__text {
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: var(--ps-muted);
+}
+
+.pattern-service-row__link {
+  align-self: flex-start;
+  margin-top: var(--ps-space-xs);
+  font-size: 1.3rem;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+  text-decoration-thickness: 0.1rem;
+}
+
+.pattern-service-row__link:hover {
+  text-decoration-thickness: 0.2rem;
+}
+
+/* ===== Feature split ===== */
+.pattern-feature-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ps-space-m);
+  align-items: center;
+}
+
+.pattern-feature-split__media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  background-color: var(--ps-sandstone);
+}
+
+.pattern-feature-split--ratio-3-2 .pattern-feature-split__media {
+  aspect-ratio: 3 / 2;
+}
+
+.pattern-feature-split--ratio-1-1 .pattern-feature-split__media {
+  aspect-ratio: 1 / 1;
+}
+
+.pattern-feature-split__image,
+.pattern-feature-split__placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pattern-feature-split__placeholder {
+  fill: currentColor;
+  opacity: 0.25;
+}
+
+.pattern-feature-split__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ps-space-s);
+  min-width: 0;
+}
+
+.pattern-feature-split__label {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ps-muted);
+}
+
+.pattern-feature-split__heading {
+  margin: 0;
+  font-family: var(--ps-font-display);
+  font-weight: var(--ps-font-display-weight);
+  font-size: calc(var(--font-heading-scale) * 2.6rem);
+  line-height: 1.15;
+  color: inherit;
+}
+
+.pattern-feature-split__text {
+  max-width: 52ch;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: var(--ps-muted);
+}
+
+/* Square, low-key button */
+.pattern-feature-split__button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 4.4rem;
+  margin-top: var(--ps-space-xs);
+  padding: 0 var(--ps-space-m);
+  border: 0.1rem solid currentColor;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.pattern-feature-split__button:hover {
+  background-color: var(--ps-charcoal);
+  border-color: var(--ps-charcoal);
+  color: var(--ps-on-charcoal);
+}
+
+.pattern-section--charcoal .pattern-feature-split__button:hover,
+.pattern-feature-split--overlay .pattern-feature-split__button:hover {
+  background-color: var(--ps-on-charcoal);
+  border-color: var(--ps-on-charcoal);
+  color: var(--ps-charcoal);
+}
+
+.pattern-feature-split__button:focus-visible,
+.pattern-service-row__link:focus-visible {
+  outline: 0.2rem solid currentColor;
+  outline-offset: 0.3rem;
+}
+
+@media screen and (min-width: 750px) {
+  .pattern-feature-split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--ps-space-l);
+  }
+
+  /* Image on the right: swap the visual order (DOM keeps image first for mobile) */
+  .pattern-feature-split--image-right .pattern-feature-split__media {
+    order: 2;
+  }
+
+  .pattern-feature-split__content {
+    padding: var(--ps-space-m) 0;
+  }
+
+  .pattern-feature-split__heading {
+    font-size: calc(var(--font-heading-scale) * 3.4rem);
+  }
+
+  /* Text over the image: one cell, charcoal overlay, light text */
+  .pattern-feature-split--overlay {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .pattern-feature-split--overlay > * {
+    grid-area: 1 / 1;
+  }
+
+  .pattern-feature-split--overlay .pattern-feature-split__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--ps-charcoal);
+    opacity: var(--overlay-opacity, 0.45);
+  }
+
+  .pattern-feature-split--overlay .pattern-feature-split__content {
+    position: relative;
+    z-index: 1;
+    align-self: end;
+    max-width: 60rem;
+    padding: var(--ps-space-l);
+    color: var(--ps-on-charcoal);
+  }
+
+  .pattern-feature-split--overlay.pattern-feature-split--image-right .pattern-feature-split__content {
+    justify-self: end;
+  }
+
+  .pattern-feature-split--overlay .pattern-feature-split__label,
+  .pattern-feature-split--overlay .pattern-feature-split__text {
+    color: color-mix(in srgb, var(--ps-on-charcoal) 85%, transparent);
+  }
+
+  /* Text over the image spans the full width: keep the chosen ratio but cap the height */
+  .pattern-feature-split--overlay .pattern-feature-split__media {
+    max-height: 80vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pattern-feature-split__button {
+    transition: none;
+  }
+}
