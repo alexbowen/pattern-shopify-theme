@@ -25,7 +25,7 @@
   class="pattern-section pattern-hero pattern-hero--image-{{ section.settings.image_position }}"
   aria-labelledby="PatternHeroHeading-{{ section.id }}"
 >
-  <div class="pattern-hero__text">
+  <div class="pattern-hero__text{% if section.settings.background_texture == 'stripes' %} pattern-stripe-dark{% endif %}">
     {%- if section.settings.eyebrow != blank -%}
       <p class="pattern-label pattern-hero__eyebrow">{{ section.settings.eyebrow | escape }}</p>
     {%- endif -%}
@@ -337,6 +337,17 @@
       "id": "feature_link",
       "label": "Link",
       "info": "Leave empty to link to the featured record."
+    },
+    {
+      "type": "select",
+      "id": "background_texture",
+      "label": "Background texture",
+      "info": "Behind the text panel.",
+      "options": [
+        { "value": "stripes", "label": "Stripes" },
+        { "value": "flat", "label": "Flat" }
+      ],
+      "default": "stripes"
     },
     {
       "type": "header",

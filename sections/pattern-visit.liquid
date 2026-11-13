@@ -14,7 +14,7 @@
   endif
 -%}
 
-<section class="pattern-section pattern-visit" aria-labelledby="PatternVisitHeading-{{ section.id }}">
+<section class="pattern-section pattern-visit{% if section.settings.background_texture == 'stripes' %} pattern-stripe-dark{% endif %}" aria-labelledby="PatternVisitHeading-{{ section.id }}">
   <div class="pattern-wrap pattern-visit__main">
     <div class="pattern-visit__col">
       {%- if section.settings.label != blank -%}
@@ -299,6 +299,16 @@
   "name": "Pattern visit footer",
   "tag": "div",
   "settings": [
+    {
+      "type": "select",
+      "id": "background_texture",
+      "label": "Background texture",
+      "options": [
+        { "value": "stripes", "label": "Stripes" },
+        { "value": "flat", "label": "Flat" }
+      ],
+      "default": "stripes"
+    },
     {
       "type": "header",
       "content": "Visit"

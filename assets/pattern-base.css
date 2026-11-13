@@ -108,18 +108,21 @@
   background: repeating-linear-gradient(135deg, var(--pattern-stripe) 0 12px, var(--pattern-clay) 12px 24px);
 }
 
-/* Dawn hides every empty div (base.css div:empty); a placeholder panel is empty on purpose */
-.pattern-placeholder:empty,
-.pattern-placeholder--dark:empty {
-  display: block;
+/* Dark diagonal stripe texture, shared by dark areas (space band placeholder, hero text panel,
+   visit footer). Colours and stripe width are tokens in snippets/pattern-tokens.liquid. Sets
+   background-image only, so the element's own background colour stays as the fallback. */
+.pattern-stripe-dark {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--pattern-stripe-dark-a) 0 var(--pattern-stripe-dark-width),
+    var(--pattern-stripe-dark-b) var(--pattern-stripe-dark-width) calc(var(--pattern-stripe-dark-width) * 2)
+  );
 }
 
-.pattern-placeholder--dark {
-  background: repeating-linear-gradient(
-    135deg,
-    var(--pattern-stripe-dark-a) 0 12px,
-    var(--pattern-stripe-dark-b) 12px 24px
-  );
+/* Dawn hides every empty div (base.css div:empty); a placeholder panel is empty on purpose */
+.pattern-placeholder:empty,
+.pattern-stripe-dark:empty {
+  display: block;
 }
 
 /* Visible keyboard focus everywhere in Pattern sections */

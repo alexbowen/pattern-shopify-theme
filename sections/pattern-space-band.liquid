@@ -4,7 +4,7 @@
   an image the band shows the dark striped placeholder. An ink overlay keeps text readable.
 {%- endcomment -%}
 <section class="pattern-section pattern-space" aria-labelledby="PatternSpaceHeading-{{ section.id }}">
-  <div class="pattern-space__media{% if section.settings.image == blank %} pattern-placeholder pattern-placeholder--dark{% endif %}">
+  <div class="pattern-space__media{% if section.settings.image == blank %} pattern-stripe-dark{% endif %}">
     {%- if section.settings.image != blank -%}
       {%- liquid
         assign focal_point = section.settings.image.presentation.focal_point | default: 'center'

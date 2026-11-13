@@ -24,7 +24,8 @@
         "feature_product": "aaron-carl-down",
         "feature_link_label": "Listen",
         "image_position": "right",
-        "overlay_opacity": 0
+        "overlay_opacity": 0,
+        "background_texture": "stripes"
       }
     },
     "featured_collection": {
@@ -374,7 +375,8 @@
         "button_label": "Subscribe",
         "success_message": "Thanks, you’re on the list.",
         "copyright": "© Pattern Records · Alcântara, Lisboa",
-        "menu": "footer"
+        "menu": "footer",
+        "background_texture": "stripes"
       }
     }
   },
