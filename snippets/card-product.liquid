@@ -27,6 +27,7 @@
   {{ 'component-price.css' | asset_url | stylesheet_tag }}
   {{ 'quick-order-list.css' | asset_url | stylesheet_tag }}
   {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
+  {{ 'component-card-pattern.css' | asset_url | stylesheet_tag }}
 {%- endunless -%}
 {%- if card_product and card_product != empty -%}
   {%- liquid
@@ -145,8 +146,97 @@
       </div>
       <div class="card__content">
         <div class="card__information">
+          {%- comment -%}
+            Pattern card text: "Artist - Title" split on the first " - " (no split, no artist line
+            when there isn't one), then a meta line: label · format (with item count) · first
+            child genre. Missing parts are left out with no stray separators.
+          {%- endcomment -%}
+          {%- liquid
+            assign card_full_title = card_product.title | strip
+            assign card_artist = ''
+            assign card_title = card_full_title
+            if card_full_title contains ' - '
+              assign card_split_artist = card_full_title | split: ' - ' | first | strip
+              assign card_split_prefix = card_full_title | split: ' - ' | first | append: ' - '
+              assign card_split_title = card_full_title | remove_first: card_split_prefix | strip
+              if card_split_artist != blank and card_split_title != blank
+                assign card_artist = card_split_artist
+                assign card_title = card_split_title
+              endif
+            endif
+
+            assign card_meta = ''
+            assign card_meta_sep = '|~|'
+            assign card_label = card_product.metafields.custom.label.value | strip
+            if card_label != blank
+              assign card_meta = card_label
+            endif
+
+            # custom.item_count is number_integer; `plus: 0` also copes with a numeric string.
+            # 2+ items: "2LP" for LPs, "2×12\" Single" etc. for anything else; 1 or missing: format only.
+            assign card_format = card_product.metafields.custom.format.value | strip
+            assign card_item_count = card_product.metafields.custom.item_count.value | default: 0 | plus: 0
+            if card_format != blank
+              if card_item_count > 1
+                assign card_format_key = card_format | downcase
+                if card_format_key == 'lp'
+                  assign card_format = card_item_count | append: 'LP'
+                else
+                  assign card_format = card_item_count | append: '×' | append: card_format
+                endif
+              endif
+              if card_meta != blank
+                assign card_meta = card_meta | append: card_meta_sep
+              endif
+              assign card_meta = card_meta | append: card_format
+            endif
+
+            # Parent genre: the first top-level genre on the product; if it only has child genres,
+            # the first child's parent (from the genre's own parent reference, falling back to the
+            # genre tree in snippets/pattern-genres.liquid, generated from genres.json).
+            assign card_parent_genre = ''
+            assign card_genres = card_product.metafields.custom.pattern_genre.value
+            for card_genre in card_genres
+              if card_genre.parent == blank
+                assign card_parent_genre = card_genre.label.value | default: card_genre.label | strip
+                break
+              endif
+            endfor
+            if card_parent_genre == blank and card_genres.size > 0
+              assign card_first_child = card_genres | first
+              assign card_parent_genre = card_first_child.parent.value.label.value | strip
+              if card_parent_genre == blank
+                capture card_genre_map
+                  render 'pattern-genres'
+                endcapture
+                assign card_child_label = card_first_child.label.value | default: card_first_child.label | strip
+                assign card_child_key = '|' | append: card_child_label | append: '='
+                if card_genre_map contains card_child_key
+                  assign card_parent_handle = card_genre_map | split: card_child_key | last | split: '|' | first | split: '>' | last
+                  assign card_parent_key = '=' | append: card_parent_handle | append: '>'
+                  if card_genre_map contains card_parent_key
+                    assign card_parent_genre = card_genre_map | split: card_parent_key | first | split: '|' | last | strip
+                  endif
+                endif
+              endif
+            endif
+            if card_parent_genre != blank
+              if card_meta != blank
+                assign card_meta = card_meta | append: card_meta_sep
+              endif
+              assign card_meta = card_meta | append: card_parent_genre
+            endif
+
+            assign card_condition = card_product.metafields.custom.condition.value | strip
+            assign card_condition_key = card_condition | downcase
+            if card_condition_key == 'new'
+              assign card_condition = 'products.card.condition_new' | t
+            elsif card_condition_key == 'used'
+              assign card_condition = 'products.card.condition_used' | t
+            endif
+          -%}
           <h3
-            class="card__heading{% if card_product.featured_media or settings.card_style == 'standard' %} h5{% endif %}"
+            class="card__heading card-pattern__heading{% if card_product.featured_media or settings.card_style == 'standard' %} h5{% endif %}"
             {% if card_product.featured_media or settings.card_style == 'card' %}
               id="title-{{ section_id }}-{{ card_product.id }}"
             {% endif %}
@@ -154,12 +244,25 @@
             <a
               href="{{ card_product.url }}"
               id="CardLink-{{ section_id }}-{{ card_product.id }}"
-              class="full-unstyled-link"
+              class="full-unstyled-link card-pattern__link"
               aria-labelledby="CardLink-{{ section_id }}-{{ card_product.id }} Badge-{{ section_id }}-{{ card_product.id }}"
             >
-              {{ card_product.title | escape }}
+              {%- if card_artist != blank -%}
+                <span class="card-pattern__artist">{{ card_artist | escape }}</span>
+                <span class="visually-hidden"> - </span>
+              {%- endif -%}
+              <span class="card-pattern__title">{{ card_title | escape }}</span>
             </a>
           </h3>
+          <p class="card-pattern__meta">
+            {%- if card_meta != blank -%}
+              {%- assign card_meta_parts = card_meta | split: card_meta_sep -%}
+              {%- for card_meta_part in card_meta_parts -%}
+                {%- unless forloop.first -%}<span class="card-pattern__sep" aria-hidden="true"> · </span>{%- endunless -%}
+                <span>{{ card_meta_part | escape }}</span>
+              {%- endfor -%}
+            {%- endif -%}
+          </p>
           <div class="card-information">
             {%- if show_vendor -%}
               <span class="visually-hidden">{{ 'accessibility.vendor' | t }}</span>
@@ -204,7 +307,13 @@
               </p>
             {%- endif -%}
 
-            {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+            {%- comment -%} Price exactly as before on the left; condition (New / Used) on the right when known. {%- endcomment -%}
+            <div class="card-pattern__price-row">
+              {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+              {%- if card_condition != blank -%}
+                <span class="card-pattern__condition">{{ card_condition | escape }}</span>
+              {%- endif -%}
+            </div>
             {%- if card_product.quantity_price_breaks_configured? -%}
               {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
                 {% liquid

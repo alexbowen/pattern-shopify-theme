@@ -114,6 +114,10 @@
     "collection_title": "Your collection's name"
   },
   "products": {
+    "card": {
+      "condition_new": "New",
+      "condition_used": "Used"
+    },
     "product": {
       "add_to_cart": "Add to cart",
       "choose_options": "Choose options",
