@@ -16,7 +16,7 @@
         "headline_start": "New cuts",
         "headline_accent": "for",
         "headline_end": "curious listeners",
-        "body": "Fresh arrivals from the crates — house, jazz, disco, dub and everything in between. New and used vinyl, in Lisbon and online.",
+        "body": "House, jazz, disco, dub, soul and more — new and used vinyl, in Alcântara and online.",
         "primary_label": "Shop new arrivals",
         "primary_link": "/collections/all",
         "secondary_label": "Browse by genre",
@@ -37,7 +37,8 @@
             "label": "",
             "artist": "",
             "title": ""
-          }
+          },
+          "blocks": {}
         },
         "record_2": {
           "type": "pattern-record",
@@ -46,7 +47,8 @@
             "label": "",
             "artist": "",
             "title": ""
-          }
+          },
+          "blocks": {}
         },
         "record_3": {
           "type": "pattern-record",
@@ -55,7 +57,8 @@
             "label": "",
             "artist": "",
             "title": ""
-          }
+          },
+          "blocks": {}
         }
       },
       "block_order": [
@@ -66,7 +69,7 @@
       "settings": {
         "heading": "",
         "label": "This week",
-        "size": "large",
+        "size": "standard",
         "layout": "lines",
         "background": "stripes",
         "show_cover": true,
@@ -289,13 +292,13 @@
         "genre_classical"
       ],
       "settings": {
-        "heading": "Browse by",
-        "heading_accent": "genre",
-        "text": "Seventeen starting points. Pick one and the sub-genres open up once you are inside.",
+        "heading": "Browse by genre",
+        "heading_accent": "",
+        "text": "Start with a genre. The sub-genres open up inside.",
         "collection": "",
         "link_label": "All records",
         "link": "",
-        "origins_label": "Or start from a place",
+        "origins_label": "Or browse by origin",
         "origins": "Portugal\nBrazil\nJapan",
         "origins_all_label": "All origins +",
         "origins_all_link": ""
@@ -307,28 +310,31 @@
         "service_postage": {
           "type": "service",
           "settings": {
-            "heading": "Postage",
-            "text": "<p>Flat-rate shipping to Portugal and Spain. Order on the website, we pack it with care.</p>",
-            "link_label": "Shipping details",
-            "link_url": "/policies/shipping-policy"
+            "label": "Postage · PT & ES",
+            "highlight": "One flat rate",
+            "text": "To Portugal and Spain.",
+            "link": "/policies/shipping-policy",
+            "link_label": "Shipping details"
           }
         },
         "service_collect": {
           "type": "service",
           "settings": {
-            "heading": "Collect in store",
-            "text": "<p>Order online and collect from the shop in Alcântara. Come early, stay for a listen.</p>",
-            "link_label": "How collection works",
-            "link_url": ""
+            "label": "Collect · Alcântara",
+            "highlight": "Order online, collect in store",
+            "text": "Pick up at the shop and have a listen while you’re there.",
+            "link": "",
+            "link_label": "How collection works"
           }
         },
         "service_lisbon": {
           "type": "service",
           "settings": {
-            "heading": "Lisbon in 24 hours",
-            "text": "<p>Flat-fee delivery within Lisbon postcodes. Order today, spin it tomorrow.</p>",
-            "link_label": "Delivery zones",
-            "link_url": ""
+            "label": "Delivery · Lisbon",
+            "highlight": "Lisbon in 24 hours",
+            "text": "Flat-fee delivery within Lisbon postcodes.",
+            "link": "",
+            "link_label": "Delivery zones"
           }
         }
       },
@@ -339,24 +345,177 @@
       ],
       "settings": {
         "heading": "",
-        "background": "transparent",
-        "full_width": false,
-        "padding_top": 16,
+        "padding_top": 48,
         "padding_bottom": 96
       }
     },
     "pattern_feature_split": {
       "type": "pattern-feature-split",
       "settings": {
+        "image": "shopify://shop_images/20171116-.com.apple.Foundation.NSItemProvider.FgbqxL.jpg",
         "image_position": "left",
-        "tone": "accent",
+        "tone": "clay",
         "label": "We buy & exchange",
         "heading": "Bring us your",
         "heading_accent": "records",
         "heading_end": ".",
-        "text": "<p>We actively buy and exchange records. Bring a crate to the shop in Alcântara or send us a list, and we'll make you an offer or swap them for something new to you.</p>",
-        "button_label": "Read our policy",
+        "text": "<p>We buy and exchange records. Bring a crate to the shop or send us a list, and we&#39;ll make you an offer or swap them for something new to you.</p>",
+        "button_label": "How it works",
         "button_link": ""
+      }
+    },
+    "pattern_columns_demo": {
+      "type": "pattern-columns",
+      "blocks": {
+        "column_left": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "stripes-dark",
+            "overlay_opacity": 50,
+            "padding": "medium",
+            "align": "center",
+            "min_height": "auto"
+          },
+          "blocks": {
+            "listen_list": {
+              "type": "pattern-listen-list",
+              "settings": {
+                "label": "Recommended",
+                "size": "standard",
+                "layout": "lines",
+                "show_cover": true,
+                "show_price": false
+              },
+              "blocks": {
+                "rec_a": {
+                  "type": "pattern-record",
+                  "settings": {
+                    "product": "nail-more-time-lax12inch103-b2b",
+                    "label": "",
+                    "artist": "",
+                    "title": ""
+                  },
+                  "blocks": {}
+                },
+                "rec_b": {
+                  "type": "pattern-record",
+                  "settings": {
+                    "product": "dj-honesty-camarque-ep-syncro40-b2b",
+                    "label": "",
+                    "artist": "",
+                    "title": ""
+                  },
+                  "blocks": {}
+                },
+                "rec_c": {
+                  "type": "pattern-record",
+                  "settings": {
+                    "product": "various-artists-jazzy-sport-past-forward-silver",
+                    "label": "",
+                    "artist": "",
+                    "title": ""
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "rec_a",
+                "rec_b",
+                "rec_c"
+              ]
+            }
+          },
+          "block_order": [
+            "listen_list"
+          ]
+        },
+        "column_right": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "clay",
+            "overlay_opacity": 50,
+            "padding": "medium",
+            "align": "center",
+            "min_height": "auto"
+          },
+          "blocks": {
+            "heading": {
+              "type": "pattern-heading",
+              "settings": {
+                "eyebrow": "We buy & exchange",
+                "heading": "Bring us your",
+                "heading_accent": "records",
+                "heading_end": ".",
+                "size": "large",
+                "tag": "h2"
+              },
+              "blocks": {}
+            },
+            "text": {
+              "type": "pattern-text",
+              "settings": {
+                "text": "<p>We buy and exchange records. Bring a crate to the shop or send us a list, and we&#39;ll make you an offer or swap them for something new to you.</p>",
+                "size": "large"
+              },
+              "blocks": {}
+            },
+            "button": {
+              "type": "pattern-button",
+              "settings": {
+                "label": "How it works",
+                "link": "/pages/sell-your-records",
+                "style": "accent"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "heading",
+            "text",
+            "button"
+          ]
+        }
+      },
+      "block_order": [
+        "column_left",
+        "column_right"
+      ],
+      "disabled": true,
+      "settings": {
+        "ratio": "60-40",
+        "width": "full",
+        "gap": "none",
+        "mobile_order": "normal",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "apps_columns_demo_audioly": {
+      "type": "apps",
+      "blocks": {
+        "audioly_columns_play_buttons": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "weekly-electronic",
+            "productsToShow": 18,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        }
+      },
+      "block_order": [
+        "audioly_columns_play_buttons"
+      ],
+      "disabled": true,
+      "settings": {
+        "include_margins": false
       }
     },
     "pattern_space_band": {
@@ -395,9 +554,9 @@
       "settings": {
         "overlay_opacity": 70,
         "label": "The space",
-        "heading": "A room for records, and for",
-        "heading_accent": "people",
-        "heading_end": ".",
+        "heading": "A room for records, and for people.",
+        "heading_accent": "",
+        "heading_end": "",
         "events_label": "What’s on",
         "link_label": "See everything coming up",
         "link": ""
@@ -409,6 +568,7 @@
         "story_mix": {
           "type": "story",
           "settings": {
+            "image": "shopify://shop_images/Ni5qcGVn_c1987202-a066-4fb4-9a4d-3315ee71f5f6.jpg",
             "tag": "Mix",
             "title": "[Mix title]",
             "blurb": "[One line on the mix and who made it.]",
@@ -418,8 +578,9 @@
         "story_label": {
           "type": "story",
           "settings": {
+            "image": "shopify://shop_images/Lush_20-_20Spooky_6c4397bd-bacf-4d92-9646-cca719a99af8.webp",
             "tag": "Label spotlight",
-            "title": "[Label name]",
+            "title": "4AD",
             "blurb": "[One line on why this label matters right now.]",
             "link": ""
           }
@@ -427,6 +588,7 @@
         "story_pick": {
           "type": "story",
           "settings": {
+            "image": "shopify://shop_images/11_-_jazzy_sport_music_shop_tokyo_2.jpg",
             "tag": "Staff pick",
             "title": "[Artist] — [Release title]",
             "blurb": "[One line from whoever picked it.]",
@@ -440,10 +602,10 @@
         "story_pick"
       ],
       "settings": {
-        "heading": "From the",
-        "heading_accent": "shop",
+        "heading": "From the shop",
+        "heading_accent": "",
         "heading_end": "",
-        "link_label": "All stories",
+        "link_label": "All news",
         "link": "/blogs/news"
       }
     },
@@ -452,9 +614,9 @@
       "settings": {
         "background_texture": "stripes",
         "label": "Visit",
-        "heading": "Come and",
-        "heading_accent": "listen",
-        "heading_end": ".",
+        "heading": "Come and listen.",
+        "heading_accent": "",
+        "heading_end": "",
         "address": "[Street address]\nAlcântara, Lisboa",
         "hours": "[Opening hours]",
         "maps_label": "Open in Maps",
@@ -499,175 +661,11 @@
         "padding_top": 44,
         "padding_bottom": 36
       }
-    },
-    "pattern_feature_split_6fkzE4": {
-      "type": "pattern-feature-split",
-      "name": "Pattern feature split",
-      "settings": {
-        "image_position": "left",
-        "tone": "accent",
-        "label": "right column",
-        "heading": "some block",
-        "heading_accent": "here",
-        "heading_end": ".",
-        "text": "<p>with a bit of text here of whatever</p>",
-        "button_label": "maybe a button",
-        "button_link": ""
-      }
-    },
-    "pattern_columns_demo": {
-      "type": "pattern-columns",
-      "blocks": {
-        "column_left": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "stripes-dark",
-            "padding": "medium",
-            "align": "center",
-            "min_height": "auto",
-            "overlay_opacity": 50
-          },
-          "blocks": {
-            "listen_list": {
-              "type": "pattern-listen-list",
-              "settings": {
-                "label": "Recommended",
-                "size": "standard",
-                "layout": "lines",
-                "show_cover": true,
-                "show_price": false
-              },
-              "blocks": {
-                "rec_a": {
-                  "type": "pattern-record",
-                  "settings": {
-                    "product": "nail-more-time-lax12inch103-b2b",
-                    "label": "",
-                    "artist": "",
-                    "title": ""
-                  }
-                },
-                "rec_b": {
-                  "type": "pattern-record",
-                  "settings": {
-                    "product": "dj-honesty-camarque-ep-syncro40-b2b",
-                    "label": "",
-                    "artist": "",
-                    "title": ""
-                  }
-                },
-                "rec_c": {
-                  "type": "pattern-record",
-                  "settings": {
-                    "product": "various-artists-jazzy-sport-past-forward-silver",
-                    "label": "",
-                    "artist": "",
-                    "title": ""
-                  }
-                }
-              },
-              "block_order": [
-                "rec_a",
-                "rec_b",
-                "rec_c"
-              ]
-            }
-          },
-          "block_order": [
-            "listen_list"
-          ]
-        },
-        "column_right": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "accent",
-            "padding": "medium",
-            "align": "center",
-            "min_height": "auto",
-            "overlay_opacity": 50
-          },
-          "blocks": {
-            "heading": {
-              "type": "pattern-heading",
-              "settings": {
-                "eyebrow": "We buy & exchange",
-                "heading": "Bring us your",
-                "heading_accent": "records",
-                "heading_end": ".",
-                "size": "large",
-                "tag": "h2"
-              }
-            },
-            "text": {
-              "type": "pattern-text",
-              "settings": {
-                "text": "<p>We actively buy and exchange records. Bring a crate to the shop in Alcântara or send us a list.</p>",
-                "size": "large"
-              }
-            },
-            "button": {
-              "type": "pattern-button",
-              "settings": {
-                "label": "Read our policy",
-                "link": "/pages/sell-your-records",
-                "style": "paper"
-              }
-            }
-          },
-          "block_order": [
-            "heading",
-            "text",
-            "button"
-          ]
-        }
-      },
-      "block_order": [
-        "column_left",
-        "column_right"
-      ],
-      "settings": {
-        "ratio": "60-40",
-        "width": "full",
-        "gap": "none",
-        "mobile_order": "normal",
-        "padding_top": 0,
-        "padding_bottom": 0
-      },
-      "disabled": true
-    },
-    "apps_columns_demo_audioly": {
-      "type": "apps",
-      "blocks": {
-        "audioly_columns_play_buttons": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "weekly-electronic",
-            "productsToShow": 18,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_columns_play_buttons"
-      ],
-      "settings": {
-        "include_margins": false
-      },
-      "disabled": true
     }
   },
   "order": [
     "pattern_hero",
     "pattern_this_week",
-    "pattern_feature_split_6fkzE4",
     "apps_this_week_audioly",
     "pattern_new_in",
     "pattern_genre_tiles",

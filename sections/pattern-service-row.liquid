@@ -1,109 +1,190 @@
 {%- comment -%}
-  Pattern service row: up to 4 short service notes (postage, collection, delivery…) in columns
-  with hairline dividers. Each block: small display heading, 1-3 lines of text, optional link,
-  optional 3:2 image above the text. Stacks on mobile with hairlines between items.
+  Pattern service row: up to 4 service notes on the paper background. Each column has a thick
+  charcoal rule on top, a small mono label ("Postage · PT & ES"), a bold display highlight, one
+  line of supporting text and an arrow link. With a link the whole column is the link: on hover
+  the link text underlines and the arrow nudges right and turns Opal.
 {%- endcomment -%}
-{{ 'section-pattern-supporting.css' | asset_url | stylesheet_tag }}
-
 {%- style -%}
-  .section-{{ section.id }}-padding {
+  #shopify-section-{{ section.id }} .pattern-service {
     padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
     padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
   }
 
   @media screen and (min-width: 750px) {
-    .section-{{ section.id }}-padding {
+    #shopify-section-{{ section.id }} .pattern-service {
       padding-top: {{ section.settings.padding_top }}px;
       padding-bottom: {{ section.settings.padding_bottom }}px;
     }
   }
 {%- endstyle -%}
 
-<div class="pattern-section pattern-supporting pattern-supporting--{{ section.settings.background }}">
-  <div class="pattern-service-row pattern-wrap section-{{ section.id }}-padding{% if section.settings.full_width %} pattern-service-row--full{% endif %}">
-    {%- if section.settings.heading != blank -%}
-      <h2 class="pattern-supporting__heading">{{ section.settings.heading | escape }}</h2>
-    {%- endif -%}
+{%- if section.blocks.size > 0 -%}
+  <section
+    class="pattern-section pattern-service"
+    {% if section.settings.heading != blank %}
+      aria-labelledby="PatternServiceHeading-{{ section.id }}"
+    {% else %}
+      aria-label="Services"
+    {% endif %}
+  >
+    <div class="pattern-wrap pattern-service__inner">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="pattern-label pattern-service__heading" id="PatternServiceHeading-{{ section.id }}">
+          {{- section.settings.heading | escape -}}
+        </h2>
+      {%- endif -%}
 
-    {%- if section.blocks.size > 0 -%}
-      <ul class="pattern-service-row__list" role="list" style="--columns: {{ section.blocks.size }};">
+      <ul class="pattern-service__list" role="list">
         {%- for block in section.blocks -%}
-          <li class="pattern-service-row__item" {{ block.shopify_attributes }}>
-            {%- if block.settings.image != blank -%}
-              <div class="pattern-service-row__media">
-                {{
-                  block.settings.image
-                  | image_url: width: 1200
-                  | image_tag:
-                    loading: 'lazy',
-                    widths: '360, 540, 720, 960, 1200',
-                    sizes: '(min-width: 990px) calc((100vw - 10rem) / 3), (min-width: 750px) calc((100vw - 10rem) / 2), calc(100vw - 3rem)',
-                    alt: block.settings.image.alt,
-                    class: 'pattern-service-row__image'
-                }}
-              </div>
-            {%- endif -%}
-
-            {%- if block.settings.heading != blank -%}
-              <h3 class="pattern-service-row__title">{{ block.settings.heading | escape }}</h3>
-            {%- endif -%}
-
-            {%- if block.settings.text != blank -%}
-              <div class="pattern-service-row__text rte">{{ block.settings.text }}</div>
-            {%- endif -%}
-
-            {%- if block.settings.link_label != blank and block.settings.link_url != blank -%}
-              <a href="{{ block.settings.link_url }}" class="pattern-service-row__link">
-                {{- block.settings.link_label | escape -}}
-              </a>
-            {%- endif -%}
+          {%- liquid
+            assign item_tag = 'div'
+            if block.settings.link != blank
+              assign item_tag = 'a'
+            endif
+          -%}
+          <li class="pattern-service__cell" {{ block.shopify_attributes }}>
+            <{{ item_tag }}
+              class="pattern-service__item{% if item_tag == 'a' %} pattern-service__item--link{% endif %}"
+              {% if item_tag == 'a' %}
+                href="{{ block.settings.link }}"
+              {% endif %}
+            >
+              {%- if block.settings.label != blank -%}
+                <span class="pattern-label pattern-service__label">{{ block.settings.label | escape }}</span>
+              {%- endif -%}
+              {%- if block.settings.highlight != blank -%}
+                <span class="pattern-service__highlight">{{ block.settings.highlight | escape }}</span>
+              {%- endif -%}
+              {%- if block.settings.text != blank -%}
+                <span class="pattern-service__text">{{ block.settings.text | escape }}</span>
+              {%- endif -%}
+              {%- if item_tag == 'a' -%}
+                <span class="pattern-service__more">
+                  <span class="pattern-service__more-label">{{ block.settings.link_label | default: 'Details' | escape }}</span>
+                  {% render 'pattern-arrow' %}
+                </span>
+              {%- endif -%}
+            </{{ item_tag }}>
           </li>
         {%- endfor -%}
       </ul>
-    {%- endif -%}
-  </div>
-</div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% stylesheet %}
+  .pattern-service__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 2.4rem;
+  }
+
+  .pattern-service__heading {
+    color: var(--pattern-muted);
+  }
+
+  .pattern-service__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(26rem, 100%), 1fr));
+    gap: 4rem 3.2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pattern-service__cell {
+    display: flex;
+    min-width: 0;
+  }
+
+  .pattern-service__item {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding-top: 2.8rem;
+    border-top: 0.3rem solid var(--pattern-ink);
+    color: var(--pattern-ink);
+    text-decoration: none;
+  }
+
+  .pattern-service__label {
+    color: var(--pattern-muted);
+  }
+
+  .pattern-service__highlight {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(3rem, 2.7vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    overflow-wrap: break-word;
+  }
+
+  .pattern-service__text {
+    font-size: 1.6rem;
+    line-height: 1.5;
+    color: var(--pattern-muted);
+  }
+
+  .pattern-service__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: auto;
+    padding-top: 0.4rem;
+    min-height: 4.4rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .pattern-service__more .pattern-arrow {
+    transition: transform 0.15s ease, color 0.15s ease;
+  }
+
+  .pattern-service__item--link:hover .pattern-service__more-label,
+  .pattern-service__item--link:focus-visible .pattern-service__more-label {
+    text-decoration: underline;
+    text-underline-offset: 0.4rem;
+  }
+
+  /* Arrow: nudges right and turns Opal (3.1:1 on paper, fine for a graphic) */
+  .pattern-service__item--link:hover .pattern-arrow,
+  .pattern-service__item--link:focus-visible .pattern-arrow {
+    transform: translateX(0.4rem);
+    color: var(--pattern-accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pattern-service__more .pattern-arrow {
+      transition: none;
+    }
+
+    .pattern-service__item--link:hover .pattern-arrow,
+    .pattern-service__item--link:focus-visible .pattern-arrow {
+      transform: none;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "Pattern service row",
-  "tag": "section",
-  "class": "section",
+  "tag": "div",
   "max_blocks": 4,
   "settings": [
     {
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "info": "Optional. Leave empty to show just the columns."
-    },
-    {
-      "type": "select",
-      "id": "background",
-      "label": "Background",
-      "options": [
-        { "value": "transparent", "label": "None" },
-        { "value": "sandstone", "label": "Sandstone" },
-        { "value": "charcoal", "label": "Charcoal" }
-      ],
-      "default": "transparent"
-    },
-    {
-      "type": "checkbox",
-      "id": "full_width",
-      "label": "Full width",
-      "default": false
-    },
-    {
-      "type": "header",
-      "content": "Section padding"
+      "info": "Optional small label above the columns."
     },
     {
       "type": "range",
       "id": "padding_top",
       "min": 0,
-      "max": 100,
-      "step": 4,
+      "max": 120,
+      "step": 8,
       "unit": "px",
       "label": "Top padding",
       "default": 48
@@ -112,47 +193,48 @@
       "type": "range",
       "id": "padding_bottom",
       "min": 0,
-      "max": 100,
-      "step": 4,
+      "max": 120,
+      "step": 8,
       "unit": "px",
       "label": "Bottom padding",
-      "default": 48
+      "default": 96
     }
   ],
   "blocks": [
     {
       "type": "service",
-      "name": "Column",
+      "name": "Service",
       "settings": [
         {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Image",
-          "info": "Optional. Shown above the text, cropped to 3:2."
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "info": "Small mono line, e.g. \"Postage · PT & ES\".",
+          "default": "Postage · PT & ES"
         },
         {
           "type": "text",
-          "id": "heading",
-          "label": "Heading",
-          "default": "Postage"
+          "id": "highlight",
+          "label": "Highlight",
+          "default": "One flat rate"
         },
         {
-          "type": "richtext",
+          "type": "text",
           "id": "text",
           "label": "Text",
-          "info": "Keep it to 1-3 lines.",
-          "default": "<p>Flat-rate shipping to Portugal and Spain. Order on the website.</p>"
+          "default": "To Portugal and Spain."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "With a link the whole column is clickable."
         },
         {
           "type": "text",
           "id": "link_label",
-          "label": "Link label",
-          "info": "Optional. The link shows when both label and link are set."
-        },
-        {
-          "type": "url",
-          "id": "link_url",
-          "label": "Link"
+          "label": "Link text",
+          "default": "Details"
         }
       ]
     }
@@ -164,22 +246,28 @@
         {
           "type": "service",
           "settings": {
-            "heading": "Postage",
-            "text": "<p>Flat-rate shipping to Portugal and Spain. Order on the website.</p>"
+            "label": "Postage · PT & ES",
+            "highlight": "One flat rate",
+            "text": "To Portugal and Spain.",
+            "link_label": "Shipping details"
           }
         },
         {
           "type": "service",
           "settings": {
-            "heading": "Collect in store",
-            "text": "<p>Order online and collect from the shop in Alcântara.</p>"
+            "label": "Collect · Alcântara",
+            "highlight": "Order online, collect in store",
+            "text": "Pick up at the shop and have a listen while you're there.",
+            "link_label": "How collection works"
           }
         },
         {
           "type": "service",
           "settings": {
-            "heading": "Lisbon in 24 hours",
-            "text": "<p>Flat-fee delivery within Lisbon postcodes.</p>"
+            "label": "Delivery · Lisbon",
+            "highlight": "Lisbon in 24 hours",
+            "text": "Flat-fee delivery within Lisbon postcodes.",
+            "link_label": "Delivery zones"
           }
         }
       ]

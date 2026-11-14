@@ -1,11 +1,15 @@
 {%- comment -%}
   Pattern column: a container for Pattern blocks (heading, text, button, image, listen list,
-  record) with a background (dark stripes, clay stripes, accent, paper or an image with an ink
+  record) with a background (dark stripes, clay stripes, clay, paper or an image with an ink
   overlay), padding, minimum height and vertical alignment. Sets --pattern-surface so listen-card
   play buttons invert correctly on every background.
 {%- endcomment -%}
 {%- liquid
   assign bg = block.settings.background
+  # Opal is never a large fill: an older saved "accent" background shows as clay.
+  if bg == 'accent'
+    assign bg = 'clay'
+  endif
   assign texture_class = ''
   if bg == 'stripes-dark'
     assign texture_class = ' pattern-stripe-dark'
@@ -86,10 +90,10 @@
     color: var(--pattern-ink);
   }
 
-  .pattern-column--bg-accent {
-    --pattern-surface: var(--pattern-accent);
-    background-color: var(--pattern-accent);
-    color: var(--pattern-on-accent);
+  .pattern-column--bg-clay {
+    --pattern-surface: var(--pattern-clay);
+    background-color: var(--pattern-clay);
+    color: var(--pattern-ink);
   }
 
   .pattern-column__media {
@@ -148,7 +152,7 @@
       "options": [
         { "value": "stripes-dark", "label": "Stripes, dark" },
         { "value": "stripes-clay", "label": "Stripes, clay" },
-        { "value": "accent", "label": "Accent" },
+        { "value": "clay", "label": "Clay" },
         { "value": "paper", "label": "Paper" },
         { "value": "image", "label": "Image" }
       ],

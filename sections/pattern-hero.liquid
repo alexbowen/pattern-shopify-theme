@@ -1,55 +1,134 @@
 {%- comment -%}
-  Pattern hero: ink text panel (eyebrow, headline with an italic accent word, body, two calls to
-  action) beside an image panel. Featured records live in sections/pattern-this-week.liquid. The image uses its focal point; without one
-  the panel shows the striped placeholder. Image side and an optional charcoal overlay are
-  settings. Stacks on mobile with the text first.
+  Pattern hero, two layouts (Layout setting):
+  - Full image (default): the photo fills the hero behind a dark gradient, with the text over it on
+    the page container's left edge. Optional mobile image. A bottom fade blends the photo into the
+    dark stripe texture of the section below ("This week"). No image: the stripe texture.
+  - Split: ink text panel beside an image panel (image side and a charcoal overlay are settings);
+    stacks on mobile with the text first.
+  The eyebrow, headline (with an italic accent word), body and two calls to action are shared.
+  Featured records live in sections/pattern-this-week.liquid.
 {%- endcomment -%}
 {%- liquid
   # Empty: jump to the genre tiles further down the homepage (sections/pattern-genre-tiles.liquid).
   assign secondary_link = section.settings.secondary_link | default: '#browse-by-genre'
+  assign layout = section.settings.layout | default: 'full'
 -%}
 
-<section
-  class="pattern-section pattern-hero pattern-hero--image-{{ section.settings.image_position }}"
-  aria-labelledby="PatternHeroHeading-{{ section.id }}"
->
-  <div class="pattern-hero__text{% if section.settings.background_texture == 'stripes' %} pattern-stripe-dark{% endif %}">
-    {%- if section.settings.eyebrow != blank -%}
-      <p class="pattern-label pattern-hero__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+{%- capture hero_eyebrow -%}
+  {%- if section.settings.eyebrow != blank -%}
+    <p class="pattern-label pattern-hero__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- capture hero_main -%}
+  <div class="pattern-hero__main">
+    <h1 class="pattern-display pattern-hero__headline" id="PatternHeroHeading-{{ section.id }}">
+      {{- section.settings.headline_start | escape -}}
+      {%- if section.settings.headline_accent != blank %}
+        <span class="pattern-accent-word">{{ section.settings.headline_accent | escape }}</span>
+      {%- endif -%}
+      {%- if section.settings.headline_end != blank %}
+        {{ section.settings.headline_end | escape }}
+      {%- endif -%}
+    </h1>
+
+    {%- if section.settings.body != blank -%}
+      <p class="pattern-hero__body">{{ section.settings.body | escape | newline_to_br }}</p>
     {%- endif -%}
 
-    <div class="pattern-hero__main">
-      <h1 class="pattern-display pattern-hero__headline" id="PatternHeroHeading-{{ section.id }}">
-        {{- section.settings.headline_start | escape -}}
-        {%- if section.settings.headline_accent != blank %}
-          <span class="pattern-accent-word">{{ section.settings.headline_accent | escape }}</span>
+    {%- if section.settings.primary_label != blank or section.settings.secondary_label != blank -%}
+      <div class="pattern-hero__ctas">
+        {%- if section.settings.primary_label != blank -%}
+          <a href="{{ section.settings.primary_link | default: routes.all_products_collection_url }}" class="pattern-button">
+            {{- section.settings.primary_label | escape -}}
+            {% render 'pattern-arrow' %}
+          </a>
         {%- endif -%}
-        {%- if section.settings.headline_end != blank %}
-          {{ section.settings.headline_end | escape }}
+        {%- if section.settings.secondary_label != blank -%}
+          <a href="{{ secondary_link }}" class="pattern-link pattern-hero__secondary">
+            {{- section.settings.secondary_label | escape -}}
+          </a>
         {%- endif -%}
-      </h1>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endcapture -%}
 
-      {%- if section.settings.body != blank -%}
-        <p class="pattern-hero__body">{{ section.settings.body | escape | newline_to_br }}</p>
+{%- if layout == 'full' -%}
+  {%- liquid
+    assign hero_image = section.settings.image
+    assign mobile_image = section.settings.mobile_image | default: hero_image
+    assign focal = hero_image.presentation.focal_point | default: 'center'
+    assign focal_mobile = mobile_image.presentation.focal_point | default: focal
+
+    # Overlay alphas (ink #141413). The text side is darker than the setting so light text stays
+    # readable even over a bright photo; phones get a stronger, bottom-up gradient.
+    assign strength = section.settings.full_overlay | divided_by: 100.0
+    assign text_alpha = strength | times: 1.35
+    if text_alpha > 0.92
+      assign text_alpha = 0.92
+    endif
+    assign far_alpha = strength | times: 0.3
+    assign mobile_alpha = strength | plus: 0.3
+    if mobile_alpha > 0.92
+      assign mobile_alpha = 0.92
+    endif
+  -%}
+  <section
+    class="pattern-section pattern-hero pattern-hero--full pattern-hero--overlay-{{ section.settings.overlay_direction }}{% if hero_image == blank %} pattern-hero--no-image{% endif %}"
+    aria-labelledby="PatternHeroHeading-{{ section.id }}"
+    style="--hero-h: {{ section.settings.full_height }}px; --hero-focal: {{ focal }}; --hero-focal-mobile: {{ focal_mobile }}; --hero-a-text: {{ text_alpha }}; --hero-a-mid: {{ strength }}; --hero-a-far: {{ far_alpha }}; --hero-a-mobile: {{ mobile_alpha }};"
+  >
+    <div class="pattern-hero__bg{% if hero_image == blank %} pattern-stripe-dark{% endif %}" aria-hidden="{% if section.settings.image_alt == blank %}true{% else %}false{% endif %}">
+      {%- if hero_image != blank -%}
+        <picture>
+          {%- if section.settings.mobile_image != blank -%}
+            <source
+              media="(max-width: 749px)"
+              srcset="
+                {{- mobile_image | image_url: width: 750 }} 750w,
+                {{ mobile_image | image_url: width: 1100 }} 1100w,
+                {{ mobile_image | image_url: width: 1500 }} 1500w
+              "
+              sizes="100vw"
+            >
+          {%- endif -%}
+          {%- comment -%} Above the fold: eager, high priority, no lazy loading. {%- endcomment -%}
+          {{
+            hero_image
+            | image_url: width: 2400
+            | image_tag:
+              loading: 'eager',
+              fetchpriority: 'high',
+              widths: '375, 550, 750, 1100, 1500, 1800, 2400',
+              sizes: '100vw',
+              alt: section.settings.image_alt,
+              class: 'pattern-hero__bg-image'
+          }}
+        </picture>
+        <div class="pattern-hero__overlay"></div>
       {%- endif -%}
-
-      {%- if section.settings.primary_label != blank or section.settings.secondary_label != blank -%}
-        <div class="pattern-hero__ctas">
-          {%- if section.settings.primary_label != blank -%}
-            <a href="{{ section.settings.primary_link | default: routes.all_products_collection_url }}" class="pattern-button">
-              {{- section.settings.primary_label | escape -}}
-              {% render 'pattern-arrow' %}
-            </a>
-          {%- endif -%}
-          {%- if section.settings.secondary_label != blank -%}
-            <a href="{{ secondary_link }}" class="pattern-link pattern-hero__secondary">
-              {{- section.settings.secondary_label | escape -}}
-            </a>
-          {%- endif -%}
-        </div>
+      {%- if section.settings.bottom_fade -%}
+        <div class="pattern-hero__fade pattern-stripe-dark"></div>
       {%- endif -%}
     </div>
 
+    <div class="pattern-wrap pattern-hero__content-wrap">
+      <div class="pattern-hero__content">
+        {{ hero_eyebrow }}
+        {{ hero_main }}
+      </div>
+    </div>
+  </section>
+{%- else -%}
+
+<section
+  class="pattern-section pattern-hero pattern-hero--split pattern-hero--image-{{ section.settings.image_position }}"
+  aria-labelledby="PatternHeroHeading-{{ section.id }}"
+>
+  <div class="pattern-hero__text{% if section.settings.background_texture == 'stripes' %} pattern-stripe-dark{% endif %}">
+    {{ hero_eyebrow }}
+    {{ hero_main }}
   </div>
 
   <div class="pattern-hero__media{% if section.settings.image == blank %} pattern-placeholder{% endif %}">
@@ -80,21 +159,152 @@
     opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
   }
 {%- endstyle -%}
+{%- endif -%}
 
 {% stylesheet %}
   .pattern-hero {
-    display: flex;
-    flex-wrap: wrap;
     background-color: var(--pattern-ink);
     color: var(--pattern-paper);
+    container-type: inline-size;
   }
 
+  /* ===== Full image layout ===== */
+  .pattern-hero--full {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: max(48rem, min(var(--hero-h, 680px), 80vh));
+    overflow: hidden;
+  }
+
+  .pattern-hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .pattern-hero__bg picture,
+  .pattern-hero__bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .pattern-hero__bg-image {
+    object-fit: cover;
+    object-position: var(--hero-focal, center);
+  }
+
+  /* Dawn hides empty divs (base.css div:empty); the overlay and fade are empty on purpose */
+  .pattern-hero .pattern-hero__overlay,
+  .pattern-hero .pattern-hero__fade {
+    display: block;
+  }
+
+  /* Dark gradient (ink). Default: left to right, darkest behind the text. */
+  .pattern-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(20, 20, 19, var(--hero-a-text)) 0%,
+      rgba(20, 20, 19, var(--hero-a-text)) 42%,
+      rgba(20, 20, 19, var(--hero-a-far)) 100%
+    );
+  }
+
+  .pattern-hero--overlay-bottom .pattern-hero__overlay {
+    background: linear-gradient(
+      0deg,
+      rgba(20, 20, 19, var(--hero-a-text)) 0%,
+      rgba(20, 20, 19, var(--hero-a-mid)) 55%,
+      rgba(20, 20, 19, var(--hero-a-far)) 100%
+    );
+  }
+
+  .pattern-hero--overlay-even .pattern-hero__overlay {
+    background: rgba(20, 20, 19, var(--hero-a-mid));
+  }
+
+  /* Bottom fade: the stripe texture of the section below, faded in over the last ~28% */
+  .pattern-hero__fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 28%;
+    background-color: var(--pattern-ink);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 92%);
+    mask-image: linear-gradient(to bottom, transparent, #000 92%);
+    pointer-events: none;
+  }
+
+  .pattern-hero__content-wrap {
+    position: relative;
+    padding-top: 11.2rem;
+    padding-bottom: 8rem;
+  }
+
+  .pattern-hero__content {
+    max-width: 64rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.4rem;
+  }
+
+  .pattern-hero--full .pattern-hero__eyebrow {
+    color: var(--pattern-paper-soft);
+  }
+
+  .pattern-hero--full .pattern-hero__main {
+    gap: 2.8rem;
+  }
+
+  @media screen and (max-width: 749px) {
+    .pattern-hero--full {
+      min-height: 52rem;
+      justify-content: flex-end;
+    }
+
+    .pattern-hero__bg-image {
+      object-position: var(--hero-focal-mobile, var(--hero-focal, center));
+    }
+
+    /* Phones: stronger overlay, darkest at the bottom where the text sits */
+    .pattern-hero--full .pattern-hero__overlay {
+      background: linear-gradient(
+        0deg,
+        rgba(20, 20, 19, var(--hero-a-mobile)) 0%,
+        rgba(20, 20, 19, var(--hero-a-mobile)) 50%,
+        rgba(20, 20, 19, var(--hero-a-mid)) 100%
+      );
+    }
+
+    .pattern-hero__content-wrap {
+      padding-top: 12rem;
+      padding-bottom: 4.8rem;
+    }
+  }
+
+  /* ===== Split layout ===== */
+  .pattern-hero--split {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  /* The background is full-bleed, but the text starts on the same line as the header and the
+     sections below (.pattern-wrap: max width + gutter, centred). 100cqw = the hero's width. */
   .pattern-hero__text {
+    --hero-inset: max(var(--pattern-gutter), calc((100cqw - var(--pattern-wrap-max)) / 2 + var(--pattern-gutter)));
     flex: 1 1 56rem;
     box-sizing: border-box;
     min-width: 0;
-    min-height: 68rem;
-    padding: 5.6rem var(--pattern-gutter) 4rem;
+    min-height: 56rem;
+    padding: 5.6rem var(--pattern-gutter) 4rem var(--hero-inset);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -112,7 +322,7 @@
   }
 
   .pattern-hero__headline {
-    font-size: clamp(5.6rem, 8.4vw, 12.8rem);
+    font-size: clamp(4rem, 5.2vw, 7.6rem);
     line-height: 0.9;
     color: inherit;
     overflow-wrap: break-word;
@@ -168,6 +378,12 @@
     .pattern-hero--image-left .pattern-hero__media {
       order: -1;
     }
+
+    /* Text on the right: align its far edge with the container instead */
+    .pattern-hero--image-left .pattern-hero__text {
+      padding-left: var(--pattern-gutter);
+      padding-right: var(--hero-inset);
+    }
   }
 
   @media screen and (max-width: 749px) {
@@ -195,6 +411,16 @@
   "name": "Pattern hero",
   "tag": "div",
   "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "full", "label": "Full image" },
+        { "value": "split", "label": "Split" }
+      ],
+      "default": "full"
+    },
     {
       "type": "header",
       "content": "Text"
@@ -227,7 +453,7 @@
       "type": "textarea",
       "id": "body",
       "label": "Body",
-      "default": "Fresh arrivals from the crates — house, jazz, disco, dub and everything in between. New and used vinyl, in Lisbon and online."
+      "default": "House, jazz, disco, dub, soul and more — new and used vinyl, in Alcântara and online."
     },
     {
       "type": "header",
@@ -261,7 +487,7 @@
       "type": "select",
       "id": "background_texture",
       "label": "Background texture",
-      "info": "Behind the text panel.",
+      "info": "Split layout: behind the text panel.",
       "options": [
         { "value": "stripes", "label": "Stripes" },
         { "value": "flat", "label": "Flat" }
@@ -276,7 +502,67 @@
       "type": "image_picker",
       "id": "image",
       "label": "Hero image",
-      "info": "Set a focal point on the image to control the crop. Without an image the panel shows a striped placeholder."
+      "info": "Set a focal point to control the crop. Full image: without an image the hero shows the dark stripe texture. Split: a striped placeholder."
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image description (alt text)",
+      "info": "Full image layout. Leave empty if the photo is decorative."
+    },
+    {
+      "type": "header",
+      "content": "Full image layout"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image",
+      "info": "Optional. Used on phones instead of the hero image (with its own focal point)."
+    },
+    {
+      "type": "range",
+      "id": "full_height",
+      "min": 560,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "label": "Height on desktop",
+      "info": "Never more than 80% of the screen height. Phones use about 520px.",
+      "default": 680
+    },
+    {
+      "type": "range",
+      "id": "full_overlay",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay strength",
+      "info": "The side with the text is made darker than this so light text stays readable.",
+      "default": 55
+    },
+    {
+      "type": "select",
+      "id": "overlay_direction",
+      "label": "Overlay direction",
+      "options": [
+        { "value": "left", "label": "Left to right (darker behind the text)" },
+        { "value": "bottom", "label": "Bottom to top" },
+        { "value": "even", "label": "Even" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "bottom_fade",
+      "label": "Fade into the section below",
+      "info": "Blends the bottom of the photo into the dark stripe texture used by \"This week\".",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Split layout"
     },
     {
       "type": "select",
@@ -297,6 +583,7 @@
       "step": 5,
       "unit": "%",
       "label": "Charcoal overlay strength",
+      "info": "Split layout.",
       "default": 0
     }
   ],

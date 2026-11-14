@@ -153,8 +153,9 @@
 
 {% stylesheet %}
   /* ===== Sizes (set on the list: .pattern-listen--compact / --standard / --large) =====
-     Large is the original look; Standard ≈ 60% artist size, Compact ≈ 40%. Covers, the play
-     button (never under 44px) and spacing scale with them. Cards outside a list use Large. */
+     Large is the original look (artist up to 104px). Standard: artist 28–36px (never above 40),
+     title ~20px, 56px cover, 48px play. Compact: artist ~24px, 44px cover and play. The play
+     button never goes under 44px. Cards outside a list use Large. */
   .pattern-listen--large {
     --listen-artist-row: clamp(4.4rem, 7vw, 10.4rem);
     --listen-title-row: clamp(2.4rem, 2.8vw, 4rem);
@@ -167,29 +168,29 @@
   }
 
   .pattern-listen--standard {
-    --listen-artist-row: clamp(3.2rem, 4.2vw, 6.2rem);
-    --listen-title-row: clamp(1.9rem, 1.8vw, 2.6rem);
-    --listen-artist-col: clamp(2.2rem, 2.1vw, 3rem);
-    --listen-title-col: clamp(1.7rem, 1.4vw, 2rem);
-    --listen-cover: 7.2rem;
-    --listen-play: 5.6rem;
-    --listen-gap: 2.4rem;
-    --listen-pad: 2.4rem;
-  }
-
-  .pattern-listen--compact {
-    --listen-artist-row: clamp(2.2rem, 2.8vw, 4.2rem);
-    --listen-title-row: clamp(1.6rem, 1.3vw, 1.9rem);
-    --listen-artist-col: clamp(1.9rem, 1.6vw, 2.2rem);
-    --listen-title-col: clamp(1.5rem, 1.2vw, 1.7rem);
+    --listen-artist-row: clamp(2.8rem, 2.5vw, 3.6rem);
+    --listen-title-row: clamp(1.8rem, 1.4vw, 2rem);
+    --listen-artist-col: clamp(2.2rem, 1.9vw, 2.8rem);
+    --listen-title-col: clamp(1.6rem, 1.2vw, 1.8rem);
     --listen-cover: 5.6rem;
-    --listen-play: 4.4rem;
-    --listen-gap: 1.6rem;
+    --listen-play: 4.8rem;
+    --listen-gap: 2rem;
     --listen-pad: 1.6rem;
   }
 
+  .pattern-listen--compact {
+    --listen-artist-row: clamp(2rem, 1.7vw, 2.4rem);
+    --listen-title-row: clamp(1.5rem, 1.1vw, 1.6rem);
+    --listen-artist-col: clamp(1.8rem, 1.4vw, 2rem);
+    --listen-title-col: clamp(1.4rem, 1vw, 1.5rem);
+    --listen-cover: 4.4rem;
+    --listen-play: 4.4rem;
+    --listen-gap: 1.6rem;
+    --listen-pad: 1.2rem;
+  }
+
   /* ===== List arrangement (.pattern-listen wraps record blocks: .pattern-record) =====
-     Lines: rows with hairlines; the whole row fills with the accent on hover. --listen-inset
+     Lines: rows with hairlines; no row hover fill (only the artist/title link underlines). --listen-inset
      lets a full-width section bleed rows to its gutters. Columns: an auto-fitting grid. */
   .pattern-listen {
     min-width: 0;
@@ -199,17 +200,10 @@
     padding: var(--listen-pad, 3.2rem) var(--listen-inset, 1.2rem);
     margin: 0 calc(var(--listen-inset, 1.2rem) * -1);
     border-top: 0.1rem solid color-mix(in srgb, currentColor 22%, transparent);
-    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   .pattern-listen--lines > .pattern-record:last-child {
     border-bottom: 0.1rem solid color-mix(in srgb, currentColor 22%, transparent);
-  }
-
-  .pattern-listen--lines > .pattern-record:hover {
-    --pattern-surface: var(--pattern-accent);
-    background-color: var(--pattern-accent);
-    color: var(--pattern-on-accent);
   }
 
   .pattern-listen--columns {
@@ -221,12 +215,6 @@
   /* Up to 6 records per list (theme blocks can't cap their children in the schema) */
   .pattern-listen > .pattern-record:nth-child(n + 7) {
     display: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .pattern-listen--lines > .pattern-record {
-      transition: none;
-    }
   }
 
   /* ===== Card ===== */
@@ -439,7 +427,6 @@
   .pattern-listen-card .audioly-play-pause-button-background.audioly-play-pause-button-background {
     background-color: var(--listen-play-bg);
     box-shadow: none;
-    transition: transform 0.15s ease;
   }
 
   .pattern-listen-card .audioly-play-pause-button.audioly-play-pause-button {
@@ -451,12 +438,8 @@
     background-color: var(--listen-play-fg);
   }
 
-  .pattern-listen-card .audioly-play-pause-button-background:hover {
-    transform: scale(1.06);
-  }
-
   .pattern-listen-card .audioly-play-pause-button:focus-visible {
-    outline: 0.3rem solid var(--pattern-accent);
+    outline: 0.3rem solid currentColor;
     outline-offset: 0.4rem;
     border-radius: 50%;
   }
@@ -483,12 +466,43 @@
     }
   }
 
+  /* ===== Audioly's play button on cards: hover, focus and playing states =====
+     Listen cards and product-grid cards (.grid__item). Audioly injects the button; we only
+     restyle it. Idle keeps its look. Hover / keyboard focus (not when Audioly has disabled the
+     button for a record without audio): accent fill, --on-accent icon,
+     scale 1.08 and a soft accent ring. Playing (Audioly swaps the icon to pause.svg and the label
+     to "Pause…"; it adds no class): filled accent with the pause icon. */
+  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background {
+    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button::after {
+    transition: background-color 0.15s ease;
+  }
+
+  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)),
+  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background:has(> .audioly-play-pause-button:is([style*='pause.svg'], [aria-label^='Pause'])) {
+    background-color: var(--accent);
+    opacity: 1;
+  }
+
+  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)) {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 0.6rem var(--accent-ring);
+  }
+
+  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)) .audioly-play-pause-button::after,
+  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button:is([style*='pause.svg'], [aria-label^='Pause'])::after {
+    background-color: var(--on-accent);
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .pattern-listen-card .audioly-play-pause-button-background {
+    :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background,
+    :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button::after {
       transition: none;
     }
 
-    .pattern-listen-card .audioly-play-pause-button-background:hover {
+    :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)) {
       transform: none;
     }
   }

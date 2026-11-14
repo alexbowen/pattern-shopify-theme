@@ -2,13 +2,49 @@
   Pattern design tokens: the one place colours, fonts and layout measures are defined.
   Rendered in layout/theme.liquid after base.css so these win over Dawn's defaults.
 
-  - Accent: theme setting (Theme settings > Pattern design), everything else fixed here.
+  - Accent: one theme setting (Theme settings > Pattern design); its text, hover and small-text
+    variants are computed from it below. Everything else is fixed here.
   - Fonts: --font-display / --font-body / --font-mono / --font-accent. To swap in Urbanist or
     Bakemono later, change the family names below (and the Google Fonts link in theme.liquid,
     or add @font-face rules). Dawn's own font variables point at these, so the whole theme follows.
   - Older Pattern variable names (--pattern-charcoal, --pattern-sandstone, --pattern-opal) are
     aliases, so components built before the tokens existed pick them up.
 {%- endcomment -%}
+{%- liquid
+  # Accent colours, all derived from the one accent setting (Theme settings > Pattern design):
+  # - on_accent: charcoal or white, whichever contrasts more with the accent
+  # - accent_hover: the accent darkened for hover/pressed, with its own text colour
+  # - accent_text: the accent darkened just enough for 4.5:1 on paper (small coloured text)
+  assign ink = '#141413'
+  assign paper = '#F2EEE5'
+  assign accent = settings.pattern_accent | default: '#C2551F'
+
+  assign contrast_ink = accent | color_contrast: ink
+  assign contrast_white = accent | color_contrast: '#FFFFFF'
+  assign on_accent = '#FFFFFF'
+  if contrast_ink > contrast_white
+    assign on_accent = ink
+  endif
+
+  assign accent_hover = accent | color_darken: 8
+  assign hover_ink = accent_hover | color_contrast: ink
+  assign hover_white = accent_hover | color_contrast: '#FFFFFF'
+  assign on_accent_hover = '#FFFFFF'
+  if hover_ink > hover_white
+    assign on_accent_hover = ink
+  endif
+
+  assign accent_text = accent
+  for step in (0..25)
+    assign amount = step | times: 2
+    assign candidate = accent | color_darken: amount
+    assign candidate_contrast = candidate | color_contrast: paper
+    if candidate_contrast >= 4.5
+      assign accent_text = candidate
+      break
+    endif
+  endfor
+-%}
 <style>
   :root {
     /* Palette */
@@ -17,8 +53,22 @@
     --pattern-clay: #DCD2BF;
     --pattern-sand: #E9E1CF;
     --pattern-muted: #4F4B44;
-    --pattern-accent: {{ settings.pattern_accent | default: '#2433D6' }};
-    --pattern-on-accent: {{ settings.pattern_on_accent | default: '#FFFFFF' }};
+    /* Accent (computed above from the setting). Use --accent for fills, markers and focus rings
+       with --on-accent for anything on top; --accent-hover (+ --on-accent-hover) for hover and
+       pressed fills; --accent-text for small accent-coloured text on light backgrounds. */
+    --accent: {{ accent }};
+    --on-accent: {{ on_accent }};
+    --accent-hover: {{ accent_hover }};
+    --on-accent-hover: {{ on_accent_hover }};
+    --accent-text: {{ accent_text }};
+    --accent-ring: color-mix(in srgb, var(--accent) 25%, transparent);
+
+    /* Pattern names for the same values */
+    --pattern-accent: var(--accent);
+    --pattern-on-accent: var(--on-accent);
+    --pattern-accent-hover: var(--accent-hover);
+    --pattern-on-accent-hover: var(--on-accent-hover);
+    --pattern-accent-text: var(--accent-text);
 
     /* Tints used on dark (ink) backgrounds, and placeholder stripes */
     --pattern-paper-dim: #B9B2A3;

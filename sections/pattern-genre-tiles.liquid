@@ -195,14 +195,15 @@
     height: 100%;
     padding: 2rem 2.2rem;
     text-decoration: none;
-    transition: transform 0.2s ease;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
   }
 
   .pattern-genre-tile:hover {
     transform: translateY(-0.3rem);
   }
 
-  .pattern-genre-tile:hover .pattern-genre-tile__name {
+  .pattern-genre-tile:hover .pattern-genre-tile__name,
+  .pattern-genre-tile:focus-visible .pattern-genre-tile__name {
     text-decoration: underline;
     text-decoration-thickness: 0.3rem;
     text-underline-offset: 0.6rem;
@@ -219,6 +220,13 @@
   .pattern-genre-tile--row-4 {
     background-color: var(--pattern-clay);
     color: var(--pattern-ink);
+  }
+
+  /* Hover and keyboard focus: Opal fill with charcoal text (5.1:1); the focus ring stays too */
+  .pattern-genre-tile:hover,
+  .pattern-genre-tile:focus-visible {
+    background-color: var(--pattern-accent);
+    color: var(--pattern-on-accent);
   }
 
   .pattern-genre-tile__top {
@@ -353,19 +361,19 @@
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Browse by"
+      "default": "Browse by genre"
     },
     {
       "type": "text",
       "id": "heading_accent",
       "label": "Heading accent word (italic)",
-      "default": "genre"
+      "info": "Optional. Added after the heading."
     },
     {
       "type": "textarea",
       "id": "text",
       "label": "Intro",
-      "default": "Seventeen starting points. Pick one and the sub-genres open up once you are inside."
+      "default": "Start with a genre. The sub-genres open up inside."
     },
     {
       "type": "collection",
@@ -393,7 +401,7 @@
       "type": "text",
       "id": "origins_label",
       "label": "Label",
-      "default": "Or start from a place"
+      "default": "Or browse by origin"
     },
     {
       "type": "textarea",

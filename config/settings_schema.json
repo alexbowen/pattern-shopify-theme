@@ -18,13 +18,8 @@
         "type": "color",
         "id": "pattern_accent",
         "label": "Accent colour",
-        "default": "#2433D6"
-      },
-      {
-        "type": "color",
-        "id": "pattern_on_accent",
-        "label": "Text on accent",
-        "default": "#FFFFFF"
+        "info": "Buttons, markers, focus rings and genre tile hovers. Text on it (charcoal or white), the hover shade and a darker shade for small text are worked out automatically.",
+        "default": "#C2551F"
       }
     ]
   },

@@ -1,5 +1,5 @@
 {%- comment -%}
-  Pattern feature split ("We buy & exchange"): full-bleed image half and a coloured text half
+  Pattern feature split ("We buy & exchange"): full-bleed image half and a clay (or ink) text half
   (label, heading with an italic accent word, text, button). Image side is a setting so stacked
   feature splits can alternate. Without an image the half shows the striped placeholder. On
   mobile it stacks with the image first.
@@ -8,14 +8,21 @@
   # A url setting can't default to a page, so the button falls back to the sell page when the
   # link is left empty. Clear the button label to hide the button.
   assign button_link = section.settings.button_link | default: '/pages/sell-your-records'
-  assign button_class = 'pattern-button pattern-button--paper'
-  if section.settings.tone == 'clay'
-    assign button_class = 'pattern-button'
+
+  # Opal is never a large fill: an older saved "accent" panel shows as clay.
+  assign tone = section.settings.tone
+  if tone != 'ink'
+    assign tone = 'clay'
+  endif
+  # The button is the primary (Opal) button on clay; paper on the ink panel.
+  assign button_class = 'pattern-button'
+  if tone == 'ink'
+    assign button_class = 'pattern-button pattern-button--paper'
   endif
 -%}
 
 <section
-  class="pattern-section pattern-split pattern-split--image-{{ section.settings.image_position }} pattern-split--{{ section.settings.tone }}"
+  class="pattern-section pattern-split pattern-split--image-{{ section.settings.image_position }} pattern-split--{{ tone }}"
   aria-labelledby="PatternSplitHeading-{{ section.id }}"
 >
   <div class="pattern-split__media{% if section.settings.image == blank %} pattern-placeholder{% endif %}">
@@ -98,11 +105,6 @@
   }
 
   /* Tones */
-  .pattern-split--accent .pattern-split__text {
-    background-color: var(--pattern-accent);
-    color: var(--pattern-on-accent);
-  }
-
   .pattern-split--ink .pattern-split__text {
     background-color: var(--pattern-ink);
     color: var(--pattern-paper);
@@ -197,11 +199,10 @@
       "id": "tone",
       "label": "Text panel colour",
       "options": [
-        { "value": "accent", "label": "Accent" },
-        { "value": "ink", "label": "Ink" },
-        { "value": "clay", "label": "Clay" }
+        { "value": "clay", "label": "Clay" },
+        { "value": "ink", "label": "Ink" }
       ],
-      "default": "accent"
+      "default": "clay"
     },
     {
       "type": "header",
@@ -235,14 +236,14 @@
       "type": "richtext",
       "id": "text",
       "label": "Text",
-      "default": "<p>We actively buy and exchange records. Bring a crate to the shop in Alcântara or send us a list, and we'll make you an offer or swap them for something new to you.</p>"
+      "default": "<p>We buy and exchange records. Bring a crate to the shop or send us a list, and we'll make you an offer or swap them for something new to you.</p>"
     },
     {
       "type": "text",
       "id": "button_label",
       "label": "Button label",
       "info": "Clear to hide the button.",
-      "default": "Read our policy"
+      "default": "How it works"
     },
     {
       "type": "url",

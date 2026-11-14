@@ -62,11 +62,22 @@
   line-height: 1.2;
   text-decoration: none;
   cursor: pointer;
-  transition: filter 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, filter 0.15s ease;
 }
 
-.pattern-button:hover {
-  filter: brightness(1.12);
+/* Accent button: hover/pressed uses the darker accent with its own text colour */
+.pattern-button:hover,
+.pattern-button:active {
+  background-color: var(--accent-hover);
+  color: var(--on-accent-hover);
+}
+
+/* Paper / ink / outline variants keep their own colours and just dim slightly */
+.pattern-button.pattern-button--paper:hover,
+.pattern-button.pattern-button--paper:active {
+  background-color: var(--pattern-paper);
+  color: var(--pattern-ink);
+  filter: brightness(0.94);
 }
 
 .pattern-button--paper {

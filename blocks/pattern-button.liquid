@@ -28,15 +28,27 @@
 {%- endif -%}
 
 {% stylesheet %}
-  .pattern-button--ink {
+  .pattern-button--ink,
+  .pattern-button.pattern-button--ink:hover,
+  .pattern-button.pattern-button--ink:active {
     background-color: var(--pattern-ink);
     color: var(--pattern-paper);
   }
 
-  .pattern-button--outline {
+  .pattern-button.pattern-button--ink:hover {
+    filter: brightness(1.25);
+  }
+
+  .pattern-button--outline,
+  .pattern-button.pattern-button--outline:hover,
+  .pattern-button.pattern-button--outline:active {
     background-color: transparent;
     color: inherit;
     box-shadow: inset 0 0 0 0.1rem currentColor;
+  }
+
+  .pattern-button.pattern-button--outline:hover {
+    box-shadow: inset 0 0 0 0.2rem currentColor;
   }
 
   .pattern-button-block__link {
@@ -53,7 +65,7 @@
       "type": "text",
       "id": "label",
       "label": "Label",
-      "default": "Read our policy"
+      "default": "How it works"
     },
     {
       "type": "url",
