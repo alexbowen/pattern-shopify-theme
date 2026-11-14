@@ -1,24 +1,12 @@
 {%- comment -%}
   Pattern hero: ink text panel (eyebrow, headline with an italic accent word, body, two calls to
-  action, "This week" strip) beside an image panel. The image uses its focal point; without one
+  action) beside an image panel. Featured records live in sections/pattern-this-week.liquid. The image uses its focal point; without one
   the panel shows the striped placeholder. Image side and an optional charcoal overlay are
   settings. Stacks on mobile with the text first.
 {%- endcomment -%}
 {%- liquid
   # Empty: jump to the genre tiles further down the homepage (sections/pattern-genre-tiles.liquid).
   assign secondary_link = section.settings.secondary_link | default: '#browse-by-genre'
-
-  assign feature_product = section.settings.feature_product
-  assign feature_title = section.settings.feature_text | strip
-  assign feature_url = section.settings.feature_link
-  if feature_product != blank
-    if feature_title == blank
-      assign feature_title = feature_product.title | replace_first: ' - ', ' — '
-    endif
-    if feature_url == blank
-      assign feature_url = feature_product.url
-    endif
-  endif
 -%}
 
 <section
@@ -62,21 +50,6 @@
       {%- endif -%}
     </div>
 
-    {%- if feature_title != blank -%}
-      <div class="pattern-hero__feature">
-        {%- if section.settings.feature_label != blank -%}
-          <span class="pattern-label pattern-hero__feature-label">{{ section.settings.feature_label | escape }}</span>
-        {%- endif -%}
-        <span class="pattern-hero__feature-title">{{ feature_title | escape }}</span>
-        {%- if feature_url != blank and section.settings.feature_link_label != blank -%}
-          <a href="{{ feature_url }}" class="pattern-link pattern-hero__feature-link">
-            {{- section.settings.feature_link_label | escape -}}
-            <span class="visually-hidden">: {{ feature_title | escape }}</span>
-            {% render 'pattern-arrow' %}
-          </a>
-        {%- endif -%}
-      </div>
-    {%- endif -%}
   </div>
 
   <div class="pattern-hero__media{% if section.settings.image == blank %} pattern-placeholder{% endif %}">
@@ -128,8 +101,7 @@
     gap: 4.8rem;
   }
 
-  .pattern-hero__eyebrow,
-  .pattern-hero__feature-label {
+  .pattern-hero__eyebrow {
     color: var(--pattern-paper-dim);
   }
 
@@ -163,25 +135,6 @@
 
   .pattern-hero__secondary {
     font-size: 1.6rem;
-    color: var(--pattern-paper);
-  }
-
-  .pattern-hero__feature {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.8rem 2.4rem;
-    padding-top: 2rem;
-    border-top: 0.1rem solid var(--pattern-hairline-on-dark);
-  }
-
-  .pattern-hero__feature-title {
-    font-weight: 600;
-    font-size: 1.6rem;
-  }
-
-  .pattern-hero__feature-link {
     color: var(--pattern-paper);
   }
 
@@ -303,40 +256,6 @@
       "id": "secondary_link",
       "label": "Secondary link",
       "info": "Leave empty to jump to the genre tiles on the homepage."
-    },
-    {
-      "type": "header",
-      "content": "This week strip"
-    },
-    {
-      "type": "text",
-      "id": "feature_label",
-      "label": "Label",
-      "default": "This week"
-    },
-    {
-      "type": "product",
-      "id": "feature_product",
-      "label": "Featured record",
-      "info": "Shows \"Artist — Title\" and links to the record."
-    },
-    {
-      "type": "text",
-      "id": "feature_text",
-      "label": "Text",
-      "info": "Optional. Overrides the record title, or use it without a record. The strip hides when both are empty."
-    },
-    {
-      "type": "text",
-      "id": "feature_link_label",
-      "label": "Link label",
-      "default": "Listen"
-    },
-    {
-      "type": "url",
-      "id": "feature_link",
-      "label": "Link",
-      "info": "Leave empty to link to the featured record."
     },
     {
       "type": "select",

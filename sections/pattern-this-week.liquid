@@ -1,0 +1,172 @@
+{%- comment -%}
+  Pattern "This week": a full-width listen list. Same records and styles as the Listen list block
+  (blocks/pattern-listen-list.liquid): up to 6 Record theme blocks, rendered through
+  snippets/pattern-listen-card.liquid, with the list settings (label, size, layout, cover,
+  price) on the section, plus heading and background.
+
+  Play buttons come from Audioly: the Apps section directly after this one (Audioly's featured
+  collection play buttons block) must use a collection that contains these records.
+  Hidden (CSS :has) when no record has a product: Liquid can't see theme-block settings here.
+{%- endcomment -%}
+{%- liquid
+  assign heading_id = 'PatternThisWeekHeading-' | append: section.id
+-%}
+
+<section
+    class="pattern-section pattern-this-week{% if request.design_mode %} pattern-this-week--editor{% endif %} pattern-this-week--bg-{{ section.settings.background }}{% if section.settings.background == 'stripes' %} pattern-stripe-dark{% endif %}"
+    {% if section.settings.heading != blank %}
+      aria-labelledby="{{ heading_id }}"
+    {% else %}
+      aria-label="{{ section.settings.label | default: 'This week' | escape }}"
+    {% endif %}
+  >
+    <div class="pattern-wrap pattern-this-week__inner">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="pattern-display pattern-this-week__heading" id="{{ heading_id }}">
+          {{- section.settings.heading | escape -}}
+        </h2>
+      {%- endif -%}
+
+      <div
+        class="pattern-listen pattern-listen-collection pattern-listen--{{ section.settings.layout }} pattern-listen--{{ section.settings.size }}{% unless section.settings.show_cover %} pattern-listen--no-cover{% endunless %}{% if section.settings.show_price %} pattern-listen--show-price{% endif %}"
+        {% if section.settings.label != blank %}
+          style="--listen-label: {{ section.settings.label | json | escape }};"
+        {% endif %}
+      >
+        {%- content_for 'blocks' -%}
+      </div>
+    </div>
+  </section>
+
+{% stylesheet %}
+  .pattern-this-week {
+    --pattern-surface: var(--pattern-paper);
+    background-color: var(--pattern-paper);
+    color: var(--pattern-ink);
+  }
+
+  .pattern-this-week--bg-stripes {
+    --pattern-surface: var(--pattern-ink);
+    background-color: var(--pattern-ink);
+    color: var(--pattern-paper);
+  }
+
+  .pattern-this-week--bg-clay {
+    --pattern-surface: var(--pattern-clay);
+    background-color: var(--pattern-clay);
+  }
+
+  /* No records with a product: hide the section (except in the theme editor) */
+  .pattern-this-week:not(.pattern-this-week--editor):not(:has(.pattern-listen-card)) {
+    display: none;
+  }
+
+  .pattern-this-week__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 3.2rem;
+    padding-top: 5.6rem;
+    padding-bottom: 5.6rem;
+  }
+
+  /* Rows bleed to the section gutters */
+  .pattern-this-week .pattern-listen {
+    --listen-inset: var(--pattern-gutter);
+  }
+
+  .pattern-this-week__heading {
+    font-size: clamp(3.2rem, 4vw, 5.6rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  @media screen and (max-width: 749px) {
+    .pattern-this-week__inner {
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+      gap: 2.4rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Pattern this week",
+  "tag": "div",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Optional."
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "info": "Shown on each record, e.g. \"This week\" or \"Recommended\". A record's own label overrides it.",
+      "default": "This week"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        { "value": "compact", "label": "Compact" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "lines", "label": "Lines" },
+        { "value": "columns", "label": "Columns" }
+      ],
+      "default": "lines"
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        { "value": "stripes", "label": "Stripe texture" },
+        { "value": "paper", "label": "Paper" },
+        { "value": "clay", "label": "Clay" }
+      ],
+      "default": "stripes"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cover",
+      "label": "Show cover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Play buttons come from Audioly. Keep an Apps section directly below this one with Audioly's featured collection play buttons block, set to a collection that contains these records."
+    }
+  ],
+  "blocks": [{ "type": "pattern-record" }],
+  "presets": [
+    {
+      "name": "Pattern this week",
+      "blocks": [
+        { "type": "pattern-record" },
+        { "type": "pattern-record" },
+        { "type": "pattern-record" }
+      ]
+    }
+  ]
+}
+{% endschema %}

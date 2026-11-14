@@ -1,0 +1,495 @@
+{%- comment -%}
+  Pattern listen card: one record as a "listen" line (row) or a cover card (column). Artist in
+  display type, title in the italic serif, meta line (label · format), optional price and cover.
+
+  Play button: this snippet has no audio or player code. Audioly injects its own play/pause
+  button when one of its app blocks on the page renders a placeholder for this product (e.g. an
+  Apps section with "Play pause buttons for featured collection" directly after the section,
+  set to a collection that contains the product). Audioly finds the card from the product's links
+  (the card root is the nearest element holding all of them, so there are always two: slot +
+  text), prepends its button wrapper (position: absolute, no offsets) to the card root and sizes
+  it to the card's .card__inner. So .card__inner is a dedicated play slot, and the CSS only places
+  Audioly's wrapper over that slot and restyles the button.
+
+  Which section Audioly searches: its featured collection block walks back from its Apps section
+  to the nearest earlier section with an element whose class contains "collection" (else one with
+  product links). The list wrappers carry .pattern-listen-collection for that, so each Apps block
+  stops at the nearest list instead of at an earlier Apps section. Never use the exact class
+  "collection" on a list: Audioly would then pair placeholders with ".collection li" by position.
+
+  Layout and size can come from the surrounding list (blocks/pattern-listen-list.liquid or
+  sections/pattern-this-week.liquid) through classes and CSS variables, because a block can't
+  read its parent's settings:
+  - layout 'auto': row, or column inside .pattern-listen--columns
+  - .pattern-listen--compact / --standard / --large set the type, cover, play and spacing sizes
+    (defaults: large)
+  - .pattern-listen--no-cover hides covers; .pattern-listen--show-price shows prices
+  - --listen-label: the default tag text when the card has no tag of its own
+
+  Accepts:
+  - product: {Object} product (required)
+  - layout: {String} 'row' (default), 'column' or 'auto'
+  - tag: {String} small mono label above the artist (optional)
+  - artist / title: {String} overrides (optional)
+  - show_image: {Boolean} render the cover; default true
+  - show_price: {Boolean|String} true, false (default) or 'auto' (shown when the list allows it)
+  - heading_tag: {String} element for the artist/title, default 'h3'
+  - app_blocks: {String} rendered app blocks to place inside the card (optional)
+
+  Usage:
+  {% render 'pattern-listen-card', product: product, layout: 'row' %}
+{%- endcomment -%}
+{%- if product != blank -%}
+  {%- liquid
+    assign card_layout = layout | default: 'row'
+    unless card_layout == 'column' or card_layout == 'auto'
+      assign card_layout = 'row'
+    endunless
+    assign card_show_image = true
+    if show_image == false
+      assign card_show_image = false
+    endif
+    assign card_heading_tag = heading_tag | default: 'h3'
+
+    # Artist / title: same split and fallback as snippets/card-product.liquid
+    assign card_full_title = product.title | strip
+    assign card_artist = ''
+    assign card_title = card_full_title
+    if card_full_title contains ' - '
+      assign card_split_artist = card_full_title | split: ' - ' | first | strip
+      assign card_split_prefix = card_full_title | split: ' - ' | first | append: ' - '
+      assign card_split_title = card_full_title | remove_first: card_split_prefix | strip
+      if card_split_artist != blank and card_split_title != blank
+        assign card_artist = card_split_artist
+        assign card_title = card_split_title
+      endif
+    endif
+    if artist != blank
+      assign card_artist = artist | strip
+    endif
+    if title != blank
+      assign card_title = title | strip
+    endif
+
+    # Meta: label · format, with the item count as on the cards ("2LP", "2×12\" Single")
+    assign card_label = product.metafields.custom.label.value | strip
+    assign card_format = product.metafields.custom.format.value | strip
+    assign card_item_count = product.metafields.custom.item_count.value | default: 0 | plus: 0
+    if card_format != blank and card_item_count > 1
+      assign card_format_key = card_format | downcase
+      if card_format_key == 'lp'
+        assign card_format = card_item_count | append: 'LP'
+      else
+        assign card_format = card_item_count | append: '×' | append: card_format
+      endif
+    endif
+  -%}
+  {%- if show_price -%}{{ 'component-price.css' | asset_url | stylesheet_tag }}{%- endif -%}
+
+  <div class="pattern-listen-card pattern-listen-card--{{ card_layout }}{% if card_show_image %} pattern-listen-card--cover{% endif %}">
+    {%- if card_show_image -%}
+      <div class="pattern-listen-card__cover{% if product.featured_image == blank %} pattern-placeholder{% endif %}">
+        {%- if product.featured_image != blank -%}
+          {{
+            product.featured_image
+            | image_url: width: 1000
+            | image_tag:
+              loading: 'lazy',
+              widths: '96, 192, 375, 550, 750, 1000',
+              sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw',
+              alt: '',
+              class: 'pattern-listen-card__image'
+          }}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%}
+      Play slot: Audioly's fit box. Holds a second link to the record (hidden from assistive tech
+      and the tab order; the text link is the real one) so Audioly can find the card root.
+    {%- endcomment -%}
+    <div class="card__inner pattern-listen-card__slot">
+      <a href="{{ product.url }}" class="pattern-listen-card__slot-link" tabindex="-1" aria-hidden="true"></a>
+    </div>
+
+    <div class="pattern-listen-card__text">
+      {%- if tag != blank -%}
+        <p class="pattern-label pattern-listen-card__tag">{{ tag | escape }}</p>
+      {%- elsif card_layout == 'auto' -%}
+        {%- comment -%} Default label from the list (--listen-label), drawn by CSS {%- endcomment -%}
+        <span class="pattern-label pattern-listen-card__tag pattern-listen-card__tag--inherit" aria-hidden="true"></span>
+      {%- endif -%}
+      <{{ card_heading_tag }} class="pattern-listen-card__heading">
+        <a href="{{ product.url }}" class="pattern-listen-card__link">
+          {%- if card_artist != blank -%}
+            <span class="pattern-listen-card__artist">{{ card_artist | escape }}</span>
+            <span class="visually-hidden"> — </span>
+          {%- endif -%}
+          <span class="pattern-listen-card__title">{{ card_title | escape }}</span>
+        </a>
+      </{{ card_heading_tag }}>
+    </div>
+
+    {%- if card_label != blank or card_format != blank or show_price -%}
+      <div class="pattern-listen-card__details">
+        {%- if card_label != blank or card_format != blank -%}
+          <p class="pattern-listen-card__meta">
+            {%- if card_label != blank -%}<span>{{ card_label | escape }}</span>{%- endif -%}
+            {%- if card_label != blank and card_format != blank -%}<span aria-hidden="true"> · </span>{%- endif -%}
+            {%- if card_format != blank -%}<span>{{ card_format | escape }}</span>{%- endif -%}
+          </p>
+        {%- endif -%}
+        {%- if show_price -%}
+          <div class="pattern-listen-card__price{% if show_price == 'auto' %} pattern-listen-card__price--auto{% endif %}">
+            {%- render 'price', product: product -%}
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {{- app_blocks -}}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  /* ===== Sizes (set on the list: .pattern-listen--compact / --standard / --large) =====
+     Large is the original look; Standard ≈ 60% artist size, Compact ≈ 40%. Covers, the play
+     button (never under 44px) and spacing scale with them. Cards outside a list use Large. */
+  .pattern-listen--large {
+    --listen-artist-row: clamp(4.4rem, 7vw, 10.4rem);
+    --listen-title-row: clamp(2.4rem, 2.8vw, 4rem);
+    --listen-artist-col: clamp(2.8rem, 3vw, 4.4rem);
+    --listen-title-col: clamp(2rem, 1.9vw, 2.8rem);
+    --listen-cover: 9.6rem;
+    --listen-play: 6.4rem;
+    --listen-gap: 3.2rem;
+    --listen-pad: 3.2rem;
+  }
+
+  .pattern-listen--standard {
+    --listen-artist-row: clamp(3.2rem, 4.2vw, 6.2rem);
+    --listen-title-row: clamp(1.9rem, 1.8vw, 2.6rem);
+    --listen-artist-col: clamp(2.2rem, 2.1vw, 3rem);
+    --listen-title-col: clamp(1.7rem, 1.4vw, 2rem);
+    --listen-cover: 7.2rem;
+    --listen-play: 5.6rem;
+    --listen-gap: 2.4rem;
+    --listen-pad: 2.4rem;
+  }
+
+  .pattern-listen--compact {
+    --listen-artist-row: clamp(2.2rem, 2.8vw, 4.2rem);
+    --listen-title-row: clamp(1.6rem, 1.3vw, 1.9rem);
+    --listen-artist-col: clamp(1.9rem, 1.6vw, 2.2rem);
+    --listen-title-col: clamp(1.5rem, 1.2vw, 1.7rem);
+    --listen-cover: 5.6rem;
+    --listen-play: 4.4rem;
+    --listen-gap: 1.6rem;
+    --listen-pad: 1.6rem;
+  }
+
+  /* ===== List arrangement (.pattern-listen wraps record blocks: .pattern-record) =====
+     Lines: rows with hairlines; the whole row fills with the accent on hover. --listen-inset
+     lets a full-width section bleed rows to its gutters. Columns: an auto-fitting grid. */
+  .pattern-listen {
+    min-width: 0;
+  }
+
+  .pattern-listen--lines > .pattern-record {
+    padding: var(--listen-pad, 3.2rem) var(--listen-inset, 1.2rem);
+    margin: 0 calc(var(--listen-inset, 1.2rem) * -1);
+    border-top: 0.1rem solid color-mix(in srgb, currentColor 22%, transparent);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .pattern-listen--lines > .pattern-record:last-child {
+    border-bottom: 0.1rem solid color-mix(in srgb, currentColor 22%, transparent);
+  }
+
+  .pattern-listen--lines > .pattern-record:hover {
+    --pattern-surface: var(--pattern-accent);
+    background-color: var(--pattern-accent);
+    color: var(--pattern-on-accent);
+  }
+
+  .pattern-listen--columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(24rem, 100%), 1fr));
+    gap: calc(var(--listen-gap, 3.2rem) * 1.25) var(--listen-gap, 3.2rem);
+  }
+
+  /* Up to 6 records per list (theme blocks can't cap their children in the schema) */
+  .pattern-listen > .pattern-record:nth-child(n + 7) {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pattern-listen--lines > .pattern-record {
+      transition: none;
+    }
+  }
+
+  /* ===== Card ===== */
+  .pattern-listen-card {
+    /* Colours: the play button is the text colour on the surface colour, so it inverts on any
+       background. Sections and columns set --pattern-surface. */
+    --listen-muted: color-mix(in srgb, currentColor 70%, transparent);
+    --listen-play-bg: currentColor;
+    --listen-play-fg: var(--pattern-surface, var(--pattern-paper));
+
+    /* Row layout without a cover (other layouts override these) */
+    --lc-cols: minmax(0, 1fr) minmax(0, 22rem) var(--listen-play, 6.4rem);
+    --lc-areas: 'text details play';
+    --lc-artist: var(--listen-artist-row, clamp(4.4rem, 7vw, 10.4rem));
+    --lc-title: var(--listen-title-row, clamp(2.4rem, 2.8vw, 4rem));
+    --lc-play-area: play;
+    --lc-play-align: center;
+    --lc-play-justify: center;
+    --lc-play-margin: 0;
+
+    position: relative; /* containing block for Audioly's absolutely positioned button wrapper */
+    display: grid;
+    grid-template-columns: var(--lc-cols);
+    grid-template-areas: var(--lc-areas);
+    align-items: center;
+    gap: calc(var(--listen-gap, 3.2rem) / 2) var(--listen-gap, 3.2rem);
+    min-width: 0;
+    color: inherit;
+  }
+
+  /* Row with cover */
+  .pattern-listen-card--cover {
+    --lc-cols: var(--listen-cover, 9.6rem) minmax(0, 1fr) minmax(0, 22rem) var(--listen-play, 6.4rem);
+    --lc-areas: 'cover text details play';
+  }
+
+  .pattern-listen--no-cover .pattern-listen-card {
+    --lc-cols: minmax(0, 1fr) minmax(0, 22rem) var(--listen-play, 6.4rem);
+    --lc-areas: 'text details play';
+  }
+
+  /* Column (explicit, or 'auto' inside a columns list) */
+  .pattern-listen-card.pattern-listen-card--column,
+  .pattern-listen--columns .pattern-listen-card {
+    --lc-cols: minmax(0, 1fr);
+    --lc-areas: 'text' 'details' 'play';
+    --lc-artist: var(--listen-artist-col, clamp(2.8rem, 3vw, 4.4rem));
+    --lc-title: var(--listen-title-col, clamp(2rem, 1.9vw, 2.8rem));
+    --lc-play-justify: start;
+    align-items: start;
+  }
+
+  /* Column with cover: the play slot (and Audioly's button) sit over the cover's bottom-left */
+  .pattern-listen-card--column.pattern-listen-card--cover,
+  .pattern-listen--columns .pattern-listen-card--cover {
+    --lc-areas: 'cover' 'text' 'details';
+    --lc-play-area: cover;
+    --lc-play-align: end;
+    --lc-play-justify: start;
+    --lc-play-margin: 0 0 1.6rem 1.6rem;
+  }
+
+  .pattern-listen--no-cover.pattern-listen--columns .pattern-listen-card {
+    --lc-areas: 'text' 'details' 'play';
+    --lc-play-area: play;
+    --lc-play-align: center;
+    --lc-play-justify: start;
+    --lc-play-margin: 0;
+  }
+
+  .pattern-listen--no-cover .pattern-listen-card__cover {
+    display: none;
+  }
+
+  .pattern-listen-card__text {
+    grid-area: text;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    min-width: 0;
+  }
+
+  .pattern-listen-card__tag {
+    color: var(--listen-muted);
+  }
+
+  .pattern-listen-card__tag--inherit::before {
+    content: var(--listen-label, none);
+  }
+
+  /* No list label: drop the empty line */
+  .pattern-listen-card__tag--inherit:not(.pattern-listen .pattern-listen-card__tag--inherit) {
+    display: none;
+  }
+
+  .pattern-listen-card__heading {
+    margin: 0;
+    font: inherit;
+    color: inherit;
+  }
+
+  .pattern-listen-card__link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .pattern-listen-card__artist {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--lc-artist);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    overflow-wrap: break-word;
+  }
+
+  .pattern-listen-card__title {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--lc-title);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    overflow-wrap: break-word;
+  }
+
+  .pattern-listen-card__link:hover .pattern-listen-card__artist,
+  .pattern-listen-card__link:hover .pattern-listen-card__title:only-child {
+    text-decoration: underline;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.12em;
+  }
+
+  .pattern-listen-card__details {
+    grid-area: details;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    min-width: 0;
+  }
+
+  .pattern-listen-card__meta {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--listen-muted);
+  }
+
+  .pattern-listen-card__price .price,
+  .pattern-listen-card__price .price * {
+    color: inherit;
+  }
+
+  .pattern-listen-card__price--auto {
+    display: none;
+  }
+
+  .pattern-listen--show-price .pattern-listen-card__price--auto {
+    display: block;
+  }
+
+  .pattern-listen-card__cover {
+    grid-area: cover;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .pattern-listen-card__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Play slot: Audioly's fit box (.card__inner); Audioly sizes its button area to this box */
+  .pattern-listen-card .pattern-listen-card__slot {
+    position: relative;
+    width: var(--listen-play, 6.4rem);
+    height: var(--listen-play, 6.4rem);
+  }
+
+  .pattern-listen-card__slot-link {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+  }
+
+  /* The slot and Audioly's button wrapper (prepended to the card; position: absolute, no offsets)
+     share one grid area. Matches every Audioly placeholder variant by class. */
+  .pattern-listen-card .pattern-listen-card__slot,
+  .pattern-listen-card > [class*='play-pause-button'][class*='placeholder'] {
+    grid-area: var(--lc-play-area);
+    align-self: var(--lc-play-align);
+    justify-self: var(--lc-play-justify);
+    margin: var(--lc-play-margin);
+  }
+
+  .pattern-listen-card > [class*='play-pause-button'][class*='placeholder'] {
+    z-index: 2;
+  }
+
+  /* Restyle Audioly's button: round, sized to the slot (min 44px), theme colours, no shadow */
+  .pattern-listen-card .audioly-play-pause-button-background.audioly-play-pause-button-background {
+    background-color: var(--listen-play-bg);
+    box-shadow: none;
+    transition: transform 0.15s ease;
+  }
+
+  .pattern-listen-card .audioly-play-pause-button.audioly-play-pause-button {
+    width: max(4.4rem, var(--listen-play, 6.4rem));
+    height: max(4.4rem, var(--listen-play, 6.4rem));
+  }
+
+  .pattern-listen-card .audioly-play-pause-button.audioly-play-pause-button::after {
+    background-color: var(--listen-play-fg);
+  }
+
+  .pattern-listen-card .audioly-play-pause-button-background:hover {
+    transform: scale(1.06);
+  }
+
+  .pattern-listen-card .audioly-play-pause-button:focus-visible {
+    outline: 0.3rem solid var(--pattern-accent);
+    outline-offset: 0.4rem;
+    border-radius: 50%;
+  }
+
+  /* Rows on tablet and mobile: play button stays on the right, details under the title */
+  @media screen and (max-width: 989px) {
+    .pattern-listen-card {
+      --lc-cols: minmax(0, 1fr) var(--listen-play, 6.4rem);
+      --lc-areas: 'text play' 'details play';
+    }
+
+    .pattern-listen-card--cover {
+      --lc-cols: min(var(--listen-cover, 9.6rem), 7.2rem) minmax(0, 1fr) var(--listen-play, 6.4rem);
+      --lc-areas: 'cover text play' 'cover details play';
+    }
+
+    .pattern-listen--no-cover .pattern-listen-card {
+      --lc-cols: minmax(0, 1fr) var(--listen-play, 6.4rem);
+      --lc-areas: 'text play' 'details play';
+    }
+
+    .pattern-listen-card--cover .pattern-listen-card__cover {
+      align-self: start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pattern-listen-card .audioly-play-pause-button-background {
+      transition: none;
+    }
+
+    .pattern-listen-card .audioly-play-pause-button-background:hover {
+      transform: none;
+    }
+  }
+{% endstylesheet %}

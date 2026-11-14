@@ -119,6 +119,15 @@
   );
 }
 
+/* Light (clay) version of the same texture, from the placeholder stripe colours */
+.pattern-stripe-clay {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--pattern-stripe) 0 var(--pattern-stripe-dark-width),
+    var(--pattern-clay) var(--pattern-stripe-dark-width) calc(var(--pattern-stripe-dark-width) * 2)
+  );
+}
+
 /* Dawn hides every empty div (base.css div:empty); a placeholder panel is empty on purpose */
 .pattern-placeholder:empty,
 .pattern-stripe-dark:empty {

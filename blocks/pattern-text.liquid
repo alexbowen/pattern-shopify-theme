@@ -1,0 +1,57 @@
+{%- comment -%} Pattern text: rich text in the body font, three sizes. {%- endcomment -%}
+{%- if block.settings.text != blank -%}
+  <div class="pattern-text-block__body pattern-text-block--{{ block.settings.size }} rte">{{ block.settings.text }}</div>
+{%- endif -%}
+
+{% stylesheet %}
+  .pattern-text-block__body {
+    max-width: 56rem;
+    color: inherit;
+    font-family: var(--font-body);
+    line-height: 1.55;
+  }
+
+  .pattern-text-block__body p {
+    margin: 0;
+  }
+
+  .pattern-text-block__body p + p {
+    margin-top: 1.2rem;
+  }
+
+  .pattern-text-block__body a {
+    color: inherit;
+    text-underline-offset: 0.3rem;
+  }
+
+  .pattern-text-block--small { font-size: 1.5rem; }
+  .pattern-text-block--body { font-size: 1.7rem; }
+  .pattern-text-block--large { font-size: clamp(1.8rem, 1.5vw, 2.2rem); }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Text",
+  "class": "pattern-text-block",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>We actively buy and exchange records. Bring a crate to the shop or send us a list.</p>"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "body", "label": "Body" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "large"
+    }
+  ],
+  "presets": [{ "name": "Text" }]
+}
+{% endschema %}

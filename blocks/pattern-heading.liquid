@@ -1,0 +1,94 @@
+{%- comment -%}
+  Pattern heading: optional mono eyebrow and a display heading with an optional italic accent word.
+{%- endcomment -%}
+{%- if block.settings.eyebrow != blank -%}
+  <p class="pattern-label pattern-heading-block__eyebrow">{{ block.settings.eyebrow | escape }}</p>
+{%- endif -%}
+{%- if block.settings.heading != blank or block.settings.heading_accent != blank or block.settings.heading_end != blank -%}
+  <{{ block.settings.tag }} class="pattern-display pattern-heading-block__heading pattern-heading-block--{{ block.settings.size }}">
+    {%- render 'pattern-heading-text',
+      start: block.settings.heading,
+      accent: block.settings.heading_accent,
+      end: block.settings.heading_end
+    -%}
+  </{{ block.settings.tag }}>
+{%- endif -%}
+
+{% stylesheet %}
+  .pattern-heading-block {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+
+  .pattern-heading-block__eyebrow {
+    opacity: 0.9;
+  }
+
+  .pattern-heading-block__heading {
+    line-height: 0.95;
+    overflow-wrap: break-word;
+  }
+
+  .pattern-heading-block--small { font-size: clamp(2.4rem, 2.4vw, 3.2rem); line-height: 1.05; letter-spacing: -0.03em; }
+  .pattern-heading-block--medium { font-size: clamp(3.2rem, 3.6vw, 5.2rem); letter-spacing: -0.04em; }
+  .pattern-heading-block--large { font-size: clamp(4.4rem, 5.4vw, 8rem); }
+  .pattern-heading-block--xlarge { font-size: clamp(5.6rem, 7vw, 10.4rem); line-height: 0.92; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Heading",
+  "class": "pattern-heading-block",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "info": "Optional small label above the heading."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading: before the accent word",
+      "default": "Bring us your"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading: accent word (italic)",
+      "default": "records"
+    },
+    {
+      "type": "text",
+      "id": "heading_end",
+      "label": "Heading: after the accent word",
+      "default": "."
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "xlarge", "label": "Extra large" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "select",
+      "id": "tag",
+      "label": "Heading level",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "p", "label": "Paragraph" }
+      ],
+      "default": "h2"
+    }
+  ],
+  "presets": [{ "name": "Heading" }]
+}
+{% endschema %}

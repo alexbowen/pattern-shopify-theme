@@ -1,0 +1,81 @@
+{%- comment -%}
+  Pattern listen list: up to 6 Record blocks as lines or columns, in three sizes. The list passes
+  its settings to the records through classes and CSS variables (see snippets/pattern-listen-card.liquid),
+  because child blocks can't read their parent's settings.
+
+  Audioly play buttons: the page needs an Apps section directly after the section holding this
+  list, with Audioly's featured collection play buttons block set to a collection containing
+  these records.
+{%- endcomment -%}
+<div
+  class="pattern-listen pattern-listen-collection pattern-listen--{{ block.settings.layout }} pattern-listen--{{ block.settings.size }}{% unless block.settings.show_cover %} pattern-listen--no-cover{% endunless %}{% if block.settings.show_price %} pattern-listen--show-price{% endif %}"
+  {% if block.settings.label != blank %}
+    style="--listen-label: {{ block.settings.label | json | escape }};"
+  {% endif %}
+>
+  {%- content_for 'blocks' -%}
+</div>
+
+{% schema %}
+{
+  "name": "Listen list",
+  "class": "pattern-listen-list",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "info": "Shown on each record, e.g. \"This week\" or \"Recommended\". A record's own label overrides it.",
+      "default": "This week"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        { "value": "compact", "label": "Compact" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "lines", "label": "Lines" },
+        { "value": "columns", "label": "Columns" }
+      ],
+      "default": "lines"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cover",
+      "label": "Show cover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": false
+    },
+    {
+      "type": "paragraph",
+      "content": "Up to 6 records; any more are hidden. Play buttons come from Audioly: add an Apps section directly below this section with its featured collection play buttons block, set to a collection containing these records."
+    }
+  ],
+  "blocks": [{ "type": "pattern-record" }],
+  "presets": [
+    {
+      "name": "Listen list",
+      "blocks": [
+        { "type": "pattern-record" },
+        { "type": "pattern-record" },
+        { "type": "pattern-record" }
+      ]
+    }
+  ]
+}
+{% endschema %}

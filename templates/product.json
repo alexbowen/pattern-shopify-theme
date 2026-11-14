@@ -54,12 +54,32 @@
           "settings": {
             "share_label": "Share"
           }
+        },
+        "audioly_sticky_audio_player_product_preview_inline_8K9b6J": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/product-preview-inline/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "product": "{{product}}",
+            "hideIfEmptyAudio": false,
+            "trackListing": "traditional",
+            "desktopColumnCount": 1,
+            "alwaysShowDisplayName": false,
+            "tracksToShow": "",
+            "useGlobalTheme": true,
+            "playButtonBackgroundColor": "#000000",
+            "playButtonIconColor": "#FFFFFF",
+            "changeTrackBackgroundColor": "#FFFFFF",
+            "changeTrackIconColor": "#000000",
+            "waveFormColor": "#777777",
+            "waveFormProgressColor": "#FF0000",
+            "volumeButtonsIconColor": "#000000"
+          }
         }
       },
       "block_order": [
         "vendor",
         "title",
         "price",
+        "audioly_sticky_audio_player_product_preview_inline_8K9b6J",
         "variant_picker",
         "quantity_selector",
         "buy_buttons",

@@ -1,0 +1,180 @@
+{%- comment -%}
+  Pattern columns: a row of 2–3 Column blocks (blocks/pattern-column.liquid) with a ratio, gap and
+  width setting. Stacks on mobile, in order or reversed.
+
+  Audioly play buttons for listen lists in these columns: add an Apps section directly after this
+  section with Audioly's featured collection play buttons block, set to a collection containing
+  the records.
+{%- endcomment -%}
+{%- liquid
+  assign column_count = section.blocks.size
+  assign ratio = section.settings.ratio
+  if column_count >= 3
+    assign ratio = '33-33-33'
+  elsif ratio == '33-33-33'
+    assign ratio = '50-50'
+  endif
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} .pattern-columns {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    #shopify-section-{{ section.id }} .pattern-columns {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="pattern-section pattern-columns pattern-columns--{{ ratio }} pattern-columns--gap-{{ section.settings.gap }} pattern-columns--mobile-{{ section.settings.mobile_order }}">
+  <div class="pattern-columns__grid{% if section.settings.width == 'contained' %} pattern-wrap{% endif %}">
+    {%- content_for 'blocks' -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .pattern-columns__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  .pattern-columns--60-40 .pattern-columns__grid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .pattern-columns--40-60 .pattern-columns__grid { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  .pattern-columns--33-33-33 .pattern-columns__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .pattern-columns--gap-none .pattern-columns__grid { gap: 0; }
+  .pattern-columns--gap-small .pattern-columns__grid { gap: 1.6rem; }
+  .pattern-columns--gap-large .pattern-columns__grid { gap: clamp(2.4rem, 3vw, 4.8rem); }
+
+  /* Mobile: one column, in order or reversed */
+  @media screen and (max-width: 749px) {
+    .pattern-columns .pattern-columns__grid {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pattern-columns--mobile-reverse .pattern-columns__grid {
+      flex-direction: column-reverse;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Pattern columns",
+  "tag": "section",
+  "class": "pattern-columns-section",
+  "max_blocks": 3,
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "ratio",
+      "label": "Column widths",
+      "info": "Three columns are always equal.",
+      "options": [
+        { "value": "50-50", "label": "50 / 50" },
+        { "value": "60-40", "label": "60 / 40" },
+        { "value": "40-60", "label": "40 / 60" },
+        { "value": "33-33-33", "label": "33 / 33 / 33" }
+      ],
+      "default": "50-50"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "contained", "label": "Page width" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "select",
+      "id": "gap",
+      "label": "Gap between columns",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "small", "label": "Small" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "mobile_order",
+      "label": "Mobile order",
+      "info": "Columns stack on mobile.",
+      "options": [
+        { "value": "normal", "label": "First column on top" },
+        { "value": "reverse", "label": "Last column on top" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 8,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 8,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 0
+    },
+    {
+      "type": "paragraph",
+      "content": "Add 2 or 3 columns. For Audioly play buttons on listen lists, add an Apps section directly below with Audioly's featured collection play buttons block."
+    }
+  ],
+  "blocks": [{ "type": "pattern-column" }],
+  "presets": [
+    {
+      "name": "Pattern columns",
+      "blocks": [
+        {
+          "type": "pattern-column",
+          "settings": { "background": "stripes-dark", "padding": "medium", "align": "center" },
+          "blocks": [
+            {
+              "type": "pattern-listen-list",
+              "settings": { "label": "This week", "size": "standard", "layout": "lines" },
+              "blocks": [
+                { "type": "pattern-record" },
+                { "type": "pattern-record" },
+                { "type": "pattern-record" }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "pattern-column",
+          "settings": { "background": "accent", "padding": "medium", "align": "center" },
+          "blocks": [
+            { "type": "pattern-heading", "settings": { "eyebrow": "We buy & exchange" } },
+            { "type": "pattern-text" },
+            { "type": "pattern-button", "settings": { "style": "paper" } }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

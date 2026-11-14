@@ -1,0 +1,63 @@
+{%- comment -%}
+  Pattern record: one record rendered with snippets/pattern-listen-card.liquid (layout 'auto', so
+  the surrounding listen list decides lines/columns, size, cover and default label).
+  Accepts app blocks, placed inside the card (for Audioly's per-card blocks if you use them).
+  Renders nothing without a product (an editor hint in the theme editor).
+{%- endcomment -%}
+{%- if block.settings.product != blank -%}
+  {%- capture record_app_blocks -%}{%- content_for 'blocks' -%}{%- endcapture -%}
+  {%- render 'pattern-listen-card',
+    product: block.settings.product,
+    layout: 'auto',
+    tag: block.settings.label,
+    artist: block.settings.artist,
+    title: block.settings.title,
+    show_price: 'auto',
+    heading_tag: 'h3',
+    app_blocks: record_app_blocks
+  -%}
+{%- elsif request.design_mode -%}
+  <p class="pattern-label pattern-record__empty">Record: choose a product</p>
+{%- endif -%}
+
+{% stylesheet %}
+  .pattern-record__empty {
+    margin: 0;
+    padding: 1.6rem 0;
+    opacity: 0.7;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Record",
+  "class": "pattern-record",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Record"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label override",
+      "info": "Leave empty to use the list's label."
+    },
+    {
+      "type": "text",
+      "id": "artist",
+      "label": "Artist override",
+      "info": "Leave empty to use the part of the product title before \" - \"."
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title override",
+      "info": "Leave empty to use the part of the product title after \" - \"."
+    }
+  ],
+  "blocks": [{ "type": "@app" }],
+  "presets": [{ "name": "Record" }]
+}
+{% endschema %}

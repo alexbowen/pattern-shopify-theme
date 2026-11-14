@@ -1,0 +1,80 @@
+{%- comment -%} Pattern button: square button or arrow link in the design tokens. {%- endcomment -%}
+{%- if block.settings.label != blank -%}
+  {%- liquid
+    case block.settings.style
+      when 'link'
+        assign button_class = 'pattern-link pattern-button-block__link'
+      when 'paper'
+        assign button_class = 'pattern-button pattern-button--paper'
+      when 'ink'
+        assign button_class = 'pattern-button pattern-button--ink'
+      when 'outline'
+        assign button_class = 'pattern-button pattern-button--outline'
+      else
+        assign button_class = 'pattern-button'
+    endcase
+  -%}
+  {%- if block.settings.link != blank -%}
+    <a href="{{ block.settings.link }}" class="{{ button_class }}">
+      {{- block.settings.label | escape -}}
+      {% render 'pattern-arrow' %}
+    </a>
+  {%- elsif request.design_mode -%}
+    <span class="{{ button_class }}" aria-disabled="true">
+      {{- block.settings.label | escape -}}
+      {% render 'pattern-arrow' %}
+    </span>
+  {%- endif -%}
+{%- endif -%}
+
+{% stylesheet %}
+  .pattern-button--ink {
+    background-color: var(--pattern-ink);
+    color: var(--pattern-paper);
+  }
+
+  .pattern-button--outline {
+    background-color: transparent;
+    color: inherit;
+    box-shadow: inset 0 0 0 0.1rem currentColor;
+  }
+
+  .pattern-button-block__link {
+    font-weight: 600;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Button",
+  "class": "pattern-button-block",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Read our policy"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link",
+      "info": "The button shows on the site once it has a link."
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "accent", "label": "Accent" },
+        { "value": "paper", "label": "Paper" },
+        { "value": "ink", "label": "Ink" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "link", "label": "Text link" }
+      ],
+      "default": "accent"
+    }
+  ],
+  "presets": [{ "name": "Button" }]
+}
+{% endschema %}
