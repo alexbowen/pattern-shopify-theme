@@ -307,11 +307,14 @@
               </p>
             {%- endif -%}
 
-            {%- comment -%} Price exactly as before on the left; condition (New / Used) on the right when known. {%- endcomment -%}
+            {%- comment -%}
+              Catalogue-label price row: amount without the currency code (cards only), then the
+              condition as a small tag (New = filled, Used = outlined) when known.
+            {%- endcomment -%}
             <div class="card-pattern__price-row">
-              {% render 'price', product: card_product, price_class: '', show_compare_at_price: true %}
+              {% render 'price', product: card_product, price_class: '', show_compare_at_price: true, hide_currency_code: true %}
               {%- if card_condition != blank -%}
-                <span class="card-pattern__condition">{{ card_condition | escape }}</span>
+                <span class="card-pattern__condition card-pattern__condition--{{ card_condition_key | handleize }}">{{ card_condition | escape }}</span>
               {%- endif -%}
             </div>
             {%- if card_product.quantity_price_breaks_configured? -%}

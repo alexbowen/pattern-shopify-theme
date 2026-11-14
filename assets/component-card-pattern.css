@@ -1,54 +1,132 @@
-/* Pattern product card text (snippets/card-product.liquid): artist / title / meta line, and the
-   price row with condition. The image container (.card__inner, .card__media), badges and price
-   markup are Dawn's and untouched.
-
-   Palette: --pattern-charcoal when the theme defines it, else the scheme foreground. */
+/* Pattern product card (snippets/card-product.liquid): the same type system as the "This week"
+   lines, laid out like a catalogue label.
+   - Artist: display font, bold, ~18px, one line with ellipsis. Title: the card-title tokens
+     (--font-card-title / --size-card-title / --color-card-title in snippets/pattern-tokens.liquid:
+     body font, regular, 15px, muted), line-height 1.35, up to two lines with ellipsis. Meta: mono 12px (label · format · genre). Space is reserved for all three so
+     cards in a row line up.
+   - Price row under a hairline: amount without the currency code in the display font, then the
+     condition as a small mono tag (New = filled charcoal, Used = outlined).
+   - Cover: 1px inset outline so pale sleeves keep an edge; hover / keyboard focus scales the image
+     slightly inside its frame and underlines the artist in the accent.
+   The image container (.card__inner, .card__media) and badges are Dawn's: badges are left where
+   they are, and the cover's top-left corner stays clear. */
 .card-wrapper {
-  --card-text: var(--pattern-charcoal, rgb(var(--color-foreground)));
+  --card-text: var(--pattern-ink, rgb(var(--color-foreground)));
   --card-muted: var(--pattern-muted, color-mix(in srgb, var(--card-text) 62%, transparent));
-  --card-line: 1.35;
+  --card-artist-size: 1.8rem;
+  --card-title-size: var(--size-card-title, 1.5rem);
+  --card-title-line: 1.35;
+  --card-line: 1.2;
 }
 
-/* Artist + title: the block always reserves three lines (one artist, two title) so cards in a
-   row line up whether or not a title wraps or has an artist. */
+/* ===== Cover ===== */
+.card-wrapper .card__media {
+  overflow: hidden;
+}
+
+.card-wrapper .card__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 0.1rem rgba(20, 20, 19, 0.12);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Slight scale inside the frame on hover and keyboard focus (replaces Dawn's slower zoom) */
+.card-wrapper .card__inner .card__media .media > img:nth-child(n) {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.card-wrapper:is(:hover, :has(.card-pattern__link:focus-visible)) .card__media .media > img:first-child:only-child,
+.card-wrapper:is(:hover, :has(.card-pattern__link:focus-visible)) .card__media .media > img + img {
+  transform: scale(1.02);
+}
+
+/* ===== Row alignment =====
+   Text space is reserved below, but covers can differ slightly in height (collections set to
+   "adapt to image"), so the text column fills the card and the price row sits at its foot. */
+.card-wrapper .card--standard > .card__content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-wrapper .card--standard > .card__content > .card__information {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-wrapper .card__information > .card-information {
+  margin-top: auto;
+}
+
+/* ===== Artist / title ===== */
+/* One artist line + two title lines are always reserved */
 .card-pattern__heading.card__heading {
-  font-size: calc(var(--font-heading-scale) * 1.4rem);
+  font-size: var(--card-artist-size);
   line-height: var(--card-line);
-  min-height: calc(3em * var(--card-line));
+  min-height: calc(var(--card-artist-size) * var(--card-line) + 2 * var(--card-title-size) * var(--card-title-line) + 0.2rem);
   color: var(--card-text);
 }
 
 .card-pattern__link {
   display: flex;
   flex-direction: column;
+  gap: 0.2rem;
   text-decoration: none;
 }
 
 .card-pattern__artist {
   display: block;
+  font-family: var(--font-display, var(--font-heading-family));
   font-weight: 700;
+  font-size: var(--card-artist-size);
+  letter-spacing: -0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-decoration-color: var(--accent, currentColor);
+  text-decoration-thickness: 0.2rem;
+  text-underline-offset: 0.3rem;
 }
 
 .card-pattern__title {
-  color: var(--card-muted);
-  font-size: 0.9em;
+  font-family: var(--font-card-title, var(--font-body-family));
+  font-style: normal;
+  font-weight: 400;
+  font-size: var(--card-title-size);
+  line-height: var(--card-title-line);
+  letter-spacing: 0;
+  color: var(--color-card-title, var(--card-muted));
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   overflow: hidden;
-  font-weight: 400;
+  text-overflow: ellipsis;
   overflow-wrap: anywhere;
 }
 
-/* Meta: label · format · genre, one line, always reserves its height (mono, per the v2 mockup) */
+/* Hover / keyboard focus: accent underline on the artist (or the title when there's no artist) */
+.card-wrapper.underline-links-hover:hover .card-pattern__link {
+  text-decoration: none;
+}
+
+.card-wrapper:is(:hover, :has(.card-pattern__link:focus-visible)) .card-pattern__artist,
+.card-wrapper:is(:hover, :has(.card-pattern__link:focus-visible)) .card-pattern__link:not(:has(.card-pattern__artist)) .card-pattern__title {
+  text-decoration-line: underline;
+  text-decoration-color: var(--accent, currentColor);
+  text-decoration-thickness: 0.2rem;
+  text-underline-offset: 0.3rem;
+}
+
+/* ===== Meta: label · format · genre, one line, always reserves its height ===== */
 .card-pattern__meta {
   font-family: var(--font-mono, inherit);
-  margin: 0.4rem 0 0;
-  min-height: calc(1em * 1.4);
+  margin: 0.6rem 0 0;
+  min-height: calc(1.2rem * 1.4);
   font-size: 1.2rem;
   line-height: 1.4;
   letter-spacing: 0.02em;
@@ -58,8 +136,7 @@
   text-overflow: ellipsis;
 }
 
-/* Dawn hides every empty <p> (base.css p:empty); the meta line must keep its height when a
-   product has no label, format or genre, or that card's price row sits higher than its row. */
+/* Dawn hides every empty <p> (base.css p:empty); the meta line keeps its height regardless */
 .card-pattern__meta:empty {
   display: block;
 }
@@ -68,76 +145,82 @@
   white-space: pre;
 }
 
-/* Price (Dawn's markup, unchanged) left; condition right */
+/* ===== Price row: hairline above, amount, condition tag ===== */
 .card-pattern__price-row {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.8rem;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
   min-width: 0;
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 0.1rem solid rgba(20, 20, 19, 0.15);
 }
 
 .card-pattern__price-row .price {
   min-width: 0;
+  margin: 0;
+  font-family: var(--font-display, inherit);
+  font-size: 1.6rem;
+  letter-spacing: 0;
+  color: var(--card-text);
+}
+
+.card-pattern__price-row .price .price-item,
+.card-pattern__price-row .price .price-item--regular,
+.card-pattern__price-row .price .price-item--sale {
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
 }
 
 .card-pattern__condition {
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.6rem;
+  border: 0.1rem solid var(--card-text);
+  border-radius: 0;
   font-family: var(--font-mono, inherit);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   line-height: 1.4;
-  color: var(--card-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--card-text);
   white-space: nowrap;
 }
 
-/* Hover: underline the artist (or the title when there's no artist line) and lift the image
-   with a soft shadow. Shadow and Dawn's existing image zoom only, so nothing moves and
-   Audioly's overlay stays aligned with the image. */
-@media (hover: hover) {
-  .card-wrapper.underline-links-hover:hover .card-pattern__link {
-    text-decoration: none;
-  }
-
-  .card-wrapper:hover .card-pattern__artist,
-  .card-wrapper:hover .card-pattern__link:not(:has(.card-pattern__artist)) .card-pattern__title {
-    text-decoration: underline;
-    text-underline-offset: 0.3rem;
-    text-decoration-thickness: 0.1rem;
-  }
-
-  .card-wrapper .card__inner {
-    transition: box-shadow var(--duration-default) ease;
-  }
-
-  .card-wrapper:hover .card__inner {
-    box-shadow: 0 0.8rem 2rem rgba(var(--color-shadow), 0.14);
-  }
+.card-pattern__condition--new {
+  background-color: var(--card-text);
+  color: var(--pattern-paper, rgb(var(--color-background)));
 }
 
-/* Mobile (two columns): tighter spacing, smaller type, meta still one line */
+/* Mobile (two columns): slightly smaller type and tighter spacing */
 @media screen and (max-width: 749px) {
+  .card-wrapper {
+    --card-artist-size: 1.6rem;
+  }
+
   .card-wrapper .card__information {
     padding: 0.8rem 0.2rem 1rem;
   }
 
-  .card-pattern__heading.card__heading {
-    font-size: calc(var(--font-heading-scale) * 1.3rem);
-  }
-
-  .card-pattern__meta,
-  .card-pattern__condition {
+  .card-pattern__meta {
     font-size: 1.1rem;
   }
 
-  .card-pattern__price-row {
-    gap: 0.4rem;
+  .card-pattern__price-row .price {
+    font-size: 1.5rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card-wrapper .card__inner {
+  .card-wrapper .card__inner .card__media .media > img:nth-child(n) {
     transition: none;
+  }
+
+  .card-wrapper:is(:hover, :has(.card-pattern__link:focus-visible)) .card__media .media > img:first-child:only-child,
+  .card-wrapper:is(:hover, :has(.card-pattern__link:focus-visible)) .card__media .media > img + img {
+    transform: none;
   }
 }
