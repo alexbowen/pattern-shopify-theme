@@ -1,7 +1,8 @@
 {%- comment -%}
   Pattern service row: up to 4 service notes on the paper background. Each column has a thick
-  charcoal rule on top, a small mono label ("Postage · PT & ES"), a bold display highlight, one
-  line of supporting text and an arrow link. With a link the whole column is the link: on hover
+  charcoal rule on top, an optional line icon (snippets/pattern-icon.liquid), a small mono label
+  ("Postage · PT & ES"), a bold display highlight, one line of supporting text and an arrow link
+  pinned to the foot of the column so links line up across columns. With a link the whole column is the link: on hover
   the link text underlines and the arrow nudges right and turns Opal.
 {%- endcomment -%}
 {%- style -%}
@@ -49,6 +50,9 @@
                 href="{{ block.settings.link }}"
               {% endif %}
             >
+              {%- if block.settings.icon != blank and block.settings.icon != 'none' -%}
+                {% render 'pattern-icon', name: block.settings.icon, class: 'pattern-service__icon' %}
+              {%- endif -%}
               {%- if block.settings.label != blank -%}
                 <span class="pattern-label pattern-service__label">{{ block.settings.label | escape }}</span>
               {%- endif -%}
@@ -106,6 +110,14 @@
     border-top: 0.3rem solid var(--pattern-ink);
     color: var(--pattern-ink);
     text-decoration: none;
+  }
+
+  /* Icon: under the rule, above the label, ~20px below it (8px margin + the 12px column gap) */
+  .pattern-service__icon {
+    flex: 0 0 auto;
+    display: block;
+    margin-bottom: 0.8rem;
+    color: var(--pattern-ink);
   }
 
   .pattern-service__label {
@@ -206,6 +218,24 @@
       "name": "Service",
       "settings": [
         {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "parcel", "label": "Parcel" },
+            { "value": "storefront", "label": "Storefront" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "bike", "label": "Bike" },
+            { "value": "van", "label": "Van" },
+            { "value": "disc", "label": "Disc (record)" },
+            { "value": "headphones", "label": "Headphones" },
+            { "value": "map-pin", "label": "Map pin" },
+            { "value": "swap", "label": "Swap (exchange)" }
+          ],
+          "default": "parcel"
+        },
+        {
           "type": "text",
           "id": "label",
           "label": "Label",
@@ -228,7 +258,7 @@
           "type": "url",
           "id": "link",
           "label": "Link",
-          "info": "With a link the whole column is clickable."
+          "info": "With a link the whole column is clickable. The link row hides when this is empty."
         },
         {
           "type": "text",
@@ -246,6 +276,7 @@
         {
           "type": "service",
           "settings": {
+            "icon": "parcel",
             "label": "Postage · PT & ES",
             "highlight": "One flat rate",
             "text": "To Portugal and Spain.",
@@ -255,8 +286,9 @@
         {
           "type": "service",
           "settings": {
+            "icon": "storefront",
             "label": "Collect · Alcântara",
-            "highlight": "Order online, collect in store",
+            "highlight": "Collect in store",
             "text": "Pick up at the shop and have a listen while you're there.",
             "link_label": "How collection works"
           }
@@ -264,6 +296,7 @@
         {
           "type": "service",
           "settings": {
+            "icon": "clock",
             "label": "Delivery · Lisbon",
             "highlight": "Lisbon in 24 hours",
             "text": "Flat-fee delivery within Lisbon postcodes.",

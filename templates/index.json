@@ -314,17 +314,19 @@
             "highlight": "One flat rate",
             "text": "To Portugal and Spain.",
             "link": "/policies/shipping-policy",
-            "link_label": "Shipping details"
+            "link_label": "Shipping details",
+            "icon": "parcel"
           }
         },
         "service_collect": {
           "type": "service",
           "settings": {
             "label": "Collect · Alcântara",
-            "highlight": "Order online, collect in store",
+            "highlight": "Collect in store",
             "text": "Pick up at the shop and have a listen while you’re there.",
-            "link": "",
-            "link_label": "How collection works"
+            "link": "/policies/shipping-policy",
+            "link_label": "How collection works",
+            "icon": "storefront"
           }
         },
         "service_lisbon": {
@@ -333,8 +335,9 @@
             "label": "Delivery · Lisbon",
             "highlight": "Lisbon in 24 hours",
             "text": "Flat-fee delivery within Lisbon postcodes.",
-            "link": "",
-            "link_label": "Delivery zones"
+            "link": "/policies/shipping-policy",
+            "link_label": "Delivery zones",
+            "icon": "clock"
           }
         }
       },

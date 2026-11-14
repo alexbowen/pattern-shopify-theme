@@ -1,0 +1,66 @@
+{%- comment -%}
+  Pattern icon: a small inline line icon (no icon font, no external request).
+
+  Icons are from Lucide (https://lucide.dev), ISC License:
+  Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2022 as part of Feather (MIT).
+  All other copyright (c) for Lucide are held by Lucide Contributors 2022.
+  Permission to use, copy, modify, and/or distribute this software for any purpose with or without
+  fee is hereby granted, provided that the above copyright notice and this permission notice
+  appear in all copies.
+
+  Drawn on Lucide's 24×24 grid and shown at 32×32 by default; stroke-width 1.125 on that grid is a
+  1.5px line at 32px. Round caps and joins, stroke="currentColor" so the icon takes the text colour.
+  Decorative: aria-hidden, the text beside it carries the meaning.
+
+  Accepts:
+  - name: {String} parcel | storefront | clock | bike | van | disc | headphones | map-pin | swap
+    (none or blank renders nothing)
+  - size: {Number} pixel size, default 32
+  - class: {String} extra classes (optional)
+
+  Usage:
+  {% render 'pattern-icon', name: 'parcel' %}
+{%- endcomment -%}
+{%- liquid
+  assign icon_size = size | default: 32
+  assign icon_stroke = 1.5 | times: 24.0 | divided_by: icon_size
+-%}
+{%- capture icon_paths -%}
+  {%- case name -%}
+    {%- when 'parcel' -%}
+      <path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/>
+    {%- when 'storefront' -%}
+      <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/>
+    {%- when 'clock' -%}
+      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+    {%- when 'bike' -%}
+      <circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>
+    {%- when 'van' -%}
+      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
+    {%- when 'disc' -%}
+      <circle cx="12" cy="12" r="10"/><path d="M6 12c0-1.7.7-3.2 1.8-4.2"/><circle cx="12" cy="12" r="2"/><path d="M18 12c0 1.7-.7 3.2-1.8 4.2"/>
+    {%- when 'headphones' -%}
+      <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>
+    {%- when 'map-pin' -%}
+      <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>
+    {%- when 'swap' -%}
+      <path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>
+  {%- endcase -%}
+{%- endcapture -%}
+{%- if icon_paths != blank -%}
+  <svg
+    class="pattern-icon pattern-icon--{{ name }}{% if class != blank %} {{ class }}{% endif %}"
+    width="{{ icon_size }}"
+    height="{{ icon_size }}"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="{{ icon_stroke }}"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    {{- icon_paths -}}
+  </svg>
+{%- endif -%}
