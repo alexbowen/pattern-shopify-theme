@@ -12,13 +12,6 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "vendor": {
-          "type": "text",
-          "settings": {
-            "text": "{{ product.vendor }}",
-            "text_style": "uppercase"
-          }
-        },
         "title": {
           "type": "title",
           "settings": {}
@@ -26,6 +19,29 @@
         "price": {
           "type": "price",
           "settings": {}
+        },
+        "audioly_sticky_audio_player_product_preview_inline_8K9b6J": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/product-preview-inline/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "trackSource": "product",
+            "product": "{{product}}",
+            "hideIfEmptyAudio": false,
+            "playlist": "",
+            "trackListing": "traditional",
+            "desktopColumnCount": 1,
+            "alwaysShowDisplayName": false,
+            "tracksToShow": "",
+            "playerBackgroundColor": "",
+            "playerForegroundColor": "",
+            "useGlobalTheme": true,
+            "playButtonBackgroundColor": "#000000",
+            "playButtonIconColor": "#ffffff",
+            "changeTrackBackgroundColor": "#ffffff",
+            "changeTrackIconColor": "#000000",
+            "waveFormColor": "#777777",
+            "waveFormProgressColor": "#ff0000",
+            "volumeButtonsIconColor": "#000000"
+          }
         },
         "variant_picker": {
           "type": "variant_picker",
@@ -55,57 +71,72 @@
             "share_label": "Share"
           }
         },
-        "audioly_sticky_audio_player_product_preview_inline_8K9b6J": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/product-preview-inline/1f530410-ca0c-4485-98fc-b2daea5cb117",
+        "trust_postage": {
+          "type": "pattern_trust",
           "settings": {
-            "product": "{{product}}",
-            "hideIfEmptyAudio": false,
-            "trackListing": "traditional",
-            "desktopColumnCount": 1,
-            "alwaysShowDisplayName": false,
-            "tracksToShow": "",
-            "useGlobalTheme": true,
-            "playButtonBackgroundColor": "#000000",
-            "playButtonIconColor": "#FFFFFF",
-            "changeTrackBackgroundColor": "#FFFFFF",
-            "changeTrackIconColor": "#000000",
-            "waveFormColor": "#777777",
-            "waveFormProgressColor": "#FF0000",
-            "volumeButtonsIconColor": "#000000"
+            "label": "Postage",
+            "text": "Flat-rate postage to PT & ES"
+          }
+        },
+        "trust_collect": {
+          "type": "pattern_trust",
+          "settings": {
+            "label": "Collect",
+            "text": "Collect in store, Alcântara"
+          }
+        },
+        "trust_lisbon": {
+          "type": "pattern_trust",
+          "settings": {
+            "label": "Delivery",
+            "text": "Lisbon in 24 hours"
+          }
+        },
+        "pattern_pills": {
+          "type": "pattern_details",
+          "settings": {
+            "show_pills": true,
+            "show_specs": false
           }
         }
       },
       "block_order": [
-        "vendor",
         "title",
+        "pattern_pills",
+        "description",
         "price",
-        "audioly_sticky_audio_player_product_preview_inline_8K9b6J",
         "variant_picker",
         "quantity_selector",
         "buy_buttons",
-        "description",
+        "trust_postage",
+        "trust_collect",
+        "trust_lisbon",
+        "audioly_sticky_audio_player_product_preview_inline_8K9b6J",
         "share"
       ],
       "settings": {
-        "enable_sticky_info": true,
+        "enable_sticky_info": false,
         "color_scheme": "scheme-1",
         "media_size": "large",
         "constrain_to_viewport": true,
         "media_fit": "contain",
-        "gallery_layout": "stacked",
+        "gallery_layout": "thumbnail",
         "mobile_thumbnails": "hide",
         "media_position": "left",
         "image_zoom": "lightbox",
         "hide_variants": true,
         "enable_video_looping": false,
-        "padding_top": 36,
-        "padding_bottom": 12
+        "padding_top": 16,
+        "padding_bottom": 12,
+        "show_breadcrumb": true,
+        "description_collapse": true,
+        "description_lines": 4
       }
     },
     "related-products": {
       "type": "related-products",
       "settings": {
-        "heading": "You may also like",
+        "heading": "More like this",
         "heading_size": "h2",
         "products_to_show": 4,
         "columns_desktop": 4,
@@ -119,10 +150,58 @@
         "padding_top": 36,
         "padding_bottom": 28
       }
+    },
+    "pattern_service_row_6zAPKC": {
+      "type": "pattern-service-row",
+      "blocks": {
+        "service_6eGfcY": {
+          "type": "service",
+          "settings": {
+            "label": "Postage · PT & ES",
+            "highlight": "One flat rate",
+            "text": "To Portugal and Spain.",
+            "link": "",
+            "link_label": "Shipping details"
+          }
+        },
+        "service_wrwMwY": {
+          "type": "service",
+          "settings": {
+            "label": "Collect · Alcântara",
+            "highlight": "Order online, collect in store",
+            "text": "Pick up at the shop and have a listen while you're there.",
+            "link": "",
+            "link_label": "How collection works"
+          }
+        },
+        "service_AawdgL": {
+          "type": "service",
+          "settings": {
+            "label": "Delivery · Lisbon",
+            "highlight": "Lisbon in 24 hours",
+            "text": "Flat-fee delivery within Lisbon postcodes.",
+            "link": "",
+            "link_label": "Delivery zones"
+          }
+        }
+      },
+      "block_order": [
+        "service_6eGfcY",
+        "service_wrwMwY",
+        "service_AawdgL"
+      ],
+      "name": "Pattern service row",
+      "settings": {
+        "heading": "",
+        "padding_top": 48,
+        "padding_bottom": 96
+      },
+      "disabled": true
     }
   },
   "order": [
     "main",
-    "related-products"
+    "related-products",
+    "pattern_service_row_6zAPKC"
   ]
 }

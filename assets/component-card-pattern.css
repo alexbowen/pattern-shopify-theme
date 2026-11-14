@@ -174,27 +174,7 @@
   letter-spacing: inherit;
 }
 
-.card-pattern__condition {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  padding: 0.1rem 0.6rem;
-  border: 0.1rem solid var(--card-text);
-  border-radius: 0;
-  font-family: var(--font-mono, inherit);
-  font-size: 1.1rem;
-  line-height: 1.4;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--card-text);
-  white-space: nowrap;
-}
-
-.card-pattern__condition--new {
-  background-color: var(--card-text);
-  color: var(--pattern-paper, rgb(var(--color-background)));
-}
-
+/* Condition tag: shared .pattern-tag (assets/pattern-base.css, snippets/pattern-tag.liquid) */
 /* Mobile (two columns): slightly smaller type and tighter spacing */
 @media screen and (max-width: 749px) {
   .card-wrapper {

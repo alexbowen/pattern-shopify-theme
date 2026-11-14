@@ -1,0 +1,17 @@
+{%- comment -%}
+  Small mono tag (11px, uppercase, 1px charcoal border, square corners), shared by the product
+  cards and the product page price row. Styles: .pattern-tag in assets/pattern-base.css.
+
+  Accepts:
+  - text: {String} tag text (renders nothing when blank)
+  - filled: {Boolean} filled charcoal with paper text (e.g. New); default outlined (e.g. Used)
+  - class: {String} extra classes (optional)
+
+  Usage:
+  {% render 'pattern-tag', text: 'New', filled: true %}
+{%- endcomment -%}
+{%- if text != blank -%}
+  <span class="pattern-tag{% if filled %} pattern-tag--filled{% endif %}{% if class != blank %} {{ class }}{% endif %}">
+    {{- text | escape -}}
+  </span>
+{%- endif -%}

@@ -304,9 +304,17 @@
         document.documentElement.classList.add('shopify-design-mode');
       }
     </script>
+    {%- comment -%}
+      Dev / unpublished themes only: hide Shopify's injected cookie consent banner
+      (section#shopify-pc__banner) so it doesn't cover previews. Never applies to the live
+      (main) theme, where the banner must always show.
+    {%- endcomment -%}
+    {%- if theme.role != 'main' -%}
+      <style>#shopify-pc__banner { display: none !important; }</style>
+    {%- endif -%}
   </head>
 
-  <body class="gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
+  <body class="gradient template-{{ template.name }}{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">
     <a class="skip-to-content-link button visually-hidden" href="#MainContent">
       {{ 'accessibility.skip_to_text' | t }}
     </a>

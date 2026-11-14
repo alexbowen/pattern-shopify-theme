@@ -1,0 +1,102 @@
+{%- comment -%}
+  Product description with an optional collapse, used by the description block in
+  sections/main-product.liquid. The full text is always in the DOM; when collapsed it is clamped
+  to a number of lines with CSS line-clamp. A "Read more" / "Show less" button (aria-expanded)
+  appears only when the text actually overflows the clamp (measured, re-checked on resize and
+  after fonts load). Expanding animates the height unless reduced motion is preferred.
+
+  Accepts:
+  - product: {Object} product
+  - collapse: {Boolean} collapse long descriptions
+  - lines: {Number} lines shown when collapsed (default 4)
+  - section_id: {String} section id (for unique ids)
+  - block: {Object} the description block (for theme editor attributes)
+{%- endcomment -%}
+{%- if product.description != blank -%}
+  {%- assign clamp_lines = lines | default: 4 -%}
+  <div
+    class="product__description rte quick-add-hidden pattern-product-description{% if collapse %} pattern-product-description--collapsible is-clamped{% endif %}"
+    {% if collapse %}
+      style="--description-lines: {{ clamp_lines }};"
+    {% endif %}
+    {{ block.shopify_attributes }}
+  >
+    <div class="pattern-product-description__body" id="ProductDescription-{{ section_id }}">
+      {{ product.description }}
+    </div>
+    {%- if collapse -%}
+      <button
+        type="button"
+        class="pattern-link pattern-product-description__toggle"
+        aria-controls="ProductDescription-{{ section_id }}"
+        aria-expanded="false"
+        hidden
+      >
+        <span class="pattern-product-description__more">Read more</span>
+        <span class="pattern-product-description__less">Show less</span>
+      </button>
+      <script>
+        (() => {
+          const root = document.currentScript.closest('.pattern-product-description');
+          if (!root) return;
+          const body = root.querySelector('.pattern-product-description__body');
+          const toggle = root.querySelector('.pattern-product-description__toggle');
+          const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+          // Show the button only if the clamped text really overflows.
+          const measure = () => {
+            if (!root.classList.contains('is-clamped')) return;
+            toggle.hidden = body.scrollHeight <= body.clientHeight + 1;
+          };
+
+          const animate = (from, to, done) => {
+            if (reduceMotion.matches) {
+              done();
+              return;
+            }
+            body.style.height = from + 'px';
+            body.style.overflow = 'hidden';
+            body.getBoundingClientRect();
+            body.style.transition = 'height 0.25s ease';
+            body.style.height = to + 'px';
+            const end = () => {
+              body.removeEventListener('transitionend', end);
+              body.style.transition = '';
+              body.style.height = '';
+              body.style.overflow = '';
+              done();
+            };
+            body.addEventListener('transitionend', end);
+            setTimeout(end, 400);
+          };
+
+          toggle.addEventListener('click', () => {
+            const expanding = root.classList.contains('is-clamped');
+            if (expanding) {
+              const from = body.clientHeight;
+              root.classList.remove('is-clamped');
+              const to = body.scrollHeight;
+              toggle.setAttribute('aria-expanded', 'true');
+              root.classList.add('is-expanded');
+              animate(from, to, () => {});
+            } else {
+              const from = body.scrollHeight;
+              root.classList.add('is-clamped');
+              const to = body.clientHeight;
+              root.classList.remove('is-clamped');
+              toggle.setAttribute('aria-expanded', 'false');
+              root.classList.remove('is-expanded');
+              animate(from, to, () => root.classList.add('is-clamped'));
+              if (reduceMotion.matches) root.classList.add('is-clamped');
+            }
+          });
+
+          measure();
+          if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+          window.addEventListener('load', measure);
+          if ('ResizeObserver' in window) new ResizeObserver(measure).observe(body);
+        })();
+      </script>
+    {%- endif -%}
+  </div>
+{%- endif -%}

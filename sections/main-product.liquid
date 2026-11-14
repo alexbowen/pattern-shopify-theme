@@ -1,6 +1,6 @@
 <product-info
   id="MainProduct-{{ section.id }}"
-  class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}"
+  class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}{% if section.settings.hide_dynamic_checkout %} pattern-product--no-dynamic-checkout{% endif %}"
   data-section="{{ section.id }}"
   data-product-id="{{ product.id }}"
   data-update-url="true"
@@ -10,6 +10,7 @@
   {% endif %}
 >
   {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
+  {{ 'pattern-product.css' | asset_url | stylesheet_tag }}
   {{ 'component-accordion.css' | asset_url | stylesheet_tag }}
   {{ 'component-price.css' | asset_url | stylesheet_tag }}
   {{ 'component-slider.css' | asset_url | stylesheet_tag }}
@@ -74,6 +75,9 @@
 
   {% assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src' %}
   <div class="page-width">
+    {%- if section.settings.show_breadcrumb -%}
+      {% render 'pattern-product-info', product: product, part: 'breadcrumb' %}
+    {%- endif -%}
     <div class="product product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
       <div class="grid__item product__media-wrapper">
         {% render 'product-media-gallery', variant_images: variant_images %}
@@ -97,8 +101,9 @@
                   {{- block.settings.text -}}
                 </p>
               {%- when 'title' -%}
-                <div class="product__title" {{ block.shopify_attributes }}>
-                  <h1>{{ product.title | escape }}</h1>
+                <div class="product__title pattern-product__title-block" {{ block.shopify_attributes }}>
+                  {%- comment -%} Label link, then the h1: text stays "Artist - Title", split visually with spans {%- endcomment -%}
+                  {% render 'pattern-product-info', product: product, part: 'title' %}
                   <a href="{{ product.url }}" class="product__title">
                     <h2 class="h1">
                       {{ product.title | escape }}
@@ -107,12 +112,23 @@
                 </div>
               {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
-                  {%- render 'price',
-                    product: product,
-                    use_variant: true,
-                    show_badges: true,
-                    price_class: 'price--large'
-                  -%}
+                  {%- comment -%}
+                    Price row: condition and format tags (shared card tag style) beside the price.
+                    Inside #price-… so Dawn's variant refresh replaces them with the price.
+                  {%- endcomment -%}
+                  <div class="pattern-price-row">
+                    {%- render 'price',
+                      product: product,
+                      use_variant: true,
+                      show_badges: true,
+                      price_class: 'price--large',
+                      hide_currency_code: true
+                    -%}
+                    {%- capture price_tags -%}{%- render 'pattern-product-info', product: product, part: 'tags' -%}{%- endcapture -%}
+                    {%- if price_tags != blank -%}
+                      <span class="pattern-price-row__tags">{{ price_tags }}</span>
+                    {%- endif -%}
+                  </div>
                 </div>
                 {%- if product.quantity_price_breaks_configured? -%}
                   <div class="volume-pricing-note" id="Volume-Note-{{ section.id }}">
@@ -192,9 +208,25 @@
                   {%- endif -%}
                 </p>
               {%- when 'description' -%}
-                {%- if product.description != blank -%}
-                  <div class="product__description rte quick-add-hidden" {{ block.shopify_attributes }}>
-                    {{ product.description }}
+                {%- render 'pattern-product-description', product: product, collapse: section.settings.description_collapse, lines: section.settings.description_lines, section_id: section.id, block: block -%}
+              {%- when 'pattern_details' -%}
+                <div class="pattern-product-details" {{ block.shopify_attributes }}>
+                  {%- if block.settings.show_pills -%}
+                    {% render 'pattern-product-info', product: product, part: 'pills' %}
+                  {%- endif -%}
+                  {%- if block.settings.show_specs -%}
+                    {% render 'pattern-product-info', product: product, part: 'specs' %}
+                  {%- endif -%}
+                </div>
+              {%- when 'pattern_trust' -%}
+                {%- if block.settings.label != blank or block.settings.text != blank -%}
+                  <div class="pattern-product-trust" {{ block.shopify_attributes }}>
+                    {%- if block.settings.label != blank -%}
+                      <span class="pattern-label pattern-product-trust__label">{{ block.settings.label | escape }}</span>
+                    {%- endif -%}
+                    {%- if block.settings.text != blank -%}
+                      <span class="pattern-product-trust__text">{{ block.settings.text | escape }}</span>
+                    {%- endif -%}
                   </div>
                 {%- endif -%}
               {%- when 'sku' -%}
@@ -228,9 +260,18 @@
                   </details>
                 </div>
               {%- when 'quantity_selector' -%}
+                {%- liquid
+                  # One (or no) copy in stock: no point choosing a quantity. The input stays in the
+                  # form (value 1) so adding to cart works as before.
+                  assign qty_variant = product.selected_or_first_available_variant
+                  assign hide_quantity = false
+                  if qty_variant.inventory_management == 'shopify' and qty_variant.inventory_policy != 'continue' and qty_variant.inventory_quantity <= 1
+                    assign hide_quantity = true
+                  endif
+                -%}
                 <div
                   id="Quantity-Form-{{ section.id }}"
-                  class="product-form__input product-form__quantity{% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_vertical_offset < 0 %} product-form__quantity-top{% endif %}"
+                  class="product-form__input product-form__quantity{% if settings.inputs_shadow_vertical_offset != 0 and settings.inputs_shadow_vertical_offset < 0 %} product-form__quantity-top{% endif %}{% if hide_quantity %} pattern-product-quantity--hidden{% endif %}"
                   {{ block.shopify_attributes }}
                 >
                   {% comment %} TODO: enable theme-check once `item_count_for_variant` is accepted as valid filter {% endcomment %}
@@ -730,6 +771,45 @@
   "tag": "section",
   "class": "section",
   "blocks": [
+    {
+      "type": "pattern_details",
+      "name": "Pattern details",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_pills",
+          "label": "Show genre and origin pills",
+          "info": "Add two Pattern details blocks to show the pills under the title and the spec list lower down.",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_specs",
+          "label": "Show spec list",
+          "info": "Label, format, condition, genre and origin, from the product's metafields. Empty rows are hidden.",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "pattern_trust",
+      "name": "Pattern trust item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Postage"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Flat-rate postage to PT & ES"
+        }
+      ]
+    },
     {
       "type": "@app"
     },
@@ -2075,6 +2155,36 @@
     }
   ],
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Show breadcrumb",
+      "info": "Shop › genre › sub-genre › title, linking to the filtered collection.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "description_collapse",
+      "label": "Collapse long descriptions",
+      "info": "Long descriptions show a few lines with a Read more button; short ones show in full.",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "description_lines",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "label": "Collapsed description lines",
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_dynamic_checkout",
+      "label": "Hide dynamic checkout buttons",
+      "info": "Hides Shop Pay / Buy it now under Add to cart (same as turning them off on the Buy buttons block).",
+      "default": false
+    },
     {
       "type": "checkbox",
       "id": "enable_sticky_info",

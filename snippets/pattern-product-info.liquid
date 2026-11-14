@@ -1,0 +1,282 @@
+{%- comment -%}
+  Pattern product info for the product page, from the product's metafields:
+  - part 'breadcrumb': Shop › primary genre › child genre › title
+  - part 'title': label link above the <h1>, artist / title split (h1 text stays "Artist - Title")
+  - part 'pills': all the product's genres as pills (parents, each followed by its children, then
+    children whose parent isn't on the product) and the origin pill, linking to the filtered collection
+  - part 'specs': hairline spec list (Label, Format, Condition, Genre, Origin); empty rows hidden
+  - part 'tags': condition tag (New filled, Used outlined) and format tag (with item count), for
+    the price row; missing ones are left out (shared snippets/pattern-tag.liquid)
+
+  Genres follow the product cards: primary = the first top-level genre; if the product only has
+  child genres, the first child's parent (its own parent reference, else the genre tree in
+  snippets/pattern-genres.liquid). Child = the first child genre. Links go to the all-products
+  collection with the pattern_genre (or origin) filter pre-selected. Missing parts are hidden.
+
+  Accepts:
+  - product: {Object} product
+  - part: {String} 'breadcrumb' | 'title' | 'pills' | 'specs' | 'tags'
+
+  Usage:
+  {% render 'pattern-product-info', product: product, part: 'breadcrumb' %}
+{%- endcomment -%}
+{%- liquid
+  assign base_url = routes.all_products_collection_url
+  assign genre_param = '?filter.p.m.custom.pattern_genre=gid://shopify/Metaobject/'
+
+  # Genres. Primary: the first top-level genre in metafield order (as on the cards); if the
+  # product only has sub-genres, the first one's parent. Breadcrumb child: the first sub-genre
+  # that belongs to the primary genre (none if no sub-genre does).
+  assign genres = product.metafields.custom.pattern_genre.value
+  assign primary_label = ''
+  assign primary_id = ''
+  assign primary_handle = ''
+  assign child_label = ''
+  assign child_id = ''
+  if genres.size > 0
+    capture genre_tree
+      render 'pattern-genres'
+    endcapture
+  endif
+  for genre in genres
+    if genre.parent == blank
+      assign primary_label = genre.label.value | default: genre.label | strip
+      assign primary_id = genre.system.id
+      assign primary_handle = genre.system.handle
+      break
+    endif
+  endfor
+  if primary_label == blank and genres.size > 0
+    assign first_child = genres | first
+    assign parent_genre = first_child.parent.value
+    if parent_genre == blank
+      assign first_child_label = first_child.label.value | default: first_child.label | strip
+      assign first_child_key = '|' | append: first_child_label | append: '='
+      if genre_tree contains first_child_key
+        assign parent_handle = genre_tree | split: first_child_key | last | split: '|' | first | split: '>' | last
+        assign parent_genre = metaobjects.pattern_genre[parent_handle]
+      endif
+    endif
+    if parent_genre != blank
+      assign primary_label = parent_genre.label.value | default: parent_genre.label | strip
+      assign primary_id = parent_genre.system.id
+      assign primary_handle = parent_genre.system.handle
+    endif
+  endif
+  if primary_handle != blank
+    for genre in genres
+      if genre.parent == blank
+        continue
+      endif
+      assign candidate_parent = genre.parent.value.system.handle
+      if candidate_parent == blank
+        assign candidate_label = genre.label.value | default: genre.label | strip
+        assign candidate_key = '|' | append: candidate_label | append: '='
+        if genre_tree contains candidate_key
+          assign candidate_parent = genre_tree | split: candidate_key | last | split: '|' | first | split: '>' | last
+        endif
+      endif
+      if candidate_parent == primary_handle
+        assign child_label = genre.label.value | default: genre.label | strip
+        assign child_id = genre.system.id
+        break
+      endif
+    endfor
+  endif
+  if primary_id != blank
+    assign primary_url = base_url | append: genre_param | append: primary_id
+  endif
+  if child_id != blank
+    assign child_url = base_url | append: genre_param | append: child_id
+  endif
+
+  # Origin, label, format (with item count, as on the cards), condition
+  assign origin = product.metafields.custom.origin.value | strip
+  if origin != blank
+    assign origin_query = origin | url_encode
+    assign origin_url = base_url | append: '?filter.p.m.custom.origin=' | append: origin_query
+  endif
+  assign record_label = product.metafields.custom.label.value | strip
+  assign format = product.metafields.custom.format.value | strip
+  assign item_count = product.metafields.custom.item_count.value | default: 0 | plus: 0
+  if format != blank and item_count > 1
+    assign format_key = format | downcase
+    if format_key == 'lp'
+      assign format = item_count | append: 'LP'
+    else
+      assign format = item_count | append: '×' | append: format
+    endif
+  endif
+  assign condition = product.metafields.custom.condition.value | strip
+  assign condition_key = condition | downcase
+  if condition_key == 'new'
+    assign condition = 'products.card.condition_new' | t
+  elsif condition_key == 'used'
+    assign condition = 'products.card.condition_used' | t
+  endif
+
+  # Artist / title: same split and fallback as the cards
+  assign full_title = product.title | strip
+  assign artist = ''
+  assign title = full_title
+  if full_title contains ' - '
+    assign split_artist = full_title | split: ' - ' | first | strip
+    assign split_prefix = full_title | split: ' - ' | first | append: ' - '
+    assign split_title = full_title | remove_first: split_prefix | strip
+    if split_artist != blank and split_title != blank
+      assign artist = split_artist
+      assign title = split_title
+    endif
+  endif
+-%}
+
+{%- case part -%}
+  {%- when 'tags' -%}
+    {%- liquid
+      assign condition_new = false
+      if condition_key == 'new'
+        assign condition_new = true
+      endif
+      render 'pattern-tag', text: condition, filled: condition_new, class: 'pattern-price-row__tag'
+      render 'pattern-tag', text: format, class: 'pattern-price-row__tag'
+    -%}
+
+  {%- when 'breadcrumb' -%}
+    <nav class="pattern-product-breadcrumb" aria-label="Breadcrumb">
+      <ol role="list">
+        <li><a href="{{ base_url }}">Shop</a></li>
+        {%- if primary_label != blank -%}
+          <li><a href="{{ primary_url | default: base_url }}">{{ primary_label | escape }}</a></li>
+        {%- endif -%}
+        {%- if child_label != blank -%}
+          <li><a href="{{ child_url }}">{{ child_label | escape }}</a></li>
+        {%- endif -%}
+        <li><span aria-current="page">{{ product.title | escape }}</span></li>
+      </ol>
+    </nav>
+
+  {%- when 'title' -%}
+    {%- if record_label != blank -%}
+      <a class="pattern-label pattern-product__label" href="{{ routes.search_url }}?q={{ record_label | url_encode }}&amp;type=product">
+        {{- record_label | escape -}}
+      </a>
+    {%- endif -%}
+    <h1 class="pattern-product__heading">
+      {%- if artist != blank -%}
+        <span class="pattern-product__artist">{{ artist | escape }}</span>
+        <span class="visually-hidden"> - </span>
+        <span class="pattern-product__title">{{ title | escape }}</span>
+      {%- else -%}
+        <span class="pattern-product__artist">{{ full_title | escape }}</span>
+      {%- endif -%}
+    </h1>
+
+  {%- when 'pills' -%}
+    {%- comment -%}
+      Every genre on the product, grouped like the filter pills: each parent (clay) in metafield
+      order, directly followed by its children (outlined, smaller); then children whose parent
+      isn't on the product (the pill's title names the parent). Parent of a child: its own parent
+      reference, else the genre tree in snippets/pattern-genres.liquid. Then the origin pill.
+    {%- endcomment -%}
+    {%- liquid
+      assign parent_handles = ''
+      for genre in genres
+        if genre.parent == blank
+          assign parent_handles = parent_handles | append: '|' | append: genre.system.handle | append: '|'
+        endif
+      endfor
+    -%}
+    {%- if genres.size > 0 or origin != blank -%}
+      <ul class="pattern-product-pills" role="list">
+        {%- for genre in genres -%}
+          {%- if genre.parent != blank -%}{%- continue -%}{%- endif -%}
+          {%- assign parent_label = genre.label.value | default: genre.label | strip -%}
+          <li>
+            <a class="pattern-product-pill" href="{{ base_url }}{{ genre_param }}{{ genre.system.id }}">{{ parent_label | escape }}</a>
+          </li>
+          {%- for child in genres -%}
+            {%- if child.parent == blank -%}{%- continue -%}{%- endif -%}
+            {%- liquid
+              assign child_parent_handle = child.parent.value.system.handle
+              if child_parent_handle == blank
+                assign child_label_key = child.label.value | default: child.label | strip
+                assign child_key = '|' | append: child_label_key | append: '='
+                if genre_tree contains child_key
+                  assign child_parent_handle = genre_tree | split: child_key | last | split: '|' | first | split: '>' | last
+                endif
+              endif
+            -%}
+            {%- if child_parent_handle == genre.system.handle -%}
+              <li>
+                <a class="pattern-product-pill pattern-product-pill--child" href="{{ base_url }}{{ genre_param }}{{ child.system.id }}">
+                  {{- child.label.value | default: child.label | strip | escape -}}
+                </a>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endfor -%}
+
+        {%- for child in genres -%}
+          {%- if child.parent == blank -%}{%- continue -%}{%- endif -%}
+          {%- liquid
+            assign orphan_parent = child.parent.value
+            assign orphan_parent_handle = orphan_parent.system.handle
+            if orphan_parent_handle == blank
+              assign orphan_label_key = child.label.value | default: child.label | strip
+              assign orphan_key = '|' | append: orphan_label_key | append: '='
+              if genre_tree contains orphan_key
+                assign orphan_parent_handle = genre_tree | split: orphan_key | last | split: '|' | first | split: '>' | last
+                assign orphan_parent = metaobjects.pattern_genre[orphan_parent_handle]
+              endif
+            endif
+            assign orphan_handle_key = '|' | append: orphan_parent_handle | append: '|'
+          -%}
+          {%- unless parent_handles contains orphan_handle_key -%}
+            {%- assign orphan_parent_label = orphan_parent.label.value | default: orphan_parent.label | strip -%}
+            <li>
+              <a
+                class="pattern-product-pill pattern-product-pill--child"
+                href="{{ base_url }}{{ genre_param }}{{ child.system.id }}"
+                {% if orphan_parent_label != blank %}
+                  title="{{ orphan_parent_label | escape }} › {{ child.label.value | default: child.label | strip | escape }}"
+                {% endif %}
+              >
+                {{- child.label.value | default: child.label | strip | escape -}}
+              </a>
+            </li>
+          {%- endunless -%}
+        {%- endfor -%}
+
+        {%- if origin != blank -%}
+          <li><a class="pattern-product-pill pattern-product-pill--origin" href="{{ origin_url }}">{{ origin | escape }}</a></li>
+        {%- endif -%}
+      </ul>
+    {%- endif -%}
+
+  {%- when 'specs' -%}
+    {%- if record_label != blank or format != blank or condition != blank or primary_label != blank or origin != blank -%}
+      <dl class="pattern-product-specs">
+        {%- if record_label != blank -%}
+          <div><dt>Label</dt><dd>{{ record_label | escape }}</dd></div>
+        {%- endif -%}
+        {%- if format != blank -%}
+          <div><dt>Format</dt><dd>{{ format | escape }}</dd></div>
+        {%- endif -%}
+        {%- if condition != blank -%}
+          <div><dt>Condition</dt><dd>{{ condition | escape }}</dd></div>
+        {%- endif -%}
+        {%- if primary_label != blank -%}
+          <div>
+            <dt>Genre</dt>
+            <dd>
+              {{- primary_label | escape -}}
+              {%- if child_label != blank %} › {{ child_label | escape }}{% endif -%}
+            </dd>
+          </div>
+        {%- endif -%}
+        {%- if origin != blank -%}
+          <div><dt>Origin</dt><dd>{{ origin | escape }}</dd></div>
+        {%- endif -%}
+      </dl>
+    {%- endif -%}
+{%- endcase -%}

@@ -313,9 +313,13 @@
             {%- endcomment -%}
             <div class="card-pattern__price-row">
               {% render 'price', product: card_product, price_class: '', show_compare_at_price: true, hide_currency_code: true %}
-              {%- if card_condition != blank -%}
-                <span class="card-pattern__condition card-pattern__condition--{{ card_condition_key | handleize }}">{{ card_condition | escape }}</span>
-              {%- endif -%}
+              {%- liquid
+                assign card_condition_new = false
+                if card_condition_key == 'new'
+                  assign card_condition_new = true
+                endif
+                render 'pattern-tag', text: card_condition, filled: card_condition_new, class: 'card-pattern__condition'
+              -%}
             </div>
             {%- if card_product.quantity_price_breaks_configured? -%}
               {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
