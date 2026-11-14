@@ -1,0 +1,347 @@
+/* Pattern collection page: heading, container, compact filter block, slim sticky bar, accent
+   hovers, keyboard-only focus rings and the empty state. Loaded after component-genre-pills.css
+   (sections/main-collection-product-grid.liquid) so these overrides win. Values come from
+   snippets/pattern-tokens.liquid. facets.js behaviour is unchanged. */
+
+/* ===== One container: same left edge as the header (logo), heading, filters and grid ===== */
+.template-collection .page-width {
+  max-width: var(--pattern-wrap-max);
+  padding-left: var(--pattern-gutter);
+  padding-right: var(--pattern-gutter);
+}
+
+/* Theme setting "Collection page width: Wide" (body.pattern-collection-wide): the page content
+   runs up to ~1680px with the same gutters; the header and footer keep the standard width. */
+.template-collection.pattern-collection-wide #MainContent .page-width {
+  max-width: 168rem;
+}
+
+/* ===== Heading ===== */
+.template-collection .collection-hero__inner {
+  padding-top: 4rem;
+  padding-bottom: 1.6rem;
+}
+
+.template-collection .collection-hero__text-wrapper {
+  flex-grow: 1;
+}
+
+.pattern-collection__title.collection-hero__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3.6rem, 3.5vw, 5.6rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--pattern-ink);
+}
+
+.template-collection .collection-hero__description {
+  margin-top: 1.2rem;
+  margin-bottom: 0;
+  max-width: 62ch;
+}
+
+/* ===== Compact filter block (vertical gaps about a third smaller) ===== */
+.template-collection .genre-pills {
+  position: static; /* the old sticky pill rows are replaced by the slim bar below */
+  margin-bottom: 0.8rem;
+}
+
+.template-collection .genre-pills__inner {
+  padding-top: 0.5rem;
+  padding-bottom: 0.6rem;
+}
+
+.template-collection .genre-pills__children.is-open .genre-pills__children-inner {
+  padding-top: 0.5rem;
+}
+
+.template-collection .genre-tray {
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+
+.template-collection .origin-line {
+  padding-top: 0.5rem;
+}
+
+.template-collection .filter-bar__row {
+  padding: 0.2rem 0 0.6rem;
+}
+
+.template-collection .facets-container {
+  padding-top: 0.6rem;
+}
+
+/* The standalone active-filter row (chips + Clear all) is gone: "Clear all" sits in the utility
+   row before the count, and the chips show in the slim sticky bar. */
+.template-collection .filter-bar-container .filter-bar__active {
+  display: none;
+}
+
+.template-collection .filter-bar__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.pattern-collection__clear {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.4rem;
+  color: var(--pattern-ink);
+  font-size: 1.3rem;
+  text-decoration: underline;
+  text-decoration-thickness: 0.1rem;
+  text-underline-offset: 0.3rem;
+  transition: text-decoration-color 0.12s ease;
+}
+
+/* ===== Accents: hover and keyboard focus fill pills with the accent (charcoal stays selected) ===== */
+.template-collection .genre-pill,
+.template-collection .origin-pill,
+.template-collection .pattern-filter-sticky__chip,
+.template-collection .pattern-filter-sticky__jump {
+  transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+@media (hover: hover) {
+  .template-collection .genre-pill:not(.genre-pill--active):not(.genre-pill--has-active-child):hover,
+  .template-collection .genre-pill.genre-pill--child:not(.genre-pill--active):hover,
+  .template-collection .origin-pill:not(.origin-pill--active):hover {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+}
+
+.template-collection .genre-pill:not(.genre-pill--active):not(.genre-pill--has-active-child):focus-visible,
+.template-collection .genre-pill.genre-pill--child:not(.genre-pill--active):focus-visible,
+.template-collection .origin-pill:not(.origin-pill--active):focus-visible {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+/* Counts at full strength on the accent fill (dimmed text would drop below 4.5:1) */
+.template-collection .genre-pill:not(.genre-pill--active):hover .genre-pill__count,
+.template-collection .genre-pill:not(.genre-pill--active):focus-visible .genre-pill__count,
+.template-collection .origin-pill:not(.origin-pill--active):hover .origin-pill__count,
+.template-collection .origin-pill:not(.origin-pill--active):focus-visible .origin-pill__count {
+  opacity: 1;
+}
+
+/* Selected sub-genre: charcoal like selected parents (the accent now means hover/focus) */
+.template-collection .genre-pill.genre-pill--child.genre-pill--active,
+.template-collection .genre-pill.genre-pill--child.genre-pill--active:hover {
+  background-color: var(--pattern-ink);
+  border-color: var(--pattern-ink);
+  color: var(--pattern-paper);
+}
+
+/* Text links: accent underline on hover */
+@media (hover: hover) {
+  .pattern-collection__clear:hover,
+  .template-collection .origin-panel__toggle:hover,
+  .template-collection .filter-bar__clear-all a:hover {
+    text-decoration-line: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 0.2rem;
+    text-underline-offset: 0.3rem;
+  }
+}
+
+/* Popovers: faint accent tint on hover, accent check marks */
+@media (hover: hover) {
+  .template-collection .filter-option:hover {
+    background-color: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+}
+
+.template-collection .filter-option input[type='checkbox'] {
+  accent-color: var(--accent);
+}
+
+/* ===== Focus: keyboard only, a 2px accent ring with a 2px offset (no double ring) ===== */
+.template-collection .genre-pill:focus-visible,
+.template-collection .origin-pill:focus-visible,
+.template-collection .origin-panel__toggle:focus-visible,
+.template-collection .origin-panel__close:focus-visible,
+.template-collection .filter-bar summary.filter-chip:focus-visible,
+.template-collection .filter-chip--toggle:has(input:focus-visible),
+.template-collection .filter-sheet__toggle:focus-visible .filter-chip,
+.template-collection .filter-option:has(input:focus-visible),
+.template-collection .filter-sheet__close:focus-visible,
+.template-collection .pattern-sort:has(.pattern-sort__select:focus-visible),
+.template-collection .pattern-filter-sticky a:focus-visible,
+.template-collection .pattern-filter-sticky button:focus-visible,
+.pattern-collection__clear:focus-visible,
+.pattern-collection-empty a:focus-visible {
+  outline: 0.2rem solid var(--accent);
+  outline-offset: 0.2rem;
+  box-shadow: none;
+}
+
+.template-collection .genre-pill:focus:not(:focus-visible),
+.template-collection .origin-pill:focus:not(:focus-visible),
+.template-collection .pattern-filter-sticky a:focus:not(:focus-visible),
+.template-collection .pattern-filter-sticky button:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ===== Slim sticky bar (shown once the filter block has scrolled out of view) ===== */
+.pattern-filter-sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background-color: var(--pattern-paper);
+  border-bottom: 0.1rem solid var(--pattern-hairline);
+  transform: translateY(-100%);
+  visibility: hidden;
+  transition: transform 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.pattern-filters-out .pattern-filter-sticky {
+  transform: none;
+  visibility: visible;
+  transition: transform 0.2s ease;
+}
+
+.pattern-filter-sticky__inner {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  min-height: 5.6rem;
+}
+
+.pattern-filter-sticky__chips {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0.4rem;
+  margin: -0.4rem;
+}
+
+.pattern-filter-sticky__chips::-webkit-scrollbar {
+  display: none;
+}
+
+.pattern-filter-sticky__chip-wrap {
+  flex: 0 0 auto;
+}
+
+.pattern-filter-sticky__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 3.2rem;
+  padding: 0 1.2rem;
+  border-radius: 99rem;
+  background-color: var(--pattern-ink);
+  color: var(--pattern-paper);
+  font-size: 1.3rem;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.pattern-filter-sticky__x {
+  font-size: 1.5rem;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.pattern-filter-sticky__none {
+  font-size: 1.3rem;
+  color: var(--pattern-muted);
+  white-space: nowrap;
+}
+
+.pattern-filter-sticky__jump {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 3.6rem;
+  padding: 0 1.6rem;
+  border: 0.1rem solid var(--pattern-ink);
+  border-radius: 99rem;
+  background-color: transparent;
+  color: var(--pattern-ink);
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .pattern-filter-sticky__chip:hover,
+  .pattern-filter-sticky__jump:hover {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+}
+
+.pattern-filter-sticky__sort {
+  flex: 0 0 auto;
+}
+
+/* ===== Empty state ===== */
+.pattern-collection-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.2rem;
+  padding: 6.4rem 0 8rem;
+}
+
+.pattern-collection-empty__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.8rem, 2.6vw, 3.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--pattern-ink);
+}
+
+.pattern-collection-empty__text {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--pattern-muted);
+}
+
+.pattern-collection-empty__button {
+  margin-top: 0.8rem;
+}
+
+@media screen and (max-width: 749px) {
+  .template-collection .collection-hero__inner {
+    padding-top: 2.4rem;
+    padding-bottom: 1.2rem;
+  }
+
+  .pattern-filter-sticky__inner {
+    min-height: 5.2rem;
+    gap: 0.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .template-collection .genre-pill,
+  .template-collection .origin-pill,
+  .template-collection .pattern-filter-sticky__chip,
+  .template-collection .pattern-filter-sticky__jump,
+  .pattern-collection__clear,
+  .pattern-filter-sticky,
+  .pattern-filters-out .pattern-filter-sticky {
+    transition: none;
+  }
+}

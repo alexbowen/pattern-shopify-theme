@@ -582,6 +582,9 @@ class FacetFiltersForm extends HTMLElement {
 
     // Keep focus and each row's horizontal scroll position across the re-render.
     const focusedId = target.contains(document.activeElement) ? document.activeElement.id : null;
+    // Only put focus back if it was keyboard focus: restoring a mouse click's focus makes some
+    // browsers (Safari) draw a focus ring on the clicked pill.
+    const focusWasVisible = focusedId ? document.activeElement.matches(':focus-visible') : false;
     const scrollPositions = {};
     target.querySelectorAll('[data-genre-row]').forEach((row) => {
       scrollPositions[row.dataset.genreRow] = row.scrollLeft;
@@ -615,7 +618,7 @@ class FacetFiltersForm extends HTMLElement {
     target.querySelectorAll('[data-genre-row]').forEach((row) => {
       if (scrollPositions[row.dataset.genreRow]) row.scrollLeft = scrollPositions[row.dataset.genreRow];
     });
-    if (focusedId && !originState) {
+    if (focusedId && focusWasVisible && !originState) {
       let focusTarget = document.getElementById(focusedId);
       // Clear is hidden once nothing is selected; move focus to "All" instead of losing it.
       if (!focusTarget || focusTarget.closest('[hidden]')) focusTarget = document.getElementById('GenrePill-all');

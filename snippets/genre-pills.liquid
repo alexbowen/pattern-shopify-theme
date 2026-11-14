@@ -197,9 +197,90 @@
             {%- if origin_param != blank -%}
               {% render 'origin-line', results: results, param_name: origin_param %}
             {%- endif -%}
+
+            {%- comment -%}
+              Slim sticky bar: shown (via html.pattern-filters-out, set by the script below) only once
+              the filter block has scrolled out of view. Active selections as removable chips
+              (facet-remove, so removal is the usual AJAX refresh), a Filters button back to the
+              top of the filter block, and a proxy sort control. Inside #GenrePills, which
+              facets.js re-renders on every refresh, so it always matches the filters.
+            {%- endcomment -%}
+            <div class="pattern-filter-sticky" data-pattern-filter-sticky>
+              <div class="pattern-filter-sticky__inner page-width">
+                <div class="pattern-filter-sticky__chips">
+                  {%- assign sticky_chips = 0 -%}
+                  {%- for filter in results.filters -%}
+                    {%- for value in filter.active_values -%}
+                      {%- assign sticky_chips = sticky_chips | plus: 1 -%}
+                      <facet-remove class="pattern-filter-sticky__chip-wrap">
+                        <a href="{{ value.url_to_remove }}" class="pattern-filter-sticky__chip">
+                          <span>{{ value.label | escape }}</span>
+                          <span class="pattern-filter-sticky__x" aria-hidden="true">×</span>
+                          <span class="visually-hidden">{{ 'products.facets.clear_filter' | t }}: {{ filter.label | escape }} {{ value.label | escape }}</span>
+                        </a>
+                      </facet-remove>
+                    {%- endfor -%}
+                    {%- liquid
+                      assign price_active = false
+                      if filter.type == 'price_range'
+                        if filter.min_value.value != null or filter.max_value.value != null
+                          assign price_active = true
+                        endif
+                      endif
+                    -%}
+                    {%- if price_active -%}
+                      {%- assign sticky_chips = sticky_chips | plus: 1 -%}
+                      <facet-remove class="pattern-filter-sticky__chip-wrap">
+                        <a href="{{ filter.url_to_remove }}" class="pattern-filter-sticky__chip">
+                          <span>{{ filter.min_value.value | default: 0 | money }} – {{ filter.max_value.value | default: filter.range_max | money }}</span>
+                          <span class="pattern-filter-sticky__x" aria-hidden="true">×</span>
+                          <span class="visually-hidden">{{ 'products.facets.clear_filter' | t }}</span>
+                        </a>
+                      </facet-remove>
+                    {%- endif -%}
+                  {%- endfor -%}
+                  {%- if sticky_chips == 0 -%}
+                    <span class="pattern-filter-sticky__none">{{ 'products.facets.genre_pills.records' | t: count: results.products_count }}</span>
+                  {%- endif -%}
+                </div>
+                <button type="button" class="pattern-filter-sticky__jump" data-pattern-filters-jump>
+                  Filters
+                </button>
+                <div class="pattern-filter-sticky__sort small-hide">
+                  {% render 'pattern-sort', results: results, id: 'PatternSortSticky', proxy: true %}
+                </div>
+              </div>
+            </div>
           </div>
         </form>
       </facet-filters-form>
+      <script>
+        (() => {
+          // Show the slim sticky bar only when the whole filter block (genre pills down to the
+          // utility row) has scrolled out of view above the viewport.
+          if (window.patternFilterStickyInit) return;
+          window.patternFilterStickyInit = true;
+          const root = document.documentElement;
+          const block = document.querySelector('.genre-pills');
+          const end = document.getElementById('main-collection-filters') || block;
+          if (!block || !end || !('IntersectionObserver' in window)) return;
+          const observer = new IntersectionObserver(([entry]) => {
+            const out = !entry.isIntersecting && entry.boundingClientRect.bottom < 0;
+            root.classList.toggle('pattern-filters-out', out);
+          });
+          observer.observe(end);
+          document.addEventListener('click', (event) => {
+            const jump = event.target.closest('[data-pattern-filters-jump]');
+            if (!jump) return;
+            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const fromKeyboard = jump.matches(':focus-visible');
+            block.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+            // Keyboard users land on the first pill; mouse users keep their place (no stray ring).
+            const first = block.querySelector('.genre-pill');
+            if (first && fromKeyboard) setTimeout(() => first.focus({ preventScroll: true }), reduce ? 0 : 400);
+          });
+        })();
+      </script>
     </div>
   {%- endif -%}
 {%- endif -%}

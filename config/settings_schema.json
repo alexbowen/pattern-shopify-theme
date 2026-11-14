@@ -20,6 +20,17 @@
         "label": "Accent colour",
         "info": "Buttons, markers, focus rings and genre tile hovers. Text on it (charcoal or white), the hover shade and a darker shade for small text are worked out automatically.",
         "default": "#C2551F"
+      },
+      {
+        "type": "select",
+        "id": "collection_page_width",
+        "label": "Collection page width",
+        "info": "Wide lets the product grid run up to about 1680px, with the same side gutters. The header stays as it is.",
+        "options": [
+          { "value": "standard", "label": "Standard" },
+          { "value": "wide", "label": "Wide" }
+        ],
+        "default": "standard"
       }
     ]
   },

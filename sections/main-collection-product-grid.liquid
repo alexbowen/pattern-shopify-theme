@@ -148,6 +148,8 @@
         show_sort: pills_show_sort
       %}
     {%- endif -%}
+    {%- comment -%} After the filter UI's own stylesheet so the Pattern overrides win {%- endcomment -%}
+    {{ 'pattern-collection.css' | asset_url | stylesheet_tag }}
 
     <div class="{% if section.settings.filter_type == 'vertical' %} facets-vertical page-width{% endif %}">
       {{ 'component-facets.css' | asset_url | stylesheet_tag }}
@@ -185,15 +187,27 @@
         {%- if collection.products.size == 0 -%}
           <div class="collection collection--empty page-width" id="product-grid" data-id="{{ section.id }}">
             <div class="loading-overlay gradient"></div>
-            <div class="title-wrapper center">
-              <h2 class="title title--primary">
-                {{ 'sections.collection_template.empty' | t -}}
-                <br>
-                {{
-                  'sections.collection_template.use_fewer_filters_html'
-                  | t: link: collection.url, class: 'underlined-link link'
-                }}
-              </h2>
+            {%- liquid
+              assign empty_sort = collection.sort_by | default: collection.default_sort_by
+              assign empty_clear_url = collection.url | append: '?sort_by=' | append: empty_sort
+              # With no results Shopify reports no active filter values, so tell "filtered to nothing"
+              # from "empty collection" by the collection's unfiltered product count.
+              assign empty_filtered = false
+              if collection.all_products_count > 0
+                assign empty_filtered = true
+              endif
+            -%}
+            <div class="pattern-collection-empty">
+              {%- if empty_filtered -%}
+                <h2 class="pattern-collection-empty__title">No records match these filters</h2>
+                <p class="pattern-collection-empty__text">Try removing a filter or two.</p>
+                <facet-remove>
+                  <a href="{{ empty_clear_url }}" class="pattern-button pattern-collection-empty__button">Clear filters</a>
+                </facet-remove>
+              {%- else -%}
+                <h2 class="pattern-collection-empty__title">No records here yet</h2>
+                <a href="{{ routes.all_products_collection_url }}" class="pattern-button pattern-collection-empty__button">All records</a>
+              {%- endif -%}
             </div>
           </div>
         {%- else -%}

@@ -186,8 +186,19 @@
         </div>
 
         <div class="filter-bar__meta">
+          {%- comment -%}
+            "Clear all" sits inline before the count, only when a filter is active. It lives inside
+            #FilterBarCount, which facets.js re-renders on every refresh, so it appears and goes
+            with the filters. (The standalone chip row below is hidden; chips show in the slim
+            sticky bar instead, see snippets/genre-pills.liquid.)
+          {%- endcomment -%}
           <p class="filter-bar__count" id="FilterBarCount">
-            {{ 'products.facets.genre_pills.records' | t: count: results.products_count }}
+            {%- if any_active -%}
+              <facet-remove class="filter-bar__clear-inline">
+                <a href="{{ clear_all_url }}" class="pattern-collection__clear">{{ 'products.facets.filter_bar.clear_all' | t }}</a>
+              </facet-remove>
+            {%- endif -%}
+            <span class="filter-bar__count-value">{{ 'products.facets.genre_pills.records' | t: count: results.products_count }}</span>
           </p>
           <div class="filter-bar__sort">
             {% render 'pattern-sort', results: results, id: 'PatternSort' %}
