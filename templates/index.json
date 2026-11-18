@@ -13,11 +13,11 @@
       "type": "pattern-hero",
       "settings": {
         "layout": "full",
-        "eyebrow": "Record shop & cultural space — Alcântara, Lisboa",
-        "headline_start": "New cuts",
+        "eyebrow": "Record shop — Alcântara, Lisboa",
+        "headline_start": "Fresh cuts",
         "headline_accent": "for",
         "headline_end": "curious listeners",
-        "body": "House, jazz, disco, dub, soul and more — new and used vinyl, in Alcântara and online.",
+        "body": "Electronic and Organic sounds — new and used vinyl, in our Alcântara store and online.",
         "primary_label": "Shop new arrivals",
         "primary_link": "/collections/all",
         "secondary_label": "Browse by genre",
@@ -319,6 +319,7 @@
     },
     "pattern_new_in": {
       "type": "pattern-new-in",
+      "disabled": true,
       "settings": {
         "heading": "New in",
         "heading_accent": "",
@@ -327,8 +328,92 @@
         "image_ratio": "square",
         "link_label": "All new arrivals",
         "link": "/collections/all?sort_by=created-descending"
+      }
+    },
+    "pattern_new_in_views": {
+      "type": "pattern-new-in-views",
+      "blocks": {
+        "view_electronic": {
+          "type": "view",
+          "settings": {
+            "label": "Electronic",
+            "collection": "new-in-electronic",
+            "see_all_label": "See all"
+          }
+        },
+        "view_flipside": {
+          "type": "view",
+          "settings": {
+            "label": "Flipside",
+            "collection": "new-in-flipside",
+            "see_all_label": "See all"
+          }
+        },
+        "view_popular": {
+          "type": "view",
+          "settings": {
+            "label": "Popular",
+            "collection": "new-in-popular",
+            "see_all_label": "See all"
+          }
+        }
       },
-      "disabled": true
+      "block_order": [
+        "view_electronic",
+        "view_flipside",
+        "view_popular"
+      ],
+      "settings": {
+        "heading": "New in",
+        "products_to_show": 12,
+        "container_width": "standard",
+        "image_ratio": "square"
+      }
+    },
+    "apps_new_in_views_audioly": {
+      "type": "apps",
+      "blocks": {
+        "audioly_new_in_electronic": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "new-in-electronic",
+            "productsToShow": 12,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        },
+        "audioly_new_in_flipside": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "new-in-flipside",
+            "productsToShow": 12,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        }
+      },
+      "block_order": [
+        "audioly_new_in_electronic",
+        "audioly_new_in_flipside"
+      ],
+      "name": "New in: Audioly play buttons (one block per view)",
+      "settings": {
+        "include_margins": false
+      }
     },
     "featured_record_example_a": {
       "type": "pattern-featured-record-section",
@@ -778,7 +863,7 @@
       "settings": {
         "heading": "Browse by genre",
         "heading_accent": "",
-        "text": "Start with a genre. The sub-genres open up inside.",
+        "text": "",
         "collection": "",
         "link_label": "All records",
         "link": "",
@@ -797,7 +882,7 @@
             "icon": "parcel",
             "label": "Postage · PT & ES",
             "highlight": "One flat rate",
-            "text": "To Portugal and Spain.",
+            "text": "Flat-rate postage to Portugal and Spain for up to 4 items.",
             "link": "/policies/shipping-policy",
             "link_label": "Shipping details"
           }
@@ -808,7 +893,7 @@
             "icon": "storefront",
             "label": "Collect · Alcântara",
             "highlight": "Collect in store",
-            "text": "Pick up at the shop and have a listen while you’re there.",
+            "text": "Place an order, select collect from store and it is immediately reserved for you.",
             "link": "/policies/shipping-policy",
             "link_label": "How collection works"
           }
@@ -819,7 +904,7 @@
             "icon": "clock",
             "label": "Delivery · Lisbon",
             "highlight": "Lisbon in 24 hours",
-            "text": "Flat-fee delivery within Lisbon postcodes.",
+            "text": "Flat-fee express delivery on up to 4 items within Lisbon postcodes.",
             "link": "/policies/shipping-policy",
             "link_label": "Delivery zones"
           }
@@ -1147,91 +1232,6 @@
         "swipe_on_mobile": false,
         "padding_top": 44,
         "padding_bottom": 36
-      }
-    },
-    "pattern_new_in_views": {
-      "type": "pattern-new-in-views",
-      "blocks": {
-        "view_electronic": {
-          "type": "view",
-          "settings": {
-            "label": "Electronic",
-            "collection": "new-in-electronic",
-            "see_all_label": "See all"
-          }
-        },
-        "view_flipside": {
-          "type": "view",
-          "settings": {
-            "label": "Flipside",
-            "collection": "new-in-flipside",
-            "see_all_label": "See all"
-          }
-        },
-        "view_popular": {
-          "type": "view",
-          "settings": {
-            "label": "Popular",
-            "collection": "",
-            "see_all_label": "See all"
-          }
-        }
-      },
-      "block_order": [
-        "view_electronic",
-        "view_flipside",
-        "view_popular"
-      ],
-      "settings": {
-        "heading": "New in",
-        "products_to_show": 8,
-        "container_width": "standard",
-        "image_ratio": "square"
-      }
-    },
-    "apps_new_in_views_audioly": {
-      "type": "apps",
-      "name": "New in: Audioly play buttons (one block per view)",
-      "blocks": {
-        "audioly_new_in_electronic": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "new-in-electronic",
-            "productsToShow": 12,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        },
-        "audioly_new_in_flipside": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "new-in-flipside",
-            "productsToShow": 12,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_new_in_electronic",
-        "audioly_new_in_flipside"
-      ],
-      "settings": {
-        "include_margins": false
       }
     }
   },

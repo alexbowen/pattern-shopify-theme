@@ -4,7 +4,20 @@
   ("Postage · PT & ES"), a bold display highlight, one line of supporting text and an arrow link
   pinned to the foot of the column so links line up across columns. With a link the whole column is the link: on hover
   the link text underlines and the arrow nudges right and turns Opal.
+
+  Background: the same setting and classes as the Pattern column block (paper, clay, clay stripes,
+  dark stripes). Text, icons (currentColor), rules and links take --service-fg / --service-muted,
+  which flip to paper tints on the dark background.
 {%- endcomment -%}
+{%- liquid
+  assign bg = section.settings.background | default: 'paper'
+  assign texture_class = ''
+  if bg == 'stripes-dark'
+    assign texture_class = ' pattern-stripe-dark'
+  elsif bg == 'stripes-clay'
+    assign texture_class = ' pattern-stripe-clay'
+  endif
+-%}
 {%- style -%}
   #shopify-section-{{ section.id }} .pattern-service {
     padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
@@ -21,7 +34,7 @@
 
 {%- if section.blocks.size > 0 -%}
   <section
-    class="pattern-section pattern-service"
+    class="pattern-section pattern-service pattern-service--bg-{{ bg }}{{ texture_class }}"
     {% if section.settings.heading != blank %}
       aria-labelledby="PatternServiceHeading-{{ section.id }}"
     {% else %}
@@ -77,6 +90,31 @@
 {%- endif -%}
 
 {% stylesheet %}
+  /* Backgrounds (as blocks/pattern-column.liquid) */
+  .pattern-service {
+    --service-fg: var(--pattern-ink);
+    --service-muted: var(--pattern-muted);
+    color: var(--service-fg);
+  }
+
+  .pattern-service--bg-paper {
+    --pattern-surface: var(--pattern-paper);
+    background-color: var(--pattern-paper);
+  }
+
+  .pattern-service--bg-clay,
+  .pattern-service--bg-stripes-clay {
+    --pattern-surface: var(--pattern-clay);
+    background-color: var(--pattern-clay);
+  }
+
+  .pattern-service--bg-stripes-dark {
+    --pattern-surface: var(--pattern-ink);
+    --service-fg: var(--pattern-paper);
+    --service-muted: var(--pattern-paper-dim);
+    background-color: var(--pattern-ink);
+  }
+
   .pattern-service__inner {
     display: flex;
     flex-direction: column;
@@ -84,7 +122,7 @@
   }
 
   .pattern-service__heading {
-    color: var(--pattern-muted);
+    color: var(--service-muted);
   }
 
   .pattern-service__list {
@@ -107,8 +145,8 @@
     flex-direction: column;
     gap: 1.2rem;
     padding-top: 2.8rem;
-    border-top: 0.3rem solid var(--pattern-ink);
-    color: var(--pattern-ink);
+    border-top: 0.3rem solid var(--service-fg);
+    color: var(--service-fg);
     text-decoration: none;
   }
 
@@ -117,11 +155,11 @@
     flex: 0 0 auto;
     display: block;
     margin-bottom: 0.8rem;
-    color: var(--pattern-ink);
+    color: var(--service-fg);
   }
 
   .pattern-service__label {
-    color: var(--pattern-muted);
+    color: var(--service-muted);
   }
 
   .pattern-service__highlight {
@@ -136,7 +174,7 @@
   .pattern-service__text {
     font-size: 1.6rem;
     line-height: 1.5;
-    color: var(--pattern-muted);
+    color: var(--service-muted);
   }
 
   .pattern-service__more {
@@ -190,6 +228,18 @@
       "id": "heading",
       "label": "Heading",
       "info": "Optional small label above the columns."
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        { "value": "stripes-dark", "label": "Stripes, dark" },
+        { "value": "stripes-clay", "label": "Stripes, clay" },
+        { "value": "clay", "label": "Clay" },
+        { "value": "paper", "label": "Paper" }
+      ],
+      "default": "paper"
     },
     {
       "type": "range",

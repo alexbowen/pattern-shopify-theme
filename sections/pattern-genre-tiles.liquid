@@ -12,14 +12,26 @@
   products by metafield), hidden when empty.
 
   The origin line links to the collection with custom.origin pre-selected for each listed origin.
+
+  Background: the same setting and classes as the Pattern column block (paper, clay, clay stripes,
+  dark stripes). Text, links and origin chips take --genres-fg / --genres-muted, which flip to paper
+  tints on the dark background. A tile never shares the section's tone: on the dark background the
+  ink tiles (rows 1-2) turn paper; on clay backgrounds the clay tiles (rows 3-4) turn paper.
 {%- endcomment -%}
 {%- liquid
+  assign bg = section.settings.background | default: 'paper'
+  assign texture_class = ''
+  if bg == 'stripes-dark'
+    assign texture_class = ' pattern-stripe-dark'
+  elsif bg == 'stripes-clay'
+    assign texture_class = ' pattern-stripe-clay'
+  endif
   assign base_collection = section.settings.collection
   assign base_url = base_collection.url | default: routes.all_products_collection_url
   assign all_url = section.settings.link | default: base_url
 -%}
 
-<section class="pattern-section pattern-genres" id="browse-by-genre" aria-labelledby="PatternGenresHeading-{{ section.id }}">
+<section class="pattern-section pattern-genres pattern-genres--bg-{{ bg }}{{ texture_class }}" id="browse-by-genre" aria-labelledby="PatternGenresHeading-{{ section.id }}">
   <div class="pattern-wrap pattern-genres__inner">
     <div class="pattern-genres__head">
       <div class="pattern-genres__intro">
@@ -129,12 +141,42 @@
 </section>
 
 {% stylesheet %}
+  /* Backgrounds (as blocks/pattern-column.liquid) */
+  .pattern-genres {
+    --genres-fg: var(--pattern-ink);
+    --genres-muted: var(--pattern-muted);
+    color: var(--genres-fg);
+  }
+
+  .pattern-genres--bg-paper {
+    --pattern-surface: var(--pattern-paper);
+    background-color: var(--pattern-paper);
+  }
+
+  .pattern-genres--bg-clay,
+  .pattern-genres--bg-stripes-clay {
+    --pattern-surface: var(--pattern-clay);
+    background-color: var(--pattern-clay);
+  }
+
+  .pattern-genres--bg-stripes-dark {
+    --pattern-surface: var(--pattern-ink);
+    --genres-fg: var(--pattern-paper);
+    --genres-muted: var(--pattern-paper-dim);
+    background-color: var(--pattern-ink);
+  }
+
   .pattern-genres__inner {
     display: flex;
     flex-direction: column;
     gap: 4rem;
     padding-top: 2.4rem;
     padding-bottom: var(--pattern-section-space);
+  }
+
+  /* On paper the section runs on from the one above; on a coloured band it needs full top space */
+  .pattern-genres:not(.pattern-genres--bg-paper) .pattern-genres__inner {
+    padding-top: var(--pattern-section-space);
   }
 
   .pattern-genres__head {
@@ -162,7 +204,7 @@
     max-width: 52rem;
     font-size: 1.7rem;
     line-height: 1.5;
-    color: var(--pattern-muted);
+    color: var(--genres-muted);
   }
 
   /* One grid per row: three across, then four, then five and five */
@@ -222,9 +264,20 @@
     color: var(--pattern-ink);
   }
 
+  /* A tile never shares the section's tone (before the hover rule, so the Opal hover still wins) */
+  .pattern-genres--bg-stripes-dark .pattern-genre-tile--row-1,
+  .pattern-genres--bg-stripes-dark .pattern-genre-tile--row-2,
+  .pattern-genres--bg-clay .pattern-genre-tile--row-3,
+  .pattern-genres--bg-clay .pattern-genre-tile--row-4,
+  .pattern-genres--bg-stripes-clay .pattern-genre-tile--row-3,
+  .pattern-genres--bg-stripes-clay .pattern-genre-tile--row-4 {
+    background-color: var(--pattern-paper);
+    color: var(--pattern-ink);
+  }
+
   /* Hover and keyboard focus: Opal fill with charcoal text (5.1:1); the focus ring stays too */
-  .pattern-genre-tile:hover,
-  .pattern-genre-tile:focus-visible {
+  .pattern-genres .pattern-genre-tile:hover,
+  .pattern-genres .pattern-genre-tile:focus-visible {
     background-color: var(--pattern-accent);
     color: var(--pattern-on-accent);
   }
@@ -276,7 +329,7 @@
 
   .pattern-genres__origins-label {
     margin-right: 0.8rem;
-    color: var(--pattern-muted);
+    color: var(--genres-muted);
   }
 
   .pattern-genres__origin-list {
@@ -293,8 +346,8 @@
     align-items: center;
     min-height: 4.4rem;
     padding: 0 2rem;
-    border: 0.1rem solid var(--pattern-ink);
-    color: var(--pattern-ink);
+    border: 0.1rem solid var(--genres-fg);
+    color: var(--genres-fg);
     font-family: var(--font-mono);
     font-size: 1.3rem;
     text-decoration: none;
@@ -368,6 +421,19 @@
       "id": "heading_accent",
       "label": "Heading accent word (italic)",
       "info": "Optional. Added after the heading."
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "info": "Tiles that would match the background switch to paper.",
+      "options": [
+        { "value": "stripes-dark", "label": "Stripes, dark" },
+        { "value": "stripes-clay", "label": "Stripes, clay" },
+        { "value": "clay", "label": "Clay" },
+        { "value": "paper", "label": "Paper" }
+      ],
+      "default": "paper"
     },
     {
       "type": "textarea",
