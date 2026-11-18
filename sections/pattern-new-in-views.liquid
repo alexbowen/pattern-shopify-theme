@@ -1,0 +1,513 @@
+{%- comment -%}
+  Pattern "New in" with switchable views (e.g. Electronic / Flipside / Popular): one block per
+  view, each fed by its own collection. Replaces sections/pattern-new-in.liquid on the homepage
+  (that file is kept).
+
+  Every view's grid is rendered here on the server; all but the active one carry `hidden`, so
+  nothing is fetched with JS and Audioly finds every card in the DOM on load. The view labels are
+  plain text links in look, but are role="tab" buttons for assistive tech, with arrow-key support.
+  A view can be linked to with its hash (#new-in-flipside). Without JS only the first view shows.
+
+  Cards use snippets/card-product.liquid in Dawn's grid / grid__item list markup, as the original
+  New in section does, so .card__inner and .grid__item still match Audioly's selectors.
+
+  Audioly: its "Product card play button" block only works on collection pages (it renders nothing
+  on the homepage). Here, add an Apps section directly after this one with one "Play/pause buttons
+  for featured collection" block per view, each set to that view's collection. They match cards by
+  product handle, so hidden views get their buttons on load too. The section's class contains
+  "collection" so those blocks find it.
+{%- endcomment -%}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign products_to_show = section.settings.products_to_show
+
+  comment
+    Views with a collection that has products are shown; the rest are left out (label and
+    panel). The first of them is the active view.
+  endcomment
+  assign see_all_default = 'sections.pattern_new_in.see_all' | t
+  assign view_count = 0
+  assign first_url = blank
+  assign first_see_all = blank
+  for block in section.blocks
+    assign view_collection = block.settings.collection
+    if view_collection != blank and view_collection.products_count > 0
+      assign view_count = view_count | plus: 1
+      if view_count == 1
+        assign first_url = view_collection.url
+        assign first_see_all = block.settings.see_all_label | default: see_all_default
+      endif
+    endif
+  endfor
+-%}
+<pattern-new-in-views
+  class="pattern-section pattern-new-in-views pattern-new-in-views-collection{% if section.settings.container_width == 'wide' %} pattern-new-in-views--wide{% endif %}"
+  data-section-id="{{ section.id }}"
+>
+  <section class="pattern-wrap pattern-new-in-views__inner" aria-labelledby="PatternNewInViewsHeading-{{ section.id }}">
+    <div class="pattern-new-in-views__head">
+      <div class="pattern-new-in-views__title">
+        <h2 class="pattern-display pattern-new-in-views__heading" id="PatternNewInViewsHeading-{{ section.id }}">
+          {{- section.settings.heading | escape -}}
+        </h2>
+
+        {%- if view_count > 1 -%}
+          <div
+            class="pattern-new-in-views__tabs"
+            role="tablist"
+            aria-label="{{ 'sections.pattern_new_in.views_label' | t: heading: section.settings.heading | escape }}"
+          >
+            {%- assign tab_index = 0 -%}
+            {%- for block in section.blocks -%}
+              {%- liquid
+                if block.settings.collection == blank or block.settings.collection.products_count == 0
+                  continue
+                endif
+                assign tab_index = tab_index | plus: 1
+                assign is_active = false
+                if tab_index == 1
+                  assign is_active = true
+                endif
+                assign view_label = block.settings.label | default: block.settings.collection.title
+                assign view_slug = view_label | handle
+                assign view_see_all = block.settings.see_all_label | default: see_all_default
+              -%}
+              <button
+                type="button"
+                class="pattern-new-in-views__tab"
+                id="new-in-{{ view_slug }}"
+                role="tab"
+                aria-selected="{{ is_active }}"
+                aria-controls="PatternNewInPanel-{{ block.id }}"
+                tabindex="{% if is_active %}0{% else %}-1{% endif %}"
+                data-view-hash="new-in-{{ view_slug }}"
+                data-see-all-url="{{ block.settings.collection.url }}"
+                data-see-all-label="{{ view_see_all | escape }}"
+                {{ block.shopify_attributes }}
+              >
+                {{- view_label | escape -}}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if view_count > 0 -%}
+        <a href="{{ first_url }}" class="pattern-link pattern-new-in-views__see-all">
+          <span data-see-all-text>{{ first_see_all | escape }}</span>
+          {%- render 'pattern-arrow' -%}
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- if view_count > 0 -%}
+      {%- assign panel_index = 0 -%}
+      {%- for block in section.blocks -%}
+        {%- liquid
+          if block.settings.collection == blank or block.settings.collection.products_count == 0
+            continue
+          endif
+          assign panel_index = panel_index | plus: 1
+          assign is_active = false
+          if panel_index == 1
+            assign is_active = true
+          endif
+          assign view_label = block.settings.label | default: block.settings.collection.title
+          assign view_slug = view_label | handle
+        -%}
+        <div
+          class="pattern-new-in-views__panel"
+          id="PatternNewInPanel-{{ block.id }}"
+          {% if view_count > 1 %}
+            role="tabpanel" aria-labelledby="new-in-{{ view_slug }}" tabindex="0"
+          {% endif %}
+          {% unless is_active %}
+            hidden
+          {% endunless %}
+        >
+          <ul class="grid product-grid pattern-new-in-views__grid" role="list">
+            {%- for product in block.settings.collection.products limit: products_to_show -%}
+              {%- liquid
+                assign skip_card_styles = true
+                if forloop.first and is_active
+                  assign skip_card_styles = false
+                endif
+              -%}
+              <li class="grid__item">
+                {% render 'card-product',
+                  card_product: product,
+                  media_aspect_ratio: section.settings.image_ratio,
+                  image_shape: 'default',
+                  show_secondary_image: false,
+                  show_vendor: false,
+                  show_rating: false,
+                  lazy_load: true,
+                  skip_styles: skip_card_styles,
+                  quick_add: 'none',
+                  section_id: section.id
+                %}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endfor -%}
+    {%- elsif request.design_mode -%}
+      {%- comment -%} No view has a collection yet: placeholder cards so the layout shows in the editor. {%- endcomment -%}
+      <ul class="grid product-grid pattern-new-in-views__grid" role="list">
+        {%- for i in (1..products_to_show) -%}
+          <li class="grid__item">
+            {% render 'card-product', show_vendor: false %}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </section>
+</pattern-new-in-views>
+
+{%- if view_count > 1 -%}
+  <noscript>
+    <style>
+      #shopify-section-{{ section.id }} .pattern-new-in-views__tabs { display: none; }
+    </style>
+  </noscript>
+{%- endif -%}
+
+{% stylesheet %}
+  .pattern-new-in-views {
+    display: block;
+  }
+
+  .pattern-new-in-views--wide .pattern-new-in-views__inner {
+    max-width: 168rem;
+  }
+
+  .pattern-new-in-views__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    padding-top: var(--pattern-section-space);
+    padding-bottom: var(--pattern-section-space);
+  }
+
+  /* Heading and view labels on the left, See all on the right of the same row */
+  .pattern-new-in-views__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.2rem 3.2rem;
+  }
+
+  .pattern-new-in-views__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 1.2rem 4.8rem;
+    min-width: 0;
+  }
+
+  .pattern-new-in-views__heading {
+    font-size: clamp(4rem, 5vw, 7.2rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  /* View labels: plain text links, no boxes or tab shapes */
+  .pattern-new-in-views__tabs {
+    display: flex;
+    gap: 3.2rem;
+    min-width: 0;
+  }
+
+  .pattern-new-in-views__tab {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0.8rem 0;
+    border: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--pattern-muted);
+    font-family: var(--font-body);
+    font-size: 1.8rem;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.6rem;
+    text-decoration-color: transparent;
+    cursor: pointer;
+    transition: color 0.15s ease, text-decoration-color 0.2s ease;
+  }
+
+  .pattern-new-in-views__tab:hover,
+  .pattern-new-in-views__tab[aria-selected='true'] {
+    color: var(--pattern-ink);
+    text-decoration-color: var(--pattern-accent);
+  }
+
+  .pattern-new-in-views__tab:focus {
+    outline: none;
+  }
+
+  .pattern-new-in-views__tab:focus-visible {
+    outline: 2px solid var(--pattern-ink);
+    outline-offset: 0.4rem;
+  }
+
+  .pattern-new-in-views__see-all {
+    flex: 0 0 auto;
+    transition: color 0.15s ease;
+  }
+
+  .pattern-new-in-views__see-all:hover {
+    color: var(--pattern-accent-text);
+  }
+
+  .pattern-new-in-views__panel:focus {
+    outline: none;
+  }
+
+  .pattern-new-in-views__panel:focus-visible {
+    outline: 2px solid var(--pattern-ink);
+    outline-offset: 0.8rem;
+  }
+
+  .pattern-new-in-views__panel[hidden] {
+    display: none;
+  }
+
+  /* Dawn's .grid is a flex row with fixed column widths; here it's an auto-fit grid */
+  .pattern-new-in-views .pattern-new-in-views__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+    gap: 4rem 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pattern-new-in-views .pattern-new-in-views__grid > .grid__item {
+    width: auto;
+    max-width: none;
+    padding: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    /* Heading on its own row; labels and See all share the row below */
+    .pattern-new-in-views__head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 1.6rem 2rem;
+    }
+
+    .pattern-new-in-views__title {
+      display: contents;
+    }
+
+    .pattern-new-in-views__heading {
+      grid-column: 1 / -1;
+    }
+
+    /* One horizontally scrollable row of labels, no visible scrollbar */
+    .pattern-new-in-views__tabs {
+      gap: 2.8rem;
+      margin-left: calc(var(--pattern-gutter) * -1);
+      padding-left: var(--pattern-gutter);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .pattern-new-in-views__tabs::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 560px) {
+    .pattern-new-in-views .pattern-new-in-views__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 3.2rem 1.2rem;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('pattern-new-in-views')) {
+    class PatternNewInViews extends HTMLElement {
+      connectedCallback() {
+        this.tabs = Array.from(this.querySelectorAll('[role="tab"]'));
+        if (this.tabs.length === 0) return;
+        this.seeAll = this.querySelector('.pattern-new-in-views__see-all');
+        this.seeAllText = this.seeAll ? this.seeAll.querySelector('[data-see-all-text]') : null;
+
+        this.onClick = (event) => {
+          const tab = event.target.closest('[role="tab"]');
+          if (tab) this.select(tab, { updateHash: true });
+        };
+        this.onKeydown = (event) => this.handleKey(event);
+        this.onHashChange = () => this.selectFromHash();
+        // Theme editor: selecting a view block shows that view.
+        this.onBlockSelect = (event) => {
+          const tab = this.tabs.find((t) => t === event.target);
+          if (tab) this.select(tab);
+        };
+
+        this.addEventListener('click', this.onClick);
+        this.addEventListener('keydown', this.onKeydown);
+        window.addEventListener('hashchange', this.onHashChange);
+        document.addEventListener('shopify:block:select', this.onBlockSelect);
+
+        this.selectFromHash();
+      }
+
+      disconnectedCallback() {
+        this.removeEventListener('click', this.onClick);
+        this.removeEventListener('keydown', this.onKeydown);
+        window.removeEventListener('hashchange', this.onHashChange);
+        document.removeEventListener('shopify:block:select', this.onBlockSelect);
+      }
+
+      selectFromHash() {
+        const hash = decodeURIComponent(window.location.hash.slice(1));
+        if (!hash) return;
+        const tab = this.tabs.find((t) => t.dataset.viewHash === hash);
+        if (tab) this.select(tab);
+      }
+
+      select(tab, { focus = false, updateHash = false } = {}) {
+        this.tabs.forEach((t) => {
+          const active = t === tab;
+          t.setAttribute('aria-selected', active ? 'true' : 'false');
+          t.tabIndex = active ? 0 : -1;
+          const panel = document.getElementById(t.getAttribute('aria-controls'));
+          if (panel) panel.hidden = !active;
+        });
+
+        if (this.seeAll) {
+          this.seeAll.href = tab.dataset.seeAllUrl;
+          if (this.seeAllText) this.seeAllText.textContent = tab.dataset.seeAllLabel;
+        }
+
+        if (focus) {
+          tab.focus();
+          tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+
+        // Keep the address linkable without adding history entries or jumping the page.
+        if (updateHash && history.replaceState) {
+          history.replaceState(history.state, '', '#' + tab.dataset.viewHash);
+        }
+      }
+
+      handleKey(event) {
+        const index = this.tabs.indexOf(event.target);
+        if (index === -1) return;
+        let next = null;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % this.tabs.length;
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index - 1 + this.tabs.length) % this.tabs.length;
+        if (event.key === 'Home') next = 0;
+        if (event.key === 'End') next = this.tabs.length - 1;
+        if (next === null) return;
+        event.preventDefault();
+        this.select(this.tabs[next], { focus: true, updateHash: true });
+      }
+    }
+
+    customElements.define('pattern-new-in-views', PatternNewInViews);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Pattern new in (views)",
+  "tag": "div",
+  "max_blocks": 4,
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "New in"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "label": "Products per view",
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "container_width",
+      "label": "Container width",
+      "info": "Wide runs up to ~1680px, as on the collection page's Wide setting.",
+      "options": [
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "square", "label": "Square" },
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "paragraph",
+      "content": "Views with no collection, or an empty one, are hidden. For Audioly play buttons, add an Apps section directly below with one \"featured collection\" play buttons block per view, each set to that view's collection."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "view",
+      "name": "View",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Electronic"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "see_all_label",
+          "label": "\"See all\" link text",
+          "default": "See all"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Pattern new in (views)",
+      "blocks": [
+        { "type": "view", "settings": { "label": "Electronic" } },
+        { "type": "view", "settings": { "label": "Flipside" } },
+        { "type": "view", "settings": { "label": "Popular" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

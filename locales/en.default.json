@@ -313,6 +313,10 @@
     }
   },
   "sections": {
+    "pattern_new_in": {
+      "see_all": "See all",
+      "views_label": "{{ heading }}: choose a view"
+    },
     "announcements": {
       "previous_announcement": "Previous announcement",
       "next_announcement": "Next announcement",
