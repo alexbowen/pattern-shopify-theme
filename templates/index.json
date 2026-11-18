@@ -863,6 +863,7 @@
       "settings": {
         "heading": "Browse by genre",
         "heading_accent": "",
+        "background": "stripes-dark",
         "text": "",
         "collection": "",
         "link_label": "All records",
@@ -917,6 +918,7 @@
       ],
       "settings": {
         "heading": "",
+        "background": "paper",
         "padding_top": 48,
         "padding_bottom": 96
       }
