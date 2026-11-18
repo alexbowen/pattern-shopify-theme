@@ -1,0 +1,480 @@
+{%- comment -%}
+  Pattern feature card ("featured record"): a richer product card, between a card and the product
+  page. Cover, label tag, artist / title, condition + format tags with the price, genre pills,
+  a clamped description, the shop comment as a pull quote, and a View record button (optional
+  Add to cart through the theme's product form).
+
+  Play button: no audio code here. Same mechanism as snippets/pattern-listen-card.liquid:
+  Audioly finds the card from its product links (two of them, so the card root holds them all),
+  prepends its button wrapper to the card root and sizes it to .card__inner, which is a play slot
+  over the cover's bottom-left corner. The root's class contains "collection" so an Audioly Apps
+  block placed after the section stops at this section. The page needs an Apps section after the
+  section with Audioly's featured collection play buttons block, set to a collection containing
+  the record.
+
+  Narrow containers (under ~560px) switch a horizontal card to the vertical layout (container
+  query), so it works in columns and side by side.
+
+  Accepts:
+  - product: {Object} product (required)
+  - layout: {String} 'horizontal' (default) | 'vertical'
+  - size: {String} 'compact' | 'standard' (default) | 'large'
+  - background: {String} 'none' (default) | 'clay' | 'paper' | 'dark'
+  - label: {String} small mono tag, default "Staff pick" (blank hides it)
+  - show_description / show_genres / show_comment / show_button: {Boolean} default true
+  - show_add_to_cart: {Boolean} default false
+  - description_lines: {Number} lines shown, default 3
+  - description_override / comment_override: {String} optional replacements
+  - form_id: {String} unique id for the add-to-cart form (e.g. the block id)
+  - heading_tag: {String} default 'h3'
+
+  Usage:
+  {% render 'pattern-feature-card', product: product, layout: 'horizontal', size: 'standard' %}
+{%- endcomment -%}
+{%- if product != blank -%}
+  {%- liquid
+    assign fc_layout = layout | default: 'horizontal'
+    assign fc_size = size | default: 'standard'
+    assign fc_bg = background | default: 'none'
+    assign fc_heading_tag = heading_tag | default: 'h3'
+    assign fc_lines = description_lines | default: 3
+    assign fc_label = label
+    if label == nil
+      assign fc_label = 'Staff pick'
+    endif
+    assign fc_show_description = true
+    if show_description == false
+      assign fc_show_description = false
+    endif
+    assign fc_show_genres = true
+    if show_genres == false
+      assign fc_show_genres = false
+    endif
+    assign fc_show_comment = true
+    if show_comment == false
+      assign fc_show_comment = false
+    endif
+    assign fc_show_button = true
+    if show_button == false
+      assign fc_show_button = false
+    endif
+
+    # Artist / title: same split and fallback as the cards
+    assign fc_full = product.title | strip
+    assign fc_artist = ''
+    assign fc_title = fc_full
+    if fc_full contains ' - '
+      assign fc_split_artist = fc_full | split: ' - ' | first | strip
+      assign fc_split_prefix = fc_full | split: ' - ' | first | append: ' - '
+      assign fc_split_title = fc_full | remove_first: fc_split_prefix | strip
+      if fc_split_artist != blank and fc_split_title != blank
+        assign fc_artist = fc_split_artist
+        assign fc_title = fc_split_title
+      endif
+    endif
+
+    # Override text is plain text (escaped on output). The product description goes through
+    # strip_html, which leaves no tags but keeps HTML entities (&amp;), so it's output as is to
+    # avoid double-escaping.
+    assign fc_description = description_override | strip | escape
+    if fc_description == blank
+      # Line breaks and block ends become spaces first, so "Label: X<br>Year: Y" doesn't run together
+      assign fc_description = product.description | replace: '<br>', ' ' | replace: '<br/>', ' ' | replace: '<br />', ' ' | replace: '</p>', ' </p>' | replace: '</li>', ' </li>' | replace: '</div>', ' </div>' | replace: '</h', ' </h' | strip_html | strip
+    endif
+    assign fc_comment = comment_override | strip
+    if fc_comment == blank
+      assign fc_comment = product.metafields.custom.shop_comment.value | strip
+    endif
+    assign fc_variant = product.selected_or_first_available_variant
+    assign fc_form_id = form_id | default: product.id | prepend: 'FeatureCardForm-'
+  -%}
+  {{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+  <div class="pattern-feature-wrap">
+    <article class="pattern-feature pattern-feature-collection pattern-feature--{{ fc_layout }} pattern-feature--{{ fc_size }} pattern-feature--bg-{{ fc_bg }}{% if fc_bg == 'dark' %} pattern-stripe-dark{% endif %}{% unless product.available %} pattern-feature--sold-out{% endunless %}">
+      <div class="pattern-feature__cover{% if product.featured_image == blank %} pattern-placeholder{% endif %}">
+        {%- if product.featured_image != blank -%}
+          {{
+            product.featured_image
+            | image_url: width: 1200
+            | image_tag:
+              loading: 'lazy',
+              widths: '240, 360, 480, 720, 960, 1200',
+              sizes: '(min-width: 990px) 40vw, 100vw',
+              alt: '',
+              class: 'pattern-feature__image'
+          }}
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Play slot: Audioly's fit box, with a second link to the record (hidden from AT) {%- endcomment -%}
+      <div class="card__inner pattern-feature__slot">
+        <a href="{{ product.url }}" class="pattern-feature__slot-link" tabindex="-1" aria-hidden="true"></a>
+      </div>
+
+      <div class="pattern-feature__body">
+        {%- if fc_label != blank -%}
+          <p class="pattern-label pattern-feature__label">{{ fc_label | escape }}</p>
+        {%- endif -%}
+
+        <{{ fc_heading_tag }} class="pattern-feature__heading">
+          <a href="{{ product.url }}" class="pattern-feature__link">
+            {%- if fc_artist != blank -%}
+              <span class="pattern-feature__artist">{{ fc_artist | escape }}</span>
+              <span class="visually-hidden"> - </span>
+              <span class="pattern-feature__title">{{ fc_title | escape }}</span>
+            {%- else -%}
+              <span class="pattern-feature__artist">{{ fc_full | escape }}</span>
+            {%- endif -%}
+          </a>
+        </{{ fc_heading_tag }}>
+
+        <div class="pattern-feature__price-row">
+          {%- render 'pattern-product-info', product: product, part: 'tags' -%}
+          {%- render 'price', product: product, price_class: '', hide_currency_code: true -%}
+          {%- unless product.available -%}
+            {%- render 'pattern-tag', text: 'Sold out', class: 'pattern-feature__sold-out' -%}
+          {%- endunless -%}
+        </div>
+
+        {%- if fc_show_genres -%}
+          {%- capture fc_pills -%}{%- render 'pattern-product-info', product: product, part: 'pills' -%}{%- endcapture -%}
+          {%- if fc_pills != blank -%}
+            <div class="pattern-feature__pills">{{ fc_pills }}</div>
+          {%- endif -%}
+        {%- endif -%}
+
+        {%- if fc_show_description and fc_description != blank -%}
+          <p class="pattern-feature__description" style="--feature-lines: {{ fc_lines }};">{{ fc_description }}</p>
+        {%- endif -%}
+
+        {%- if fc_show_comment and fc_comment != blank -%}
+          <blockquote class="pattern-pull-quote pattern-feature__comment">
+            {{- fc_comment | escape | newline_to_br -}}
+          </blockquote>
+        {%- endif -%}
+
+        {%- if product.available -%}
+          {%- if fc_show_button or show_add_to_cart -%}
+            <div class="pattern-feature__actions">
+              {%- if show_add_to_cart -%}
+                <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+                <product-form class="pattern-feature__form" data-hide-errors="false">
+                  <div class="product-form__error-message-wrapper" role="alert" hidden>
+                    <span class="product-form__error-message"></span>
+                  </div>
+                  {%- form 'product', product, id: fc_form_id, novalidate: 'novalidate' -%}
+                    <input type="hidden" name="id" value="{{ fc_variant.id }}">
+                    <button type="submit" name="add" class="pattern-button pattern-feature__add">
+                      <span>{{ 'products.product.add_to_cart' | t }}</span>
+                      {%- render 'loading-spinner' -%}
+                    </button>
+                  {%- endform -%}
+                </product-form>
+              {%- endif -%}
+              {%- if fc_show_button -%}
+                <a href="{{ product.url }}" class="pattern-button{% if show_add_to_cart %} pattern-button--outline{% endif %} pattern-feature__view">
+                  View record
+                  {% render 'pattern-arrow' %}
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+    </article>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  /* ===== Featured record card ===== */
+  .pattern-feature-wrap {
+    container-type: inline-size;
+    min-width: 0;
+  }
+
+  .pattern-feature {
+    --fc-cover: 24rem;
+    --fc-artist: clamp(2.6rem, 2.4vw, 3.2rem);
+    --fc-title: clamp(1.7rem, 1.4vw, 2rem);
+    --fc-comment: clamp(1.9rem, 1.6vw, 2.2rem);
+    --fc-gap: 2.4rem;
+    --fc-muted: var(--pattern-muted);
+    --pattern-surface: var(--pattern-paper);
+
+    position: relative; /* containing block for Audioly's button wrapper */
+    display: grid;
+    grid-template-columns: var(--fc-cover) minmax(0, 1fr);
+    grid-template-areas: 'cover body';
+    align-items: start;
+    gap: var(--fc-gap);
+    min-width: 0;
+    color: var(--pattern-ink);
+  }
+
+  .pattern-feature--compact {
+    --fc-cover: 16rem;
+    --fc-artist: 2.4rem;
+    --fc-title: 1.6rem;
+    --fc-comment: 1.8rem;
+    --fc-gap: 1.6rem;
+  }
+
+  .pattern-feature--large {
+    --fc-cover: 36rem;
+    --fc-artist: clamp(3.2rem, 3vw, 4.4rem);
+    --fc-title: clamp(2rem, 1.7vw, 2.4rem);
+    --fc-comment: clamp(2.2rem, 1.9vw, 2.6rem);
+    --fc-gap: 3.2rem;
+  }
+
+  .pattern-feature--vertical {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'cover' 'body';
+  }
+
+  .pattern-feature--vertical .pattern-feature__cover {
+    max-width: none;
+  }
+
+  /* Narrow containers: horizontal cards stack */
+  @container (max-width: 560px) {
+    .pattern-feature--horizontal {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: 'cover' 'body';
+    }
+  }
+
+  /* Backgrounds */
+  .pattern-feature:not(.pattern-feature--bg-none) {
+    padding: clamp(1.6rem, 2.4vw, 3.2rem);
+  }
+
+  .pattern-feature--bg-clay {
+    --pattern-surface: var(--pattern-clay);
+    background-color: var(--pattern-clay);
+  }
+
+  .pattern-feature--bg-paper {
+    background-color: var(--pattern-paper);
+    box-shadow: inset 0 0 0 0.1rem var(--pattern-hairline);
+  }
+
+  .pattern-feature--bg-dark {
+    --pattern-surface: var(--pattern-ink);
+    --fc-muted: var(--pattern-paper-dim);
+    background-color: var(--pattern-ink);
+    color: var(--pattern-paper);
+  }
+
+  .pattern-feature--bg-dark .pattern-tag {
+    border-color: var(--pattern-paper);
+    color: var(--pattern-paper);
+  }
+
+  .pattern-feature--bg-dark .pattern-tag--filled {
+    background-color: var(--pattern-paper);
+    color: var(--pattern-ink);
+  }
+
+  /* Cover */
+  .pattern-feature__cover {
+    grid-area: cover;
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .pattern-feature__cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 0 0.1rem rgba(20, 20, 19, 0.12);
+    pointer-events: none;
+  }
+
+  .pattern-feature__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Play slot + Audioly's wrapper: bottom-left of the cover, as on the listen cards */
+  .pattern-feature .pattern-feature__slot,
+  .pattern-feature > [class*='play-pause-button'][class*='placeholder'] {
+    grid-area: cover;
+    align-self: end;
+    justify-self: start;
+    margin: 0 0 1.6rem 1.6rem;
+  }
+
+  .pattern-feature .pattern-feature__slot {
+    position: relative;
+    width: 5.6rem;
+    height: 5.6rem;
+  }
+
+  .pattern-feature > [class*='play-pause-button'][class*='placeholder'] {
+    z-index: 2;
+  }
+
+  /* Horizontal: the text column can be taller than the cover, so place the slot from the cover's
+     own size (its width is --fc-cover and it's square) instead of the bottom of the row. */
+  .pattern-feature--horizontal .pattern-feature__slot,
+  .pattern-feature--horizontal > [class*='play-pause-button'][class*='placeholder'] {
+    align-self: start;
+    margin: calc(var(--fc-cover) - 7.2rem) 0 0 1.6rem;
+  }
+
+  @container (max-width: 560px) {
+    .pattern-feature--horizontal .pattern-feature__slot,
+    .pattern-feature--horizontal > [class*='play-pause-button'][class*='placeholder'] {
+      align-self: end;
+      margin: 0 0 1.6rem 1.6rem;
+    }
+  }
+
+  .pattern-feature__slot-link {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+  }
+
+  /* Body */
+  .pattern-feature__body {
+    grid-area: body;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    min-width: 0;
+  }
+
+  .pattern-feature__label {
+    color: var(--fc-muted);
+  }
+
+  .pattern-feature__heading {
+    margin: 0;
+    font: inherit;
+    color: inherit;
+  }
+
+  .pattern-feature__link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .pattern-feature__artist {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fc-artist);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    overflow-wrap: break-word;
+  }
+
+  .pattern-feature__title {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: var(--fc-title);
+    line-height: 1.25;
+    overflow-wrap: break-word;
+  }
+
+  .pattern-feature__link:hover .pattern-feature__artist,
+  .pattern-feature__link:focus-visible .pattern-feature__artist {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 0.2rem;
+    text-underline-offset: 0.3rem;
+  }
+
+  .pattern-feature__price-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1rem;
+  }
+
+  .pattern-feature__price-row .price {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: inherit;
+  }
+
+  .pattern-feature__price-row .price .price-item {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  .pattern-feature__price-row .price__badge-sold-out,
+  .pattern-feature__price-row .price__badge-sale {
+    display: none;
+  }
+
+  /* Smaller genre pills than on the product page */
+  .pattern-feature__pills .pattern-product-pills {
+    gap: 0.6rem;
+  }
+
+  .pattern-feature__pills .pattern-product-pill {
+    min-height: 2.8rem;
+    padding: 0 1.1rem;
+    font-size: 1.2rem;
+  }
+
+  .pattern-feature--bg-clay .pattern-feature__pills .pattern-product-pill:not(.pattern-product-pill--origin) {
+    background-color: var(--pattern-sand);
+    border-color: var(--pattern-sand);
+  }
+
+  .pattern-feature__description {
+    margin: 0;
+    max-width: 62ch;
+    font-size: 1.5rem;
+    line-height: 1.55;
+    color: inherit;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--feature-lines, 3);
+    line-clamp: var(--feature-lines, 3);
+    overflow: hidden;
+  }
+
+  .pattern-feature__comment {
+    font-size: var(--fc-comment);
+    max-width: 48ch;
+  }
+
+  .pattern-feature__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 0.4rem;
+  }
+
+  .pattern-feature__add .loading__spinner {
+    position: absolute;
+  }
+
+  .pattern-feature__add.loading > span {
+    visibility: hidden;
+  }
+
+  .pattern-feature--bg-dark .pattern-button--outline {
+    color: var(--pattern-paper);
+  }
+
+  .pattern-feature__form .product-form__error-message-wrapper:not([hidden]) {
+    font-size: 1.3rem;
+    color: inherit;
+  }
+{% endstylesheet %}

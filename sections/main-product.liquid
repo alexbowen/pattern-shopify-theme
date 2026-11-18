@@ -209,6 +209,9 @@
                 </p>
               {%- when 'description' -%}
                 {%- render 'pattern-product-description', product: product, collapse: section.settings.description_collapse, lines: section.settings.description_lines, section_id: section.id, block: block -%}
+                {%- if section.settings.show_shop_comment -%}
+                  {%- render 'pattern-shop-comment', product: product -%}
+                {%- endif -%}
               {%- when 'pattern_details' -%}
                 <div class="pattern-product-details" {{ block.shopify_attributes }}>
                   {%- if block.settings.show_pills -%}
@@ -2167,6 +2170,13 @@
       "id": "description_collapse",
       "label": "Collapse long descriptions",
       "info": "Long descriptions show a few lines with a Read more button; short ones show in full.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shop_comment",
+      "label": "Show shop comment",
+      "info": "Under the description: \"From the shop\" and the product's shop comment (custom.shop_comment), when it has one.",
       "default": true
     },
     {

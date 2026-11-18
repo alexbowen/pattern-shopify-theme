@@ -1,0 +1,19 @@
+{%- comment -%}
+  "From the shop" label and the product's shop comment (custom.shop_comment, multi-line text) as a
+  pull quote, for the product page under the description. Renders nothing without a comment.
+
+  Accepts:
+  - product: {Object} product
+
+  Usage:
+  {% render 'pattern-shop-comment', product: product %}
+{%- endcomment -%}
+{%- assign shop_comment = product.metafields.custom.shop_comment.value | strip -%}
+{%- if shop_comment != blank -%}
+  <div class="pattern-product-comment quick-add-hidden">
+    <p class="pattern-label pattern-product-comment__label">From the shop</p>
+    <blockquote class="pattern-pull-quote pattern-product-comment__quote">
+      {{- shop_comment | escape | newline_to_br -}}
+    </blockquote>
+  </div>
+{%- endif -%}

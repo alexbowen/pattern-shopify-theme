@@ -467,42 +467,42 @@
   }
 
   /* ===== Audioly's play button on cards: hover, focus and playing states =====
-     Listen cards and product-grid cards (.grid__item). Audioly injects the button; we only
+     Listen cards, featured record cards (.pattern-feature) and product-grid cards (.grid__item). Audioly injects the button; we only
      restyle it. Idle keeps its look. Hover / keyboard focus (not when Audioly has disabled the
      button for a record without audio): accent fill, --on-accent icon,
      scale 1.08 and a soft accent ring. Playing (Audioly swaps the icon to pause.svg and the label
      to "Pause…"; it adds no class): filled accent with the pause icon. */
-  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background {
+  :is(.pattern-listen-card, .pattern-feature, .grid__item) .audioly-play-pause-button-background {
     transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   }
 
-  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button::after {
+  :is(.pattern-listen-card, .pattern-feature, .grid__item) .audioly-play-pause-button::after {
     transition: background-color 0.15s ease;
   }
 
-  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)),
-  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background:has(> .audioly-play-pause-button:is([style*='pause.svg'], [aria-label^='Pause'])) {
+  :is(.pattern-listen-card, .pattern-feature, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)),
+  :is(.pattern-listen-card, .pattern-feature, .grid__item) .audioly-play-pause-button-background:has(> .audioly-play-pause-button:is([style*='pause.svg'], [aria-label^='Pause'])) {
     background-color: var(--accent);
     opacity: 1;
   }
 
-  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)) {
+  :is(.pattern-listen-card, .pattern-feature, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)) {
     transform: scale(1.08);
     box-shadow: 0 0 0 0.6rem var(--accent-ring);
   }
 
-  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)) .audioly-play-pause-button::after,
-  :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button:is([style*='pause.svg'], [aria-label^='Pause'])::after {
+  :is(.pattern-listen-card, .pattern-feature, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)) .audioly-play-pause-button::after,
+  :is(.pattern-listen-card, .pattern-feature, .grid__item) .audioly-play-pause-button:is([style*='pause.svg'], [aria-label^='Pause'])::after {
     background-color: var(--on-accent);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background,
-    :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button::after {
+    :is(.pattern-listen-card, .pattern-feature, .grid__item) .audioly-play-pause-button-background,
+    :is(.pattern-listen-card, .pattern-feature, .grid__item) .audioly-play-pause-button::after {
       transition: none;
     }
 
-    :is(.pattern-listen-card, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)) {
+    :is(.pattern-listen-card, .pattern-feature, .grid__item) .audioly-play-pause-button-background:not(:has(> .audioly-play-pause-button:disabled)):is(:hover, :has(.audioly-play-pause-button:focus-visible)) {
       transform: none;
     }
   }

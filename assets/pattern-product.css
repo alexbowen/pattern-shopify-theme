@@ -321,44 +321,7 @@
   display: none;
 }
 
-.pattern-product-pills {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.8rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.pattern-product-pill {
-  display: inline-flex;
-  align-items: center;
-  min-height: 3.6rem;
-  padding: 0 1.6rem;
-  border: 0.1rem solid var(--pattern-clay);
-  border-radius: 99rem;
-  background-color: var(--pattern-clay);
-  color: var(--pattern-ink);
-  font-size: 1.4rem;
-  text-decoration: none;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-/* Sub-genres (.pattern-product-pill--child) look exactly like parents here; they just follow their
-   parent in the list. The collection filter pills keep their own parent/child styling. */
-
-.pattern-product-pill--origin {
-  background-color: transparent;
-  border-color: var(--pattern-ink);
-  border-style: dashed;
-}
-
-.pattern-product-pill:hover {
-  background-color: var(--pattern-ink);
-  border-color: var(--pattern-ink);
-  color: var(--pattern-paper);
-}
+/* Genre / origin pills (.pattern-product-pills / .pattern-product-pill): shared, in assets/pattern-base.css */
 
 .pattern-product-specs {
   margin: 0;
@@ -438,6 +401,18 @@
 
 .is-expanded .pattern-product-description__less {
   display: inline;
+}
+
+/* ===== Shop comment under the description ===== */
+.template-product .pattern-product-comment {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 62ch;
+}
+
+.pattern-product-comment__label {
+  color: var(--pattern-muted);
 }
 
 /* ===== Audioly inline player (CSS only) =====

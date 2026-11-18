@@ -1,0 +1,147 @@
+{%- comment -%}
+  Pattern featured record: one record as a feature card (snippets/pattern-feature-card.liquid).
+  Works inside Pattern columns, the Pattern featured record section, and any section that accepts
+  theme blocks. Audioly play buttons need an Apps section after the section with Audioly's featured
+  collection play buttons block, set to a collection containing the record.
+{%- endcomment -%}
+{%- if block.settings.product != blank -%}
+  {%- render 'pattern-feature-card',
+    product: block.settings.product,
+    layout: block.settings.layout,
+    size: block.settings.size,
+    background: block.settings.background,
+    label: block.settings.label,
+    show_description: block.settings.show_description,
+    description_lines: block.settings.description_lines,
+    description_override: block.settings.description_override,
+    show_genres: block.settings.show_genres,
+    show_comment: block.settings.show_comment,
+    comment_override: block.settings.comment_override,
+    show_button: block.settings.show_button,
+    show_add_to_cart: block.settings.show_add_to_cart,
+    form_id: block.id
+  -%}
+{%- elsif request.design_mode -%}
+  <p class="pattern-label pattern-featured-record__empty">Featured record: choose a product</p>
+{%- endif -%}
+
+{% stylesheet %}
+  .pattern-featured-record__empty {
+    margin: 0;
+    padding: 2.4rem;
+    border: 0.1rem dashed currentColor;
+    opacity: 0.7;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Featured record",
+  "class": "pattern-featured-record",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Record"
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Staff pick"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "info": "Horizontal cards stack automatically when there isn't room (e.g. in a narrow column).",
+      "options": [
+        { "value": "horizontal", "label": "Horizontal" },
+        { "value": "vertical", "label": "Vertical" }
+      ],
+      "default": "horizontal"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        { "value": "compact", "label": "Compact" },
+        { "value": "standard", "label": "Standard" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "clay", "label": "Clay" },
+        { "value": "paper", "label": "Paper" },
+        { "value": "dark", "label": "Dark stripe" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_genres",
+      "label": "Show genres",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "description_lines",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "label": "Description lines",
+      "default": 3
+    },
+    {
+      "type": "textarea",
+      "id": "description_override",
+      "label": "Description override",
+      "info": "Optional. Replaces the product description here."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_comment",
+      "label": "Show shop comment",
+      "info": "From the product's shop comment field (custom.shop_comment).",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "comment_override",
+      "label": "Comment override",
+      "info": "Optional. Replaces the shop comment here."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button",
+      "label": "Show View record button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_add_to_cart",
+      "label": "Show Add to cart",
+      "info": "Adds straight to the cart (with the cart notification). Hidden when sold out.",
+      "default": false
+    }
+  ],
+  "presets": [{ "name": "Featured record" }]
+}
+{% endschema %}

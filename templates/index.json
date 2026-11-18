@@ -664,13 +664,506 @@
         "padding_top": 44,
         "padding_bottom": 36
       }
+    },
+    "pattern_featured_records_demo": {
+      "type": "pattern-featured-record-section",
+      "blocks": {
+        "fr_long": {
+          "type": "pattern-featured-record",
+          "settings": {
+            "product": "inta-city-runnin-outta-time-journey-to-the-sun-remixes",
+            "label": "Staff pick",
+            "layout": "vertical",
+            "size": "standard",
+            "background": "none",
+            "show_genres": true,
+            "show_description": true,
+            "description_lines": 3,
+            "description_override": "",
+            "show_comment": true,
+            "comment_override": "",
+            "show_button": true,
+            "show_add_to_cart": true
+          }
+        },
+        "fr_comment": {
+          "type": "pattern-featured-record",
+          "settings": {
+            "product": "dj-sneak-voodoo-salon020-b2b",
+            "label": "Staff pick",
+            "layout": "vertical",
+            "size": "standard",
+            "background": "none",
+            "show_genres": true,
+            "show_description": true,
+            "description_lines": 3,
+            "description_override": "",
+            "show_comment": true,
+            "comment_override": "A Chicago staple in the shop this summer. Drop it after something deep and watch the room lift.",
+            "show_button": true,
+            "show_add_to_cart": false
+          }
+        },
+        "fr_soldout": {
+          "type": "pattern-featured-record",
+          "settings": {
+            "product": "2302-untitled",
+            "label": "Staff pick",
+            "layout": "vertical",
+            "size": "standard",
+            "background": "none",
+            "show_genres": true,
+            "show_description": true,
+            "description_lines": 3,
+            "description_override": "",
+            "show_comment": true,
+            "comment_override": "",
+            "show_button": true,
+            "show_add_to_cart": false
+          }
+        }
+      },
+      "block_order": [
+        "fr_long",
+        "fr_comment",
+        "fr_soldout"
+      ],
+      "settings": {
+        "eyebrow": "This month",
+        "heading": "Staff picks",
+        "background": "none"
+      },
+      "disabled": true
+    },
+    "apps_featured_records_demo": {
+      "type": "apps",
+      "blocks": {
+        "audioly_featured_records_play_buttons": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "weekly-electronic",
+            "productsToShow": 18,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        }
+      },
+      "block_order": [
+        "audioly_featured_records_play_buttons"
+      ],
+      "settings": {
+        "include_margins": false
+      },
+      "disabled": true
+    },
+    "pattern_columns_feature_demo": {
+      "type": "pattern-columns",
+      "blocks": {
+        "col_a": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "paper",
+            "padding": "medium",
+            "align": "center",
+            "min_height": "auto",
+            "overlay_opacity": 50
+          },
+          "blocks": {
+            "feat": {
+              "type": "pattern-featured-record",
+              "settings": {
+                "product": "vakula-firecracker-ep5-phonogra",
+                "label": "Record of the week",
+                "layout": "horizontal",
+                "size": "standard",
+                "background": "clay",
+                "show_genres": true,
+                "show_description": true,
+                "description_lines": 3,
+                "description_override": "",
+                "show_comment": true,
+                "comment_override": "Three tracks, all killers.",
+                "show_button": true,
+                "show_add_to_cart": false
+              }
+            }
+          },
+          "block_order": [
+            "feat"
+          ]
+        },
+        "col_b": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "stripes-dark",
+            "padding": "medium",
+            "align": "center",
+            "min_height": "auto",
+            "overlay_opacity": 50
+          },
+          "blocks": {
+            "h": {
+              "type": "pattern-heading",
+              "settings": {
+                "eyebrow": "In the shop",
+                "heading": "New this week",
+                "heading_accent": "",
+                "heading_end": "",
+                "size": "large",
+                "tag": "h2"
+              }
+            }
+          },
+          "block_order": [
+            "h"
+          ]
+        }
+      },
+      "block_order": [
+        "col_a",
+        "col_b"
+      ],
+      "settings": {
+        "ratio": "60-40",
+        "width": "full",
+        "gap": "none",
+        "mobile_order": "normal",
+        "padding_top": 0,
+        "padding_bottom": 0
+      },
+      "disabled": true
+    },
+    "apps_columns_feature_demo": {
+      "type": "apps",
+      "blocks": {
+        "audioly_columns_feature_play_buttons": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "weekly-electronic",
+            "productsToShow": 18,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        }
+      },
+      "block_order": [
+        "audioly_columns_feature_play_buttons"
+      ],
+      "settings": {
+        "include_margins": false
+      },
+      "disabled": true
+    },
+    "featured_record_example_a": {
+      "type": "pattern-featured-record-section",
+      "name": "Featured record (example) A: three records",
+      "blocks": {
+        "ex_a1": {
+          "type": "pattern-featured-record",
+          "settings": {
+            "product": "inta-city-runnin-outta-time-journey-to-the-sun-remixes",
+            "label": "Staff pick",
+            "layout": "horizontal",
+            "size": "standard",
+            "background": "none",
+            "show_genres": true,
+            "show_description": true,
+            "description_lines": 3,
+            "description_override": "",
+            "show_comment": true,
+            "comment_override": "",
+            "show_button": true,
+            "show_add_to_cart": false
+          }
+        },
+        "ex_a2": {
+          "type": "pattern-featured-record",
+          "settings": {
+            "product": "dj-sneak-voodoo-salon020-b2b",
+            "label": "Staff pick",
+            "layout": "horizontal",
+            "size": "standard",
+            "background": "none",
+            "show_genres": true,
+            "show_description": true,
+            "description_lines": 3,
+            "description_override": "",
+            "show_comment": true,
+            "comment_override": "[A line from the shop about why this one matters.]",
+            "show_button": true,
+            "show_add_to_cart": false
+          }
+        },
+        "ex_a3": {
+          "type": "pattern-featured-record",
+          "settings": {
+            "product": "theo-parrish-natural-aspirations-vinyl-vers-pt-1-4432357368",
+            "label": "Staff pick",
+            "layout": "horizontal",
+            "size": "standard",
+            "background": "none",
+            "show_genres": true,
+            "show_description": true,
+            "description_lines": 3,
+            "description_override": "",
+            "show_comment": true,
+            "comment_override": "",
+            "show_button": true,
+            "show_add_to_cart": false
+          }
+        }
+      },
+      "block_order": [
+        "ex_a1",
+        "ex_a2",
+        "ex_a3"
+      ],
+      "settings": {
+        "eyebrow": "Example",
+        "heading": "Featured record (example)",
+        "background": "none"
+      }
+    },
+    "featured_record_example_a_audioly": {
+      "type": "apps",
+      "name": "Featured record (example) A: Audioly play buttons",
+      "blocks": {
+        "audioly_example_a": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "weekly-electronic",
+            "productsToShow": 18,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        }
+      },
+      "block_order": [
+        "audioly_example_a"
+      ],
+      "settings": {
+        "include_margins": false
+      }
+    },
+    "featured_record_example_b": {
+      "type": "pattern-columns",
+      "name": "Featured record (example) B: in columns",
+      "blocks": {
+        "ex_b_left": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "paper",
+            "padding": "medium",
+            "align": "top",
+            "min_height": "auto",
+            "overlay_opacity": 50
+          },
+          "blocks": {
+            "ex_b_record": {
+              "type": "pattern-featured-record",
+              "settings": {
+                "product": "nail-more-time-lax12inch103-b2b",
+                "label": "Staff pick",
+                "layout": "vertical",
+                "size": "standard",
+                "background": "none",
+                "show_genres": true,
+                "show_description": true,
+                "description_lines": 3,
+                "description_override": "",
+                "show_comment": true,
+                "comment_override": "",
+                "show_button": true,
+                "show_add_to_cart": false
+              }
+            }
+          },
+          "block_order": [
+            "ex_b_record"
+          ]
+        },
+        "ex_b_right": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "stripes-clay",
+            "padding": "medium",
+            "align": "center",
+            "min_height": "auto",
+            "overlay_opacity": 50
+          },
+          "blocks": {
+            "ex_b_heading": {
+              "type": "pattern-heading",
+              "settings": {
+                "eyebrow": "Featured record (example)",
+                "heading": "Staff picks",
+                "heading_accent": "",
+                "heading_end": "",
+                "size": "large",
+                "tag": "h2"
+              }
+            },
+            "ex_b_text": {
+              "type": "pattern-text",
+              "settings": {
+                "text": "<p>[Placeholder text: a couple of lines about this week&#39;s picks from the shop.]</p>",
+                "size": "large"
+              }
+            },
+            "ex_b_button": {
+              "type": "pattern-button",
+              "settings": {
+                "label": "All staff picks",
+                "link": "/collections/all",
+                "style": "accent"
+              }
+            }
+          },
+          "block_order": [
+            "ex_b_heading",
+            "ex_b_text",
+            "ex_b_button"
+          ]
+        }
+      },
+      "block_order": [
+        "ex_b_left",
+        "ex_b_right"
+      ],
+      "settings": {
+        "ratio": "50-50",
+        "width": "full",
+        "gap": "none",
+        "mobile_order": "normal",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "featured_record_example_b_audioly": {
+      "type": "apps",
+      "name": "Featured record (example) B: Audioly play buttons",
+      "blocks": {
+        "audioly_example_b": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "weekly-electronic",
+            "productsToShow": 18,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        }
+      },
+      "block_order": [
+        "audioly_example_b"
+      ],
+      "settings": {
+        "include_margins": false
+      }
+    },
+    "featured_record_example_c": {
+      "type": "pattern-featured-record-section",
+      "name": "Featured record (example) C: dark stripe",
+      "blocks": {
+        "ex_c1": {
+          "type": "pattern-featured-record",
+          "settings": {
+            "product": "dj-honesty-camarque-ep-syncro40-b2b",
+            "label": "Record of the week",
+            "layout": "horizontal",
+            "size": "standard",
+            "background": "dark",
+            "show_genres": true,
+            "show_description": true,
+            "description_lines": 3,
+            "description_override": "",
+            "show_comment": true,
+            "comment_override": "",
+            "show_button": true,
+            "show_add_to_cart": false
+          }
+        }
+      },
+      "block_order": [
+        "ex_c1"
+      ],
+      "settings": {
+        "eyebrow": "",
+        "heading": "Featured record (example), dark",
+        "background": "none"
+      }
+    },
+    "featured_record_example_c_audioly": {
+      "type": "apps",
+      "name": "Featured record (example) C: Audioly play buttons",
+      "blocks": {
+        "audioly_example_c": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "weekly-electronic",
+            "productsToShow": 18,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        }
+      },
+      "block_order": [
+        "audioly_example_c"
+      ],
+      "settings": {
+        "include_margins": false
+      }
     }
   },
   "order": [
     "pattern_hero",
     "pattern_this_week",
     "apps_this_week_audioly",
+    "pattern_featured_records_demo",
+    "apps_featured_records_demo",
+    "pattern_columns_feature_demo",
+    "apps_columns_feature_demo",
     "pattern_new_in",
+    "featured_record_example_a",
+    "featured_record_example_a_audioly",
+    "featured_record_example_b",
+    "featured_record_example_b_audioly",
+    "featured_record_example_c",
+    "featured_record_example_c_audioly",
     "pattern_genre_tiles",
     "pattern_service_row",
     "pattern_feature_split",
