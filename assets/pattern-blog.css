@@ -1,7 +1,7 @@
 /* Pattern blog: the listing (sections/main-blog.liquid), the article card
    (snippets/pattern-article-card.liquid) and the article page (sections/main-article.liquid; its
    reading column comes from assets/pattern-pages.css). Values from snippets/pattern-tokens.liquid.
-   The accent is for hover and focus only. */
+   Hover and focus underlines use the text colour; the accent fills hovered pills and nudged arrows. */
 
 /* ===== Listing ===== */
 .pattern-blog--wide {
@@ -218,7 +218,7 @@
   transition: transform 0.15s ease, color 0.15s ease;
 }
 
-/* Hover / keyboard focus: image zoom, darker hairline, accent underline on the title */
+/* Hover / keyboard focus: image zoom, darker hairline, underline on the title */
 .pattern-article-card:is(:hover, :has(.pattern-article-card__link:focus-visible)) .pattern-article-card__image {
   transform: scale(1.03);
 }
@@ -228,7 +228,7 @@
 }
 
 .pattern-article-card:is(:hover, :has(.pattern-article-card__link:focus-visible)) .pattern-article-card__link {
-  text-decoration-color: var(--pattern-accent);
+  text-decoration-color: currentColor;
 }
 
 .pattern-article-card:is(:hover, :has(.pattern-article-card__link:focus-visible)) .pattern-article-card__read .pattern-arrow {
@@ -290,7 +290,7 @@
 .pattern-article__meta-tag:hover,
 .pattern-article__meta-tag:focus-visible {
   color: var(--pattern-ink);
-  text-decoration-color: var(--pattern-accent);
+  text-decoration-color: currentColor;
 }
 
 .pattern-article__title {
@@ -430,7 +430,7 @@
 }
 
 .pattern-article__back:hover {
-  text-decoration-color: var(--pattern-accent);
+  text-decoration-color: currentColor;
 }
 
 .pattern-article__back:hover .pattern-arrow {
@@ -477,7 +477,7 @@
 
 .pattern-article__pager-link:hover .pattern-article__pager-title,
 .pattern-article__pager-link:focus-visible .pattern-article__pager-title {
-  text-decoration-color: var(--pattern-accent);
+  text-decoration-color: currentColor;
 }
 
 .pattern-article__pager-link:focus-visible,

@@ -4,7 +4,7 @@
    stylesheet, so these rules win without !important. Values come from snippets/pattern-tokens.liquid.
 
    One narrow text column (about 70 characters per line) centred in the shared container, display-font
-   title, body at 17px / 1.65, hairline rules above h2s, ink links with the accent on hover/focus. */
+   title, body at 17px / 1.65, hairline rules above h2s, ink links (thicker underline on hover/focus). */
 
 .page-width.pattern-page,
 #MainContent .shopify-policy__container,
@@ -203,7 +203,7 @@
   text-transform: uppercase;
 }
 
-/* Links: ink, underlined; accent only on hover and focus */
+/* Links: ink, underlined; a thicker underline on hover and focus */
 .pattern-page .rte a,
 #MainContent .shopify-policy__body .rte a {
   color: var(--pattern-ink);
@@ -218,7 +218,7 @@
 .pattern-page .rte a:focus-visible,
 #MainContent .shopify-policy__body .rte a:hover,
 #MainContent .shopify-policy__body .rte a:focus-visible {
-  color: var(--pattern-accent-text);
+  color: var(--pattern-ink);
   text-decoration-thickness: 0.2rem;
 }
 

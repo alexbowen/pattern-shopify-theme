@@ -241,3 +241,10 @@
     transition: none;
   }
 }
+
+/* Current page in Dawn's pagination: burnt orange text, and its underline (drawn in currentColor)
+   follows. --accent-text passes 4.5:1 on paper. */
+.pagination__item.pagination__item--current {
+  color: var(--accent-text);
+  opacity: 1; /* Dawn dims it with .light, which would drop below 4.5:1 */
+}

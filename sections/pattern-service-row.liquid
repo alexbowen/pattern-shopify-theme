@@ -1,7 +1,7 @@
 {%- comment -%}
   Pattern service row: up to 4 service notes on the paper background. Each column has a thick
-  charcoal rule on top, an optional line icon (snippets/pattern-icon.liquid), a small mono label
-  ("Postage · PT & ES"), a bold display highlight, one line of supporting text and an arrow link
+  charcoal rule on top, a small mono label ("Postage · PT & ES") with an optional line icon
+  (snippets/pattern-icon.liquid) just before it on the same line, a bold display highlight, one line of supporting text and an arrow link
   pinned to the foot of the column so links line up across columns. With a link the whole column is the link: on hover
   the link text underlines and the arrow nudges right and turns Opal.
 
@@ -63,11 +63,21 @@
                 href="{{ block.settings.link }}"
               {% endif %}
             >
-              {%- if block.settings.icon != blank and block.settings.icon != 'none' -%}
-                {% render 'pattern-icon', name: block.settings.icon, class: 'pattern-service__icon' %}
-              {%- endif -%}
-              {%- if block.settings.label != blank -%}
-                <span class="pattern-label pattern-service__label">{{ block.settings.label | escape }}</span>
+              {%- liquid
+                assign has_icon = false
+                if block.settings.icon != blank and block.settings.icon != 'none'
+                  assign has_icon = true
+                endif
+              -%}
+              {%- if has_icon or block.settings.label != blank -%}
+                <span class="pattern-service__label-row">
+                  {%- if has_icon -%}
+                    {% render 'pattern-icon', name: block.settings.icon, size: 22, class: 'pattern-service__icon' %}
+                  {%- endif -%}
+                  {%- if block.settings.label != blank -%}
+                    <span class="pattern-label pattern-service__label">{{ block.settings.label | escape }}</span>
+                  {%- endif -%}
+                </span>
               {%- endif -%}
               {%- if block.settings.highlight != blank -%}
                 <span class="pattern-service__highlight">{{ block.settings.highlight | escape }}</span>
@@ -150,15 +160,24 @@
     text-decoration: none;
   }
 
-  /* Icon: under the rule, above the label, ~20px below it (8px margin + the 12px column gap) */
+  /* Icon and label on one line: the 22px icon (snippets/pattern-icon.liquid scales the stroke so
+     it still draws 1.5px) sits 10px before the label, centred on its first 18px line; a long label
+     wraps beside it with the icon staying on the first line. */
+  .pattern-service__label-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
   .pattern-service__icon {
     flex: 0 0 auto;
     display: block;
-    margin-bottom: 0.8rem;
+    margin-top: -0.2rem;
     color: var(--service-fg);
   }
 
   .pattern-service__label {
+    min-width: 0;
     color: var(--service-muted);
   }
 

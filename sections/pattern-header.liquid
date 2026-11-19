@@ -174,10 +174,17 @@
     white-space: nowrap;
   }
 
+  /* Hover: underline in the text colour. Current page: burnt orange text and underline
+     (--accent-text passes 4.5:1 on paper). */
   .pattern-header__link:hover,
   .pattern-header__link[aria-current='page'] {
     text-decoration: underline;
+    text-decoration-color: currentColor;
     text-underline-offset: 0.4rem;
+  }
+
+  .pattern-header__link[aria-current='page'] {
+    color: var(--accent-text);
   }
 
   /* Mobile: wordmark and Search / Cart on the first row; the menu scrolls sideways underneath */

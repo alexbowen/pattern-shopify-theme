@@ -7,7 +7,7 @@
    - Price row under a hairline: amount without the currency code in the display font, then the
      condition as a small mono tag (New = filled charcoal, Used = outlined).
    - Cover: 1px inset outline so pale sleeves keep an edge; hover / keyboard focus scales the image
-     slightly inside its frame and underlines the artist in the accent.
+     slightly inside its frame and underlines the artist in the text colour.
    The image container (.card__inner, .card__media) and badges are Dawn's: badges are left where
    they are, and the cover's top-left corner stays clear. */
 .card-wrapper {
@@ -87,7 +87,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-decoration-color: var(--accent, currentColor);
+  text-decoration-color: currentColor;
   text-decoration-thickness: 0.2rem;
   text-underline-offset: 0.3rem;
 }
@@ -109,7 +109,7 @@
   overflow-wrap: anywhere;
 }
 
-/* Hover / keyboard focus: accent underline on the artist (or the title when there's no artist) */
+/* Hover / keyboard focus: underline (text colour) on the artist (or the title when there's no artist) */
 .card-wrapper.underline-links-hover:hover .card-pattern__link {
   text-decoration: none;
 }
@@ -117,7 +117,7 @@
 .card-wrapper:is(:hover, :has(.card-pattern__link:focus-visible)) .card-pattern__artist,
 .card-wrapper:is(:hover, :has(.card-pattern__link:focus-visible)) .card-pattern__link:not(:has(.card-pattern__artist)) .card-pattern__title {
   text-decoration-line: underline;
-  text-decoration-color: var(--accent, currentColor);
+  text-decoration-color: currentColor;
   text-decoration-thickness: 0.2rem;
   text-underline-offset: 0.3rem;
 }

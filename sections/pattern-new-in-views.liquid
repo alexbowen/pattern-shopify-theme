@@ -243,10 +243,15 @@
     transition: color 0.15s ease, text-decoration-color 0.2s ease;
   }
 
-  .pattern-new-in-views__tab:hover,
-  .pattern-new-in-views__tab[aria-selected='true'] {
+  /* Hover: ink text, underline in the text colour. Active view: burnt orange text and underline. */
+  .pattern-new-in-views__tab:hover {
     color: var(--pattern-ink);
-    text-decoration-color: var(--pattern-accent);
+    text-decoration-color: currentColor;
+  }
+
+  .pattern-new-in-views__tab[aria-selected='true'] {
+    color: var(--accent-text);
+    text-decoration-color: currentColor;
   }
 
   .pattern-new-in-views__tab:focus {
@@ -264,7 +269,7 @@
   }
 
   .pattern-new-in-views__see-all:hover {
-    color: var(--pattern-accent-text);
+    color: var(--pattern-ink);
   }
 
   .pattern-new-in-views__panel:focus {

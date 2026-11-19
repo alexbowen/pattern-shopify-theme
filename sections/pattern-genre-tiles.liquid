@@ -2,9 +2,10 @@
   Pattern "Browse by genre": heading (with italic accent word), intro, link to all records, genre
   tiles (one block each) and an origin line.
 
-  Tiles sit in four ranked rows set by block position: blocks 1-3 row 1, 4-7 row 2, 8-12 row 3,
-  13 onwards row 4. Each row has one tile size and type size (largest first) and a fixed tone:
-  rows 1-2 ink, rows 3-4 clay. Reordering blocks in the editor re-ranks the grid.
+  Tiles sit in rows set by block position (hardcoded; there's no tiles-per-row setting): blocks
+  1-5 row 1, 6-11 row 2, 12-17 row 3, 18 onwards row 4 (six across, wrapping). Every tile is the
+  same size; tone by row: row 1 soft charcoal (the dark stripe base), row 2 clay, rows 3-4 sand.
+  Reordering blocks in the editor moves tiles between rows. Tablet: three across; phone: two.
 
   Each tile links to the collection with the custom.pattern_genre filter pre-selected: the genre
   handle (the block's handle setting, or its label handleized) is looked up in the pattern_genre metaobjects and its ID becomes the filter value.
@@ -16,7 +17,8 @@
   Background: the same setting and classes as the Pattern column block (paper, clay, clay stripes,
   dark stripes). Text, links and origin chips take --genres-fg / --genres-muted, which flip to paper
   tints on the dark background. A tile never shares the section's tone: on the dark background the
-  ink tiles (rows 1-2) turn paper; on clay backgrounds the clay tiles (rows 3-4) turn paper.
+  charcoal tiles (row 1) turn paper; on clay backgrounds the clay tiles (row 2) turn paper. Every
+  tile also has a hairline edge, so light tiles stay distinct on paper and clay.
 {%- endcomment -%}
 {%- liquid
   assign bg = section.settings.background | default: 'paper'
@@ -57,21 +59,21 @@
       <div class="pattern-genres__grid">
         {%- for block in section.blocks -%}
           {%- liquid
-            # Row from position: 1-3, 4-7, 8-12, then 13+ (row 4 wraps if more blocks are added).
+            # Row from position: 1-5, 6-11, 12-17, then 18+ (row 4 wraps six across).
             # A new <ul> opens at each row's first block.
             assign i = forloop.index
-            if i <= 3
+            if i <= 5
               assign row = 1
               assign row_start = 1
-            elsif i <= 7
+            elsif i <= 11
               assign row = 2
-              assign row_start = 4
-            elsif i <= 12
+              assign row_start = 6
+            elsif i <= 17
               assign row = 3
-              assign row_start = 8
+              assign row_start = 12
             else
               assign row = 4
-              assign row_start = 13
+              assign row_start = 18
             endif
 
             assign genre_handle = block.settings.genre_handle | default: block.settings.label | handleize
@@ -207,37 +209,45 @@
     color: var(--genres-muted);
   }
 
-  /* One grid per row: three across, then four, then five and five */
+  /* One grid per row: five across, then six and six (row 4, if any, six) */
   .pattern-genres__grid {
     display: flex;
     flex-direction: column;
-    gap: 1.6rem;
+    gap: 1.2rem;
   }
 
   .pattern-genres__row {
     display: grid;
     grid-template-columns: repeat(var(--genre-cols), minmax(0, 1fr));
-    gap: 1.6rem;
+    gap: 1.2rem;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .pattern-genres__row--1 { --genre-cols: 3; }
-  .pattern-genres__row--2 { --genre-cols: 4; }
+  .pattern-genres__row--1 { --genre-cols: 5; }
+  .pattern-genres__row--2,
   .pattern-genres__row--3,
-  .pattern-genres__row--4 { --genre-cols: 5; }
+  .pattern-genres__row--4 { --genre-cols: 6; }
 
   .pattern-genre-tile {
+    --tile-edge: var(--pattern-hairline);
     display: flex;
     flex-direction: column-reverse;
     justify-content: space-between;
-    gap: 1.6rem;
+    gap: 1.2rem;
     box-sizing: border-box;
     height: 100%;
-    padding: 2rem 2.2rem;
+    min-height: clamp(14rem, 10.5vw, 16rem);
+    padding: 1.6rem 1.8rem;
+    box-shadow: inset 0 0 0 0.1rem var(--tile-edge);
     text-decoration: none;
     transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
+
+  /* Tile edges on the dark background: the paper hairline */
+  .pattern-genres--bg-stripes-dark .pattern-genre-tile {
+    --tile-edge: var(--pattern-hairline-on-dark);
   }
 
   .pattern-genre-tile:hover {
@@ -247,37 +257,43 @@
   .pattern-genre-tile:hover .pattern-genre-tile__name,
   .pattern-genre-tile:focus-visible .pattern-genre-tile__name {
     text-decoration: underline;
-    text-decoration-thickness: 0.3rem;
-    text-underline-offset: 0.6rem;
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 0.2rem;
+    text-underline-offset: 0.4rem;
   }
 
-  /* Tone by row: 1-2 ink, 3-4 clay */
-  .pattern-genre-tile--row-1,
-  .pattern-genre-tile--row-2 {
-    background-color: var(--pattern-ink);
+  /* Tone by row: 1 soft charcoal (paper text), 2 clay, 3-4 sand (ink text) */
+  .pattern-genre-tile--row-1 {
+    background-color: var(--pattern-stripe-dark-a);
     color: var(--pattern-paper);
   }
 
-  .pattern-genre-tile--row-3,
-  .pattern-genre-tile--row-4 {
+  .pattern-genre-tile--row-2 {
     background-color: var(--pattern-clay);
     color: var(--pattern-ink);
   }
 
+  .pattern-genre-tile--row-3,
+  .pattern-genre-tile--row-4 {
+    background-color: var(--pattern-sand);
+    color: var(--pattern-ink);
+  }
+
   /* A tile never shares the section's tone (before the hover rule, so the Opal hover still wins) */
-  .pattern-genres--bg-stripes-dark .pattern-genre-tile--row-1,
-  .pattern-genres--bg-stripes-dark .pattern-genre-tile--row-2,
-  .pattern-genres--bg-clay .pattern-genre-tile--row-3,
-  .pattern-genres--bg-clay .pattern-genre-tile--row-4,
-  .pattern-genres--bg-stripes-clay .pattern-genre-tile--row-3,
-  .pattern-genres--bg-stripes-clay .pattern-genre-tile--row-4 {
+  .pattern-genres--bg-stripes-dark .pattern-genre-tile--row-1 {
     background-color: var(--pattern-paper);
     color: var(--pattern-ink);
   }
 
-  /* Hover and keyboard focus: Opal fill with charcoal text (5.1:1); the focus ring stays too */
+  .pattern-genres--bg-clay .pattern-genre-tile--row-2,
+  .pattern-genres--bg-stripes-clay .pattern-genre-tile--row-2 {
+    background-color: var(--pattern-paper);
+  }
+
+  /* Hover and keyboard focus: Opal fill with its text colour; the focus ring stays too */
   .pattern-genres .pattern-genre-tile:hover,
   .pattern-genres .pattern-genre-tile:focus-visible {
+    --tile-edge: transparent;
     background-color: var(--pattern-accent);
     color: var(--pattern-on-accent);
   }
@@ -301,23 +317,15 @@
     height: 1.6rem;
   }
 
+  /* Name: about 60% of the old middle-row size */
   .pattern-genre-tile__name {
     font-family: var(--font-display);
     font-weight: 700;
-    line-height: 0.95;
-    letter-spacing: -0.04em;
+    font-size: clamp(2rem, 2vw, 3rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
     overflow-wrap: break-word;
   }
-
-  /* Size by row, stepping down (rows 3 and 4 share a size), from the mockup */
-  .pattern-genre-tile--row-1 { min-height: 32rem; }
-  .pattern-genre-tile--row-1 .pattern-genre-tile__name { font-size: clamp(4.4rem, 6.67vw, 9.6rem); }
-  .pattern-genre-tile--row-2 { min-height: 24rem; }
-  .pattern-genre-tile--row-2 .pattern-genre-tile__name { font-size: clamp(2.8rem, 3.6vw, 5.2rem); }
-  .pattern-genre-tile--row-3,
-  .pattern-genre-tile--row-4 { min-height: 19rem; }
-  .pattern-genre-tile--row-3 .pattern-genre-tile__name,
-  .pattern-genre-tile--row-4 .pattern-genre-tile__name { font-size: clamp(2.2rem, 2.36vw, 3.4rem); }
 
   /* Origin line */
   .pattern-genres__origins {
@@ -362,35 +370,28 @@
     border-style: dashed;
   }
 
-  /* Tablet: row 1 stays three across, row 2 two, rows 3-4 three */
-  @media screen and (max-width: 900px) {
-    .pattern-genres__row--2 { --genre-cols: 2; }
+  /* Tablet: three across on every row */
+  @media screen and (max-width: 989px) {
+    .pattern-genres__row--1,
+    .pattern-genres__row--2,
     .pattern-genres__row--3,
     .pattern-genres__row--4 { --genre-cols: 3; }
 
-    /* Shorter tiles than the mockup's fixed heights, so the stacked grid isn't overly long */
-    .pattern-genre-tile--row-1 { min-height: 22rem; }
-    .pattern-genre-tile--row-2 { min-height: 17rem; }
-    .pattern-genre-tile--row-3,
-    .pattern-genre-tile--row-4 { min-height: 14rem; }
+    .pattern-genre-tile { min-height: 12.8rem; }
   }
 
-  /* Phone: row 1 one column, row 2 and rows 3-4 two */
-  @media screen and (max-width: 560px) {
+  /* Phone: two across, shorter tiles */
+  @media screen and (max-width: 749px) {
     .pattern-genres__grid,
-    .pattern-genres__row { gap: 1.2rem; }
+    .pattern-genres__row { gap: 0.8rem; }
 
-    .pattern-genres__row--1 { --genre-cols: 1; }
+    .pattern-genres__row--1,
     .pattern-genres__row--2,
     .pattern-genres__row--3,
     .pattern-genres__row--4 { --genre-cols: 2; }
 
-    .pattern-genre-tile { padding: 1.6rem 1.8rem; gap: 1.2rem; }
-
-    .pattern-genre-tile--row-1 { min-height: 16rem; }
-    .pattern-genre-tile--row-2 { min-height: 13rem; }
-    .pattern-genre-tile--row-3,
-    .pattern-genre-tile--row-4 { min-height: 11rem; }
+    .pattern-genre-tile { min-height: 10.4rem; padding: 1.2rem 1.4rem; gap: 0.8rem; }
+    .pattern-genre-tile__name { font-size: 1.9rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {

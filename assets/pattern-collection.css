@@ -142,13 +142,13 @@
   color: var(--pattern-paper);
 }
 
-/* Text links: accent underline on hover */
+/* Text links: underline in the text colour on hover */
 @media (hover: hover) {
   .pattern-collection__clear:hover,
   :is(.template-collection, .template-search) .origin-panel__toggle:hover,
   :is(.template-collection, .template-search) .filter-bar__clear-all a:hover {
     text-decoration-line: underline;
-    text-decoration-color: var(--accent);
+    text-decoration-color: currentColor;
     text-decoration-thickness: 0.2rem;
     text-underline-offset: 0.3rem;
   }

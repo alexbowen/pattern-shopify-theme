@@ -361,7 +361,7 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
 }
 
 .origin-line__more:hover {
-  text-decoration-color: var(--pattern-accent, currentColor);
+  text-decoration-color: currentColor;
 }
 
 .origin-line__more:focus {

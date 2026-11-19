@@ -1,7 +1,7 @@
 /* Pattern search: the inline search field and predictive dropdown (snippets/pattern-search-form.liquid,
    assets/pattern-search.js, sections/pattern-predictive-search.liquid) and the search results page
-   (sections/pattern-search-results.liquid). Values from snippets/pattern-tokens.liquid. The accent
-   is only a hover / highlight underline; no orange fills. */
+   (sections/pattern-search-results.liquid). Values from snippets/pattern-tokens.liquid. Hover and
+   highlight underlines use the text colour; no orange. */
 
 .pattern-search {
   --pattern-search-line: color-mix(in srgb, var(--pattern-ink) 55%, transparent);
@@ -180,7 +180,7 @@
   color: var(--pattern-ink);
 }
 
-/* Highlighted (arrow keys or pointer): neutral sand tint and an accent underline on the name */
+/* Highlighted (arrow keys or pointer): neutral sand tint and an underline on the name */
 .pattern-predictive__option[aria-selected='true'] {
   background-color: var(--pattern-sand);
 }
@@ -188,13 +188,13 @@
 .pattern-predictive__option[aria-selected='true'] .pattern-predictive__title,
 .pattern-predictive__option[aria-selected='true'] .pattern-predictive__plain,
 .pattern-predictive__option[aria-selected='true'] .pattern-predictive__all {
-  text-decoration-color: var(--pattern-accent);
+  text-decoration-color: currentColor;
 }
 
 /* Products without an artist line underline the title; with one, the artist carries it too */
 .pattern-predictive__option[aria-selected='true'] .pattern-predictive__artist {
   text-decoration: underline;
-  text-decoration-color: var(--pattern-accent);
+  text-decoration-color: currentColor;
   text-decoration-thickness: 0.2rem;
   text-underline-offset: 0.3rem;
 }
@@ -423,6 +423,6 @@
 
 .pattern-search-results__text-result:hover .pattern-search-results__text-title {
   text-decoration: underline;
-  text-decoration-color: var(--pattern-accent);
+  text-decoration-color: currentColor;
   text-underline-offset: 0.3rem;
 }
