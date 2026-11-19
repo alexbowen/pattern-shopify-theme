@@ -264,6 +264,9 @@
     {%- comment -%} Pattern design tokens and shared building blocks (after base.css so they win) {%- endcomment -%}
     {% render 'pattern-tokens' %}
     {{ 'pattern-base.css' | asset_url | stylesheet_tag }}
+    {%- if request.page_type == 'page' or request.page_type == 'policy' -%}
+      {{ 'pattern-pages.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
     <link rel="stylesheet" href="{{ 'component-cart-items.css' | asset_url }}" media="print" onload="this.media='all'">
 
     {%- if settings.cart_type == 'drawer' -%}
