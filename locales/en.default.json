@@ -209,7 +209,9 @@
         "chip": "Origin",
         "title": "Origins",
         "search": "Search origins",
-        "no_match": "No origins match"
+        "no_match": "No origins match",
+        "more": "More",
+        "less": "Less"
       },
       "filter_bar": {
         "filters": "Filters",

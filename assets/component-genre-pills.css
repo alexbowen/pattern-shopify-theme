@@ -330,8 +330,47 @@ body:has(.section-header.shopify-section-header-sticky:not(.shopify-section-head
 }
 
 .origin-line__row.genre-pills__row {
-  flex: 0 1 auto;
+  /* relative: contains the pills' visually-hidden counts (absolutely positioned), which would
+     otherwise escape the scrolling row on mobile and widen the page */
+  position: relative;
+  flex: 1 1 auto;
   gap: 0.6rem;
+}
+
+/* Origins past the threshold: hidden behind "More"; when shown they flow inline with the rest */
+.origin-line__extra:not([hidden]) {
+  display: contents;
+}
+
+.origin-line__more {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--origin-pill-height);
+  margin: 0;
+  padding: 0 0.4rem;
+  border: 0;
+  background: none;
+  color: var(--pal-charcoal);
+  font-family: inherit;
+  font-size: 1.2rem;
+  text-decoration: underline;
+  text-underline-offset: 0.3rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.origin-line__more:hover {
+  text-decoration-color: var(--pattern-accent, currentColor);
+}
+
+.origin-line__more:focus {
+  outline: none;
+}
+
+.origin-line__more:focus-visible {
+  outline: 0.2rem solid var(--pal-charcoal);
+  outline-offset: 0.2rem;
 }
 
 .origin-pill {

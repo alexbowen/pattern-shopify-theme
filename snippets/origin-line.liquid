@@ -1,13 +1,14 @@
 {% comment %}
-  Origin filter line under the genre pills: "From", the top 6 origins by count as small outline
-  pills, any other selected origins, and an "All origins" panel (popover on desktop, bottom sheet
-  on mobile) with live search over a flat alphabetical list. On mobile the line collapses to a
-  single "Origin" chip that opens the sheet.
+  Origin filter line under the genre pills: every origin as a small outline pill, ordered by
+  product count (highest first) then alphabetically, in a group named "Origin" (no visible label).
+  Same row behaviour as the genre pills: one scrolling line on mobile, wrapping from 750px.
+  Safety net: past 15 origins, the rest sit behind a small "More" toggle (shown straight away if
+  one of them is selected).
 
   Every visible origin has one hidden input (disabled unless selected): that's what the form
-  submits. The pills and the panel checkboxes have no name; facets.js keeps them and the inputs in
-  step, so a value is never sent twice. The line sits in the genre pills form, so origin goes with
-  every submission. Shopify combines origins with OR and with genres with AND.
+  submits. The pills have no name; facets.js keeps them and the inputs in step, so a value is never
+  sent twice. The line sits in the genre pills form, so origin goes with every submission. Shopify
+  combines origins with OR and with genres with AND.
 
   Renders nothing if the filter is missing or has no values with results.
 
@@ -15,6 +16,7 @@
   - results: {Object} Collection
   - param_name: {String} Param name of the origin filter, e.g. 'filter.p.m.custom.origin'
 {% endcomment %}
+
 
 {%- liquid
   assign origin_filter = results.filters | where: 'param_name', param_name | first
@@ -30,122 +32,84 @@
 
 {%- if origin_filter and visible > 0 -%}
   {%- liquid
-    assign selected_count = origin_filter.active_values.size
+    assign max_visible = 15
 
-    # Top 6 by count (ties keep Shopify's order), skipping zero counts.
-    assign by_count = origin_filter.values | sort: 'count' | reverse
-    assign top_keys = ','
-    assign top_shown = 0
-    for value in by_count
-      if top_shown >= 6
-        break
-      endif
-      if value.count > 0
-        assign key = value.value | handleize
-        assign top_keys = top_keys | append: key | append: ','
-        assign top_shown = top_shown | plus: 1
-      endif
-    endfor
-
+    # Order: count (highest first), then alphabetically within the same count. Zero-count values
+    # only appear when selected (so they can be cleared), at the end.
     assign alphabetical = origin_filter.values | sort_natural: 'label'
+    assign counts = origin_filter.values | map: 'count' | uniq | sort | reverse
+
+    # Is a selected origin past the threshold? Then the extra pills start open.
+    assign extra_active = false
+    assign position = 0
+    for c in counts
+      for value in alphabetical
+        if value.count != c
+          continue
+        endif
+        if value.count == 0 and value.active == false
+          continue
+        endif
+        assign position = position | plus: 1
+        if position > max_visible and value.active
+          assign extra_active = true
+        endif
+      endfor
+    endfor
+    assign extra_total = position | minus: max_visible
   -%}
 
   <div class="origin-line" data-origin-line>
-    <span class="origin-line__label small-hide" id="OriginLineLabel">{{ 'products.facets.origin.from' | t }}</span>
-
     <div
-      class="origin-line__row genre-pills__row small-hide"
+      class="origin-line__row genre-pills__row"
       data-genre-row="origins"
       role="group"
-      aria-labelledby="OriginLineLabel"
+      aria-label="{{ 'products.facets.origin.chip' | t | escape }}"
     >
-      {%- comment -%} Top 6 in count order, then selected origins outside the top 6. {%- endcomment -%}
-      {%- for value in by_count -%}
-        {%- assign key = value.value | handleize -%}
-        {%- assign key_check = ',' | append: key | append: ',' -%}
-        {%- if top_keys contains key_check -%}
-          {% render 'origin-pill', value: value, key: key %}
-        {%- endif -%}
-      {%- endfor -%}
-      {%- for value in origin_filter.active_values -%}
-        {%- assign key = value.value | handleize -%}
-        {%- assign key_check = ',' | append: key | append: ',' -%}
-        {%- unless top_keys contains key_check -%}
-          {% render 'origin-pill', value: value, key: key %}
-        {%- endunless -%}
-      {%- endfor -%}
-    </div>
-
-    <details class="origin-panel disclosure-has-popup" data-origin-panel>
-      <summary
-        class="origin-panel__toggle{% if selected_count > 0 %} origin-panel__toggle--active{% endif %}"
-        aria-controls="OriginPanel"
-        aria-expanded="false"
-      >
-        <span class="small-hide">{{ 'products.facets.origin.all' | t }}</span>
-        <span class="medium-hide large-up-hide">
-          {{- 'products.facets.origin.chip' | t -}}
-          <span class="origin-panel__count" data-origin-count>
-            {%- if selected_count > 0 %} · {{ selected_count }}{% endif -%}
+      {%- liquid
+        # One pass: the first max_visible pills, and the rest for behind "More".
+        assign position = 0
+        assign visible_html = ''
+        assign extra_html = ''
+        for c in counts
+          for value in alphabetical
+            if value.count != c
+              continue
+            endif
+            if value.count == 0 and value.active == false
+              continue
+            endif
+            assign position = position | plus: 1
+            assign key = value.value | handleize
+            capture pill
+              render 'origin-pill', value: value, key: key
+            endcapture
+            if position > max_visible
+              assign extra_html = extra_html | append: pill
+            else
+              assign visible_html = visible_html | append: pill
+            endif
+          endfor
+        endfor
+      -%}
+      {{- visible_html -}}
+      {%- if extra_total > 0 -%}
+        <span class="origin-line__extra" id="OriginLineExtra"{% unless extra_active %} hidden{% endunless %}>
+          {{- extra_html -}}
+        </span>
+        <button
+          type="button"
+          class="origin-line__more"
+          aria-controls="OriginLineExtra"
+          aria-expanded="{{ extra_active }}"
+          data-origin-more
+        >
+          <span data-origin-more-label data-more="{{ 'products.facets.origin.more' | t | escape }}" data-less="{{ 'products.facets.origin.less' | t | escape }}">
+            {%- if extra_active %}{{ 'products.facets.origin.less' | t }}{% else %}{{ 'products.facets.origin.more' | t }}{% endif -%}
           </span>
-        </span>
-        <span class="origin-panel__caret svg-wrapper" aria-hidden="true">
-          {{- 'icon-caret.svg' | inline_asset_content -}}
-        </span>
-      </summary>
-      <div
-        class="origin-panel__content"
-        id="OriginPanel"
-        role="dialog"
-        aria-labelledby="OriginPanelTitle"
-      >
-        <div class="origin-panel__header">
-          <h2 class="origin-panel__title" id="OriginPanelTitle">{{ 'products.facets.origin.title' | t }}</h2>
-          <button type="button" class="origin-panel__close" data-origin-close aria-label="{{ 'accessibility.close' | t }}">
-            <span class="svg-wrapper">{{- 'icon-close.svg' | inline_asset_content -}}</span>
-          </button>
-        </div>
-        <div class="origin-panel__search-wrap">
-          <label class="visually-hidden" for="OriginSearch">{{ 'products.facets.origin.search' | t }}</label>
-          <input
-            type="search"
-            id="OriginSearch"
-            class="origin-panel__search"
-            placeholder="{{ 'products.facets.origin.search' | t }}"
-            autocomplete="off"
-            spellcheck="false"
-            aria-controls="OriginList"
-            data-origin-search
-          >
-        </div>
-        <ul class="origin-panel__list list-unstyled" id="OriginList" role="list">
-          {%- for value in alphabetical -%}
-            {%- if value.count == 0 and value.active == false -%}{%- continue -%}{%- endif -%}
-            {%- assign key = value.value | handleize -%}
-            <li class="origin-panel__item" data-origin-name="{{ value.label | escape }}">
-              <label class="filter-option" for="OriginOption-{{ key }}">
-                <input
-                  type="checkbox"
-                  id="OriginOption-{{ key }}"
-                  data-origin-key="{{ key }}"
-                  {% if value.active %}
-                    checked
-                  {% endif %}
-                >
-                <span class="filter-option__label">{{ value.label | escape }}</span>
-                <span class="filter-option__count">{{ value.count }}</span>
-              </label>
-            </li>
-          {%- endfor -%}
-        </ul>
-        <p class="origin-panel__empty" data-origin-empty hidden>{{ 'products.facets.origin.no_match' | t }}</p>
-        <div class="origin-panel__footer">
-          <button type="button" class="button button--primary origin-panel__done" data-origin-close>
-            {{- 'products.facets.filter_bar.show_records' | t: count: results.products_count -}}
-          </button>
-        </div>
-      </div>
-    </details>
+        </button>
+      {%- endif -%}
+    </div>
 
     <div class="origin-line__inputs" hidden>
       {%- for value in origin_filter.values -%}
@@ -162,4 +126,34 @@
       {%- endfor -%}
     </div>
   </div>
+  <script>
+    (() => {
+      // "More" toggle for origins past the threshold. Delegated once, because facets.js
+      // re-renders the pills (innerHTML) on every filter change; the open state is kept across
+      // those re-renders.
+      if (window.patternOriginMoreInit) return;
+      window.patternOriginMoreInit = true;
+      const setOpen = (button, open) => {
+        const extra = document.getElementById(button.getAttribute('aria-controls'));
+        const label = button.querySelector('[data-origin-more-label]');
+        if (!extra) return;
+        extra.hidden = !open;
+        button.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (label) label.textContent = open ? label.dataset.less : label.dataset.more;
+      };
+      document.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-origin-more]');
+        if (!button) return;
+        const open = button.getAttribute('aria-expanded') !== 'true';
+        window.patternOriginMoreOpen = open;
+        setOpen(button, open);
+      });
+      const pills = document.querySelector('.genre-pills');
+      if (!pills) return;
+      new MutationObserver(() => {
+        const button = pills.querySelector('[data-origin-more]');
+        if (button && window.patternOriginMoreOpen && button.getAttribute('aria-expanded') !== 'true') setOpen(button, true);
+      }).observe(pills, { childList: true, subtree: true });
+    })();
+  </script>
 {%- endif -%}
