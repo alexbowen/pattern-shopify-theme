@@ -1,0 +1,426 @@
+{%- comment -%}
+  Pattern search results: matches the collection page. Display-font heading "Results for '…'"
+  with a mono record count, a slim search field prefilled with the query (predictive, via
+  snippets/pattern-search-form.liquid), then the collection page's filter UI on the search object
+  (genre pills, Pattern filter bar with sort; Search & Discovery filters apply on search), the
+  shared product card in Dawn's grid (so Audioly's play buttons find .card__inner / .grid__item),
+  and Dawn's pagination.
+
+  No results, or no query: a heading and one line, then onward pills (the 17 parent genres linking
+  to the collection filtered by genre, as the genre tiles do; New in / Popular collections that
+  exist; Contact).
+
+  Replaces sections/main-search.liquid in templates/search.json (that file is kept).
+{%- endcomment -%}
+{{ 'template-collection.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'pattern-search.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- liquid
+  assign terms = search.terms | strip
+  assign has_terms = false
+  if search.performed and terms != blank
+    assign has_terms = true
+  endif
+
+  # A filter is active (zero results then means "filtered to nothing", not "nothing found").
+  assign any_filter_active = false
+  for filter in search.filters
+    if filter.active_values.size > 0 or filter.min_value.value != null or filter.max_value.value != null
+      assign any_filter_active = true
+      break
+    endif
+  endfor
+
+  assign show_results = false
+  if has_terms
+    if search.results_count > 0 or any_filter_active
+      assign show_results = true
+    endif
+  endif
+-%}
+
+<div class="pattern-search-results section-{{ section.id }}-padding">
+  {%- paginate search.results by section.settings.products_per_page -%}
+    <div class="page-width pattern-search-results__head">
+      {%- if show_results -%}
+        <h1 class="pattern-search-results__title">{{ 'sections.pattern_search.results_for' | t: terms: terms }}</h1>
+        <p class="pattern-label pattern-search-results__count" data-search-count>
+          {{- 'products.facets.genre_pills.records' | t: count: search.results_count -}}
+        </p>
+      {%- elsif has_terms -%}
+        <h1 class="pattern-search-results__title">{{ 'sections.pattern_search.nothing_heading' | t: terms: terms }}</h1>
+        <p class="pattern-search-results__line" role="status">{{ 'sections.pattern_search.nothing_line' | t }}</p>
+      {%- else -%}
+        <h1 class="pattern-search-results__title">{{ 'sections.pattern_search.search_heading' | t }}</h1>
+        <p class="pattern-search-results__line">{{ 'sections.pattern_search.no_query' | t }}</p>
+      {%- endif -%}
+      {%- assign search_field_label = 'general.search.search' | t -%}
+      {% render 'pattern-search-form', id: 'SearchPage', value: search.terms, label: search_field_label, variant: 'page' %}
+    </div>
+
+    {%- if show_results -%}
+      {%- liquid
+        # Same filter set-up as sections/main-collection-product-grid.liquid, on the search object.
+        assign genre_param = 'filter.p.m.custom.pattern_genre'
+        assign origin_param = 'filter.p.m.custom.origin'
+        assign legacy_genre_param = 'filter.v.t.shopify.music-genre'
+        assign genre_pills = false
+        assign genre_param_excluded = ''
+        if section.settings.enable_filtering and section.settings.show_genre_pills
+          assign genre_pills_filter = search.filters | where: 'param_name', genre_param | first
+          if genre_pills_filter
+            assign genre_pills = true
+            assign genre_param_excluded = genre_param
+          endif
+        endif
+
+        assign sort_in_bar = false
+        if genre_pills and section.settings.enable_sorting
+          assign sort_in_bar = true
+        endif
+        assign facets_sorting = section.settings.enable_sorting
+        if sort_in_bar
+          assign facets_sorting = false
+        endif
+
+        assign filter_bar = false
+        assign pills_show_sort = sort_in_bar
+        if sort_in_bar and section.settings.filter_type == 'horizontal'
+          assign filter_bar = true
+          assign pills_show_sort = false
+        endif
+        assign utility_excludes = ',' | append: genre_param | append: ',' | append: legacy_genre_param | append: ',' | append: origin_param | append: ','
+        assign discovery_params = ',' | append: genre_param | append: ',' | append: origin_param | append: ','
+        assign chip_excludes = ',' | append: genre_param | append: ',' | append: legacy_genre_param | append: ','
+      -%}
+
+      {%- if genre_pills -%}
+        {% render 'genre-pills',
+          results: search,
+          param_name: genre_param,
+          origin_param: origin_param,
+          show_sort: pills_show_sort
+        %}
+      {%- endif -%}
+      {{ 'pattern-collection.css' | asset_url | stylesheet_tag }}
+
+      <div>
+        {{ 'component-facets.css' | asset_url | stylesheet_tag }}
+        <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+        {%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
+          <aside
+            aria-labelledby="verticalTitle"
+            class="facets-wrapper{% unless section.settings.enable_filtering %} facets-wrapper--no-filters{% endunless %} page-width"
+            id="main-collection-filters"
+            data-id="{{ section.id }}"
+          >
+            {% render 'facets',
+              results: search,
+              enable_filtering: section.settings.enable_filtering,
+              enable_sorting: facets_sorting,
+              filter_type: 'horizontal',
+              paginate: paginate,
+              exclude_param: genre_param_excluded,
+              sort_in_bar: sort_in_bar,
+              filter_bar: filter_bar,
+              utility_excludes: utility_excludes,
+              discovery_params: discovery_params,
+              chip_excludes: chip_excludes
+            %}
+          </aside>
+        {%- endif -%}
+
+        <div class="product-grid-container" id="ProductGridContainer">
+          {%- if search.results.size == 0 -%}
+            <div class="collection collection--empty page-width" id="product-grid" data-id="{{ section.id }}">
+              <div class="loading-overlay gradient"></div>
+              {%- liquid
+                assign empty_sort = search.sort_by | default: search.default_sort_by
+                assign empty_terms = search.terms | url_encode
+                assign empty_clear_url = routes.search_url | append: '?q=' | append: empty_terms | append: '&type=product&options%5Bprefix%5D=last&sort_by=' | append: empty_sort
+              -%}
+              <div class="pattern-collection-empty">
+                <h2 class="pattern-collection-empty__title">No records match these filters</h2>
+                <p class="pattern-collection-empty__text">Try removing a filter or two.</p>
+                <facet-remove>
+                  <a href="{{ empty_clear_url }}" class="pattern-button pattern-collection-empty__button">Clear filters</a>
+                </facet-remove>
+              </div>
+            </div>
+          {%- else -%}
+            <div class="collection page-width">
+              <div class="loading-overlay gradient"></div>
+              <ul
+                id="product-grid"
+                data-id="{{ section.id }}"
+                class="grid product-grid grid--{{ section.settings.columns_mobile }}-col-tablet-down grid--{{ section.settings.columns_desktop }}-col-desktop"
+                role="list"
+              >
+                {%- assign skip_card_product_styles = false -%}
+                {%- for item in search.results -%}
+                  {%- liquid
+                    assign lazy_load = false
+                    if forloop.index > 2
+                      assign lazy_load = true
+                    endif
+                  -%}
+                  <li class="grid__item">
+                    {%- if item.object_type == 'product' -%}
+                      {% render 'card-product',
+                        card_product: item,
+                        media_aspect_ratio: section.settings.image_ratio,
+                        image_shape: section.settings.image_shape,
+                        show_secondary_image: section.settings.show_secondary_image,
+                        show_vendor: section.settings.show_vendor,
+                        show_rating: section.settings.show_rating,
+                        lazy_load: lazy_load,
+                        skip_styles: skip_card_product_styles,
+                        quick_add: 'none',
+                        section_id: section.id
+                      %}
+                      {%- assign skip_card_product_styles = true -%}
+                    {%- else -%}
+                      {%- comment -%} Pages / articles (only from a search URL without type=product). {%- endcomment -%}
+                      <a href="{{ item.url }}" class="pattern-search-results__text-result">
+                        <span class="pattern-label">{{ item.object_type | capitalize }}</span>
+                        <span class="pattern-search-results__text-title">{{ item.title | escape }}</span>
+                      </a>
+                    {%- endif -%}
+                  </li>
+                {%- endfor -%}
+              </ul>
+
+              {%- if paginate.pages > 1 -%}
+                {% render 'pagination', paginate: paginate, anchor: '' %}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+      <script>
+        (() => {
+          // Filters and sort refresh the grid without a reload (facets.js); keep the heading's
+          // record count in step with the filter bar's.
+          const head = document.querySelector('[data-search-count]');
+          const grid = document.getElementById('ProductGridContainer');
+          if (!head || !grid) return;
+          new MutationObserver(() => {
+            const source = document.querySelector('.filter-bar__count-value, .genre-pills__count');
+            if (source) head.textContent = source.textContent.trim();
+          }).observe(grid, { childList: true });
+        })();
+      </script>
+    {%- else -%}
+      {%- comment -%} Nothing found / no query: onward pills {%- endcomment -%}
+      {{ 'component-genre-pills.css' | asset_url | stylesheet_tag }}
+      {{ 'pattern-collection.css' | asset_url | stylesheet_tag }}
+      {%- liquid
+        assign base_url = routes.all_products_collection_url
+        capture genre_map
+          render 'pattern-genres'
+        endcapture
+        assign genre_entries = genre_map | strip | split: '|'
+      -%}
+      <div class="page-width pattern-search-results__onward">
+        <nav class="pattern-search-results__group" aria-labelledby="SearchOnwardGenres">
+          <p class="pattern-label pattern-search-results__group-label" id="SearchOnwardGenres">
+            {{- 'sections.pattern_search.browse_genres' | t -}}
+          </p>
+          <ul class="pattern-search-results__pills" role="list">
+            {%- for entry in genre_entries -%}
+              {%- liquid
+                if entry == blank
+                  continue
+                endif
+                assign entry_label = entry | split: '=' | first
+                assign entry_pair = entry | split: '=' | last | split: '>'
+                assign entry_handle = entry_pair[0]
+                assign entry_parent = entry_pair[1]
+                if entry_parent != blank
+                  continue
+                endif
+                # Link as the genre tiles do: the pattern_genre metaobject's ID as the filter value.
+                assign genre_url = base_url
+                assign genre = metaobjects.pattern_genre[entry_handle]
+                if genre != blank
+                  assign genre_gid = 'gid://shopify/Metaobject/' | append: genre.system.id
+                  assign genre_url = base_url | append: '?filter.p.m.custom.pattern_genre=' | append: genre_gid
+                endif
+              -%}
+              <li>
+                <a href="{{ genre_url }}" class="genre-pill"><span class="genre-pill__label">{{ entry_label | escape }}</span></a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+
+        {%- liquid
+          assign onward_handles = 'new-in-electronic,new-in-flipside,new-in-popular' | split: ','
+          assign contact_page = pages['contact']
+        -%}
+        <nav class="pattern-search-results__group" aria-labelledby="SearchOnwardMore">
+          <p class="pattern-label pattern-search-results__group-label" id="SearchOnwardMore">
+            {{- 'sections.pattern_search.or_try' | t -}}
+          </p>
+          <ul class="pattern-search-results__pills" role="list">
+            {%- for handle in onward_handles -%}
+              {%- assign onward_collection = collections[handle] -%}
+              {%- if onward_collection.id != blank and onward_collection.products_count > 0 -%}
+                <li>
+                  <a href="{{ onward_collection.url }}" class="genre-pill"><span class="genre-pill__label">{{ onward_collection.title | escape }}</span></a>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+            {%- if contact_page != blank -%}
+              <li>
+                <a href="{{ contact_page.url }}" class="genre-pill"><span class="genre-pill__label">{{ contact_page.title | escape }}</span></a>
+              </li>
+            {%- endif -%}
+          </ul>
+        </nav>
+      </div>
+    {%- endif -%}
+  {%- endpaginate -%}
+</div>
+
+{% schema %}
+{
+  "name": "Pattern search results",
+  "class": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "default": 24,
+      "label": "Products per page"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 6,
+      "label": "Columns on desktop"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "default": "2",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Product cards"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "adapt"
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "label": "Image shape",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "arch", "label": "Arch" },
+        { "value": "blob", "label": "Blobs" },
+        { "value": "chevronleft", "label": "Chevron left" },
+        { "value": "chevronright", "label": "Chevron right" },
+        { "value": "diamond", "label": "Diamond" },
+        { "value": "parallelogram", "label": "Parallelogram" },
+        { "value": "round", "label": "Round" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "label": "Show second image on hover",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show product rating",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Filtering and sorting"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "label": "Enable filtering",
+      "info": "Uses the Search & Discovery filters, as on the collection page.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "filter_type",
+      "label": "Filter layout",
+      "options": [
+        { "value": "horizontal", "label": "Horizontal" }
+      ],
+      "default": "horizontal"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "Enable sorting",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_genre_pills",
+      "label": "Show genre pills",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    }
+  ]
+}
+{% endschema %}

@@ -313,6 +313,26 @@
     }
   },
   "sections": {
+    "pattern_search": {
+      "placeholder": "Artist, title or label",
+      "records": "Records",
+      "collections": "Collections",
+      "pages": "Pages",
+      "see_all": "See all results for '{{ terms }}'",
+      "suggestions": "Search suggestions",
+      "result_one": "result",
+      "result_other": "results",
+      "no_suggestions": "No suggestions",
+      "close": "Close search",
+      "results_for": "Results for '{{ terms }}'",
+      "nothing_heading": "Nothing found for '{{ terms }}'.",
+      "nothing_line": "Check the spelling, or try an artist, a title or a label.",
+      "nothing_found": "Nothing found for '{{ terms }}'. Check the spelling, or try an artist, a title or a label.",
+      "search_heading": "Search",
+      "no_query": "Search for an artist, title or label.",
+      "browse_genres": "Browse by genre",
+      "or_try": "Or try"
+    },
     "pattern_new_in": {
       "see_all": "See all",
       "views_label": "{{ heading }}: choose a view"

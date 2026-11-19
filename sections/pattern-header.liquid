@@ -1,6 +1,7 @@
 {%- comment -%}
-  Pattern header: wordmark ("pattern" + italic "records", or a logo image), main menu, Search and
-  Cart (N) as text links. Keeps Dawn's cart notification working: it renders <cart-notification>
+  Pattern header: wordmark ("pattern" + italic "records", or a logo image), main menu, an inline
+  search field with predictive results (snippets/pattern-search-form.liquid; from 990px it sits in
+  the header, below that a search icon opens it in place) and Cart (N) as a text link. Keeps Dawn's cart notification working: it renders <cart-notification>
   and the #cart-icon-bubble element cart-notification.js updates, and refreshes the visible count
   on Dawn's cart-update event.
 
@@ -11,6 +12,9 @@
   {{ 'component-cart-notification.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'cart-notification.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
+
+{{ 'pattern-search.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'pattern-search.js' | asset_url }}" defer="defer"></script>
 
 {%- assign menu_links = linklists[section.settings.menu].links -%}
 
@@ -57,7 +61,12 @@
     {%- endif -%}
 
     <div class="pattern-header__actions">
-      <a href="{{ routes.search_url }}" class="pattern-header__link">{{ section.settings.search_label | escape }}</a>
+      {%- comment -%} Small screens: opens the field over the header (a plain link to /search without JS). {%- endcomment -%}
+      <a href="{{ routes.search_url }}" class="pattern-header__link pattern-header__search-toggle" data-search-toggle="HeaderSearch">
+        {% render 'pattern-icon', name: 'search', size: 22 %}
+        <span class="visually-hidden">{{ section.settings.search_label | escape }}</span>
+      </a>
+      {% render 'pattern-search-form', id: 'HeaderSearch', label: section.settings.search_label, variant: 'header' %}
       <a
         href="{{ routes.cart_url }}"
         class="pattern-header__link"
@@ -149,6 +158,7 @@
 
   .pattern-header__actions {
     display: flex;
+    align-items: center;
     gap: 2.8rem;
   }
 
@@ -245,6 +255,7 @@
       "type": "text",
       "id": "search_label",
       "label": "Search label",
+      "info": "Accessible name of the search field and icon.",
       "default": "Search"
     },
     {

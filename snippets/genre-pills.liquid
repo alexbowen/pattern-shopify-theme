@@ -20,6 +20,8 @@
   {% render 'genre-pills', results: collection, param_name: 'filter.p.m.custom.pattern_genre' %}
 {% endcomment %}
 
+{%- comment -%} The search object has no products_count; results_count is its (filtered) total. {%- endcomment -%}
+{%- assign results_total = results.products_count | default: results.results_count -%}
 {%- liquid
   assign genre_filter = null
   for filter in results.filters
@@ -155,6 +157,13 @@
     <div class="genre-pills">
       <facet-filters-form class="genre-pills__inner page-width">
         <form id="FacetGenrePillsForm">
+          {%- comment -%}
+            Search results page: keep the search to products when a filter changes (the filter
+            forms carry q and the prefix option; this form is part of every submission).
+          {%- endcomment -%}
+          {%- if results.terms -%}
+            <input type="hidden" name="type" value="product">
+          {%- endif -%}
           <div id="GenrePills">
             <fieldset class="genre-pills__fieldset">
               <legend class="visually-hidden">{{ genre_filter.label | escape }}</legend>
@@ -176,7 +185,7 @@
                 {%- if show_sort -%}
                 <div class="genre-pills__meta">
                   <p class="genre-pills__count">
-                    {{ 'products.facets.genre_pills.records' | t: count: results.products_count }}
+                    {{ 'products.facets.genre_pills.records' | t: count: results_total }}
                   </p>
                   {%- if show_sort -%}
                     {%- comment -%} Hidden on mobile, where the copy next to the Filter button drives it. {%- endcomment -%}
@@ -240,7 +249,7 @@
                     {%- endif -%}
                   {%- endfor -%}
                   {%- if sticky_chips == 0 -%}
-                    <span class="pattern-filter-sticky__none">{{ 'products.facets.genre_pills.records' | t: count: results.products_count }}</span>
+                    <span class="pattern-filter-sticky__none">{{ 'products.facets.genre_pills.records' | t: count: results_total }}</span>
                   {%- endif -%}
                 </div>
                 <button type="button" class="pattern-filter-sticky__jump" data-pattern-filters-jump>

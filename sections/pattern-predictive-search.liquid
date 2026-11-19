@@ -1,0 +1,174 @@
+{%- comment -%}
+  Pattern predictive search results, rendered by Shopify's Predictive Search API through section
+  rendering: /search/suggest?q=…&resources[…]&section_id=pattern-predictive-search
+  (assets/pattern-search.js fetches it and drops the markup into the dropdown under the input).
+
+  Up to 6 products (cover, artist / title split and format as on the product cards, price), a
+  "See all results" option, then collections and pages only if there are any. Every result is a
+  role="option" carrying its link, so the combobox script can move through them with the arrow
+  keys and open the highlighted one on Enter.
+{%- endcomment -%}
+{%- liquid
+  assign terms = predictive_search.terms
+  assign products = predictive_search.resources.products
+  assign collections = predictive_search.resources.collections
+  assign pages = predictive_search.resources.pages
+  assign terms_encoded = terms | url_encode
+  assign see_all_url = routes.search_url | append: '?q=' | append: terms_encoded | append: '&type=product&options%5Bprefix%5D=last'
+  assign result_total = products.size | plus: collections.size | plus: pages.size
+  assign option_index = 0
+-%}
+<div class="pattern-predictive" data-result-count="{{ result_total }}" data-terms="{{ terms | escape }}">
+  {%- if products.size > 0 -%}
+    <p class="pattern-label pattern-predictive__heading" id="PatternPredictiveProducts" aria-hidden="true">
+      {{- 'sections.pattern_search.records' | t -}}
+    </p>
+    <ul class="pattern-predictive__list" role="group" aria-labelledby="PatternPredictiveProducts">
+      {%- for product in products limit: 6 -%}
+        {%- liquid
+          assign option_index = option_index | plus: 1
+
+          # Artist / title: split on the first " - ", as snippets/card-product.liquid does.
+          assign full_title = product.title | strip
+          assign artist = ''
+          assign title = full_title
+          if full_title contains ' - '
+            assign split_artist = full_title | split: ' - ' | first | strip
+            assign split_prefix = full_title | split: ' - ' | first | append: ' - '
+            assign split_title = full_title | remove_first: split_prefix | strip
+            if split_artist != blank and split_title != blank
+              assign artist = split_artist
+              assign title = split_title
+            endif
+          endif
+
+          # Format with item count, as on the product cards: "2LP", "2×12\" Single", or the format.
+          assign format = product.metafields.custom.format.value | strip
+          assign item_count = product.metafields.custom.item_count.value | default: 0 | plus: 0
+          if format != blank and item_count > 1
+            assign format_key = format | downcase
+            if format_key == 'lp'
+              assign format = item_count | append: 'LP'
+            else
+              assign format = item_count | append: '×' | append: format
+            endif
+          endif
+        -%}
+        <li
+          class="pattern-predictive__option pattern-predictive__option--product"
+          id="PatternPredictiveOption-{{ option_index }}"
+          role="option"
+          aria-selected="false"
+          data-url="{{ product.url }}"
+        >
+          <a href="{{ product.url }}" class="pattern-predictive__link" tabindex="-1">
+            <span class="pattern-predictive__thumb">
+              {%- if product.featured_media -%}
+                {{
+                  product.featured_media
+                  | image_url: width: 120
+                  | image_tag: width: 56, height: 56, loading: 'lazy', alt: '', class: 'pattern-predictive__image'
+                }}
+              {%- endif -%}
+            </span>
+            <span class="pattern-predictive__text">
+              {%- if artist != blank -%}
+                <span class="pattern-predictive__artist">{{ artist | escape }}</span>
+              {%- endif -%}
+              <span class="pattern-predictive__title">{{ title | escape }}</span>
+              <span class="pattern-predictive__meta">
+                {%- if format != blank -%}
+                  <span class="pattern-predictive__format">{{ format | escape }}</span>
+                {%- endif -%}
+                <span class="pattern-predictive__price">
+                  {%- if product.price_varies -%}
+                    {{ 'products.product.price.from_price_html' | t: price: product.price_min | money }}
+                  {%- else -%}
+                    {{ product.price | money }}
+                  {%- endif -%}
+                </span>
+                {%- unless product.available -%}
+                  <span class="pattern-predictive__sold-out">{{ 'products.product.sold_out' | t }}</span>
+                {%- endunless -%}
+              </span>
+            </span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+
+  {%- if result_total > 0 -%}
+    {%- assign option_index = option_index | plus: 1 -%}
+    <div
+      class="pattern-predictive__option pattern-predictive__option--all"
+      id="PatternPredictiveOption-{{ option_index }}"
+      role="option"
+      aria-selected="false"
+      data-url="{{ see_all_url }}"
+    >
+      <a href="{{ see_all_url }}" class="pattern-predictive__all" tabindex="-1">
+        {{- 'sections.pattern_search.see_all' | t: terms: terms -}}
+        {% render 'pattern-arrow' %}
+      </a>
+    </div>
+  {%- endif -%}
+
+  {%- if collections.size > 0 or pages.size > 0 -%}
+    <div class="pattern-predictive__secondary">
+      {%- if collections.size > 0 -%}
+        <div class="pattern-predictive__group">
+          <p class="pattern-label pattern-predictive__heading" id="PatternPredictiveCollections" aria-hidden="true">
+            {{- 'sections.pattern_search.collections' | t -}}
+          </p>
+          <ul class="pattern-predictive__list pattern-predictive__list--short" role="group" aria-labelledby="PatternPredictiveCollections">
+            {%- for collection in collections limit: 4 -%}
+              {%- assign option_index = option_index | plus: 1 -%}
+              <li
+                class="pattern-predictive__option"
+                id="PatternPredictiveOption-{{ option_index }}"
+                role="option"
+                aria-selected="false"
+                data-url="{{ collection.url }}"
+              >
+                <a href="{{ collection.url }}" class="pattern-predictive__plain" tabindex="-1">{{ collection.title | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+      {%- if pages.size > 0 -%}
+        <div class="pattern-predictive__group">
+          <p class="pattern-label pattern-predictive__heading" id="PatternPredictivePages" aria-hidden="true">
+            {{- 'sections.pattern_search.pages' | t -}}
+          </p>
+          <ul class="pattern-predictive__list pattern-predictive__list--short" role="group" aria-labelledby="PatternPredictivePages">
+            {%- for page in pages limit: 4 -%}
+              {%- assign option_index = option_index | plus: 1 -%}
+              <li
+                class="pattern-predictive__option"
+                id="PatternPredictiveOption-{{ option_index }}"
+                role="option"
+                aria-selected="false"
+                data-url="{{ page.url }}"
+              >
+                <a href="{{ page.url }}" class="pattern-predictive__plain" tabindex="-1">{{ page.title | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if result_total == 0 -%}
+    <p class="pattern-predictive__empty">{{ 'sections.pattern_search.nothing_found' | t: terms: terms }}</p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Pattern predictive search",
+  "tag": "div"
+}
+{% endschema %}

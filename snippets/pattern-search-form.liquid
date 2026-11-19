@@ -1,0 +1,66 @@
+{%- comment -%}
+  Pattern search form: a GET form to /search (works without JS) wrapped in <pattern-search>
+  (assets/pattern-search.js), which adds the predictive dropdown (combobox + listbox) from
+  sections/pattern-predictive-search.liquid. Styles: assets/pattern-search.css.
+
+  Accepts:
+  - id: {String} unique id for this instance (the header's small-screen toggle points at it with
+    data-search-toggle="id")
+  - value: {String} prefilled query (optional)
+  - label: {String} accessible label and placeholder
+  - variant: {String} 'header' (inline in the header; opens over it on small screens with a close
+    button) or 'page' (slim field on the search results page)
+
+  Usage:
+  {% render 'pattern-search-form', id: 'HeaderSearch', label: 'Search', variant: 'header' %}
+{%- endcomment -%}
+{%- liquid
+  assign search_label = label | default: 'Search'
+  assign search_placeholder = 'sections.pattern_search.placeholder' | t
+-%}
+<pattern-search
+  id="{{ id }}"
+  class="pattern-search pattern-search--{{ variant | default: 'page' }}"
+  data-one-result="{{ 'sections.pattern_search.result_one' | t | escape }}"
+  data-many-results="{{ 'sections.pattern_search.result_other' | t | escape }}"
+  data-no-results="{{ 'sections.pattern_search.no_suggestions' | t | escape }}"
+>
+  <form action="{{ routes.search_url }}" method="get" role="search" class="pattern-search__form">
+    <div class="pattern-search__field">
+      <label for="{{ id }}-input" class="visually-hidden">{{ search_label | escape }}</label>
+      {% render 'pattern-icon', name: 'search', size: 20, class: 'pattern-search__icon' %}
+      <input
+        id="{{ id }}-input"
+        class="pattern-search__input"
+        type="search"
+        name="q"
+        value="{{ value | escape }}"
+        placeholder="{{ search_placeholder | escape }}"
+        role="combobox"
+        aria-expanded="false"
+        aria-controls="{{ id }}-listbox"
+        aria-autocomplete="list"
+        aria-haspopup="listbox"
+        aria-keyshortcuts="/"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        enterkeyhint="search"
+      >
+      <input type="hidden" name="type" value="product">
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="submit" class="pattern-search__submit visually-hidden">{{ search_label | escape }}</button>
+      {%- if variant == 'header' -%}
+        <button type="button" class="pattern-search__close" data-search-close>
+          {% render 'pattern-icon', name: 'x', size: 20 %}
+          <span class="visually-hidden">{{ 'sections.pattern_search.close' | t }}</span>
+        </button>
+      {%- endif -%}
+    </div>
+    <div class="pattern-search__panel" data-search-panel hidden>
+      <div id="{{ id }}-listbox" class="pattern-search__listbox" role="listbox" aria-label="{{ 'sections.pattern_search.suggestions' | t | escape }}"></div>
+    </div>
+    <p class="visually-hidden" role="status" aria-live="polite" data-search-status></p>
+  </form>
+</pattern-search>

@@ -24,9 +24,16 @@
   - paginate: {Object}
 {% endcomment %}
 
+{%- comment -%} The search object has no products_count; results_count is its (filtered) total. {%- endcomment -%}
+{%- assign results_total = results.products_count | default: results.results_count -%}
 {%- liquid
   assign sort_by = results.sort_by | default: results.default_sort_by
   assign clear_all_url = results.url | append: '?sort_by=' | append: sort_by
+  # Search results: keep the query (products, prefix match) when clearing filters.
+  if results.terms
+    assign clear_terms = results.terms | url_encode
+    assign clear_all_url = routes.search_url | append: '?q=' | append: clear_terms | append: '&type=product&options%5Bprefix%5D=last&sort_by=' | append: sort_by
+  endif
 
   # Mobile sheet "Clear": remove the sheet's filters but keep genres and sort.
   assign clear_sheet_url = clear_all_url
@@ -62,6 +69,11 @@
   {%- comment -%} ===== Desktop row ===== {%- endcomment -%}
   <facet-filters-form class="facets filter-bar small-hide">
     <form id="FacetFiltersForm" class="filter-bar__form">
+      {%- comment -%} Search results page: keep the query (as Dawn's facets form does). {%- endcomment -%}
+      {%- if results.terms -%}
+        <input type="hidden" name="q" value="{{ results.terms | escape }}">
+        <input type="hidden" name="options[prefix]" value="last">
+      {%- endif -%}
       <div id="FacetsWrapperDesktop" class="filter-bar__row">
         <h2 class="visually-hidden" id="verticalTitle" tabindex="-1">{{ 'products.facets.filter_by_label' | t }}</h2>
         <div class="filter-bar__filters" id="FilterBarFilters">
@@ -198,7 +210,7 @@
                 <a href="{{ clear_all_url }}" class="pattern-collection__clear">{{ 'products.facets.filter_bar.clear_all' | t }}</a>
               </facet-remove>
             {%- endif -%}
-            <span class="filter-bar__count-value">{{ 'products.facets.genre_pills.records' | t: count: results.products_count }}</span>
+            <span class="filter-bar__count-value">{{ 'products.facets.genre_pills.records' | t: count: results_total }}</span>
           </p>
           <div class="filter-bar__sort">
             {% render 'pattern-sort', results: results, id: 'PatternSort' %}
@@ -274,6 +286,11 @@
       </summary>
       <facet-filters-form>
         <form id="FacetFiltersFormMobile" class="mobile-facets filter-sheet__form">
+      {%- comment -%} Search results page: keep the query (as Dawn's facets form does). {%- endcomment -%}
+      {%- if results.terms -%}
+        <input type="hidden" name="q" value="{{ results.terms | escape }}">
+        <input type="hidden" name="options[prefix]" value="last">
+      {%- endif -%}
           <div
             class="filter-sheet__inner gradient"
             role="dialog"
@@ -390,7 +407,7 @@
                 onclick="this.closest('.mobile-facets__wrapper').querySelector('summary').click()"
               >
                 <span class="mobile-facets__count">
-                  {{- 'products.facets.filter_bar.show_records' | t: count: results.products_count -}}
+                  {{- 'products.facets.filter_bar.show_records' | t: count: results_total -}}
                 </span>
               </button>
             </div>
@@ -453,11 +470,11 @@
     <h2 class="product-count__text text-body">
       <span id="ProductCount">
         {%- if results.products_count == results.all_products_count -%}
-          {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
+          {{ 'products.facets.product_count_simple' | t: count: results_total }}
         {%- else -%}
           {{
             'products.facets.product_count'
-            | t: product_count: results.products_count, count: results.all_products_count
+            | t: product_count: results_total, count: results.all_products_count
           }}
         {%- endif -%}
       </span>

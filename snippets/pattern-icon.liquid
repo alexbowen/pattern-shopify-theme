@@ -13,7 +13,8 @@
   Decorative: aria-hidden, the text beside it carries the meaning.
 
   Accepts:
-  - name: {String} parcel | storefront | clock | bike | van | disc | headphones | map-pin | swap
+  - name: {String} parcel | storefront | clock | bike | van | disc | headphones | map-pin | swap |
+    search | x
     (none or blank renders nothing)
   - size: {Number} pixel size, default 32
   - class: {String} extra classes (optional)
@@ -45,6 +46,10 @@
       <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>
     {%- when 'swap' -%}
       <path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>
+    {%- when 'search' -%}
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+    {%- when 'x' -%}
+      <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
   {%- endcase -%}
 {%- endcapture -%}
 {%- if icon_paths != blank -%}
