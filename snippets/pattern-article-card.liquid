@@ -1,0 +1,83 @@
+{%- comment -%}
+  Pattern article card: cover (hairline outline as on the product cards; the dark stripe texture
+  when the post has no image), a DM Mono meta line (date · first tag, or the blog's name when the
+  post has no tags), the title in the display font, a clamped excerpt and a "Read" link.
+  The title is the only link; it is stretched over the whole card, so the cover and "Read" are
+  clickable without extra tab stops. Styles: assets/pattern-blog.css.
+
+  Accepts:
+  - article: {Object} article
+  - blog_title: {String} shown in the meta line when the post has no tags
+  - show_image: {Boolean} default true
+  - show_date: {Boolean} default true
+  - show_author: {Boolean} default false
+  - feature: {Boolean} larger, full-width layout (the blog's "Feature the first post")
+  - heading_tag: {String} default 'h2'
+  - sizes: {String} image sizes attribute (optional)
+
+  Usage:
+  {% render 'pattern-article-card', article: article, blog_title: blog.title %}
+{%- endcomment -%}
+{%- liquid
+  assign card_show_image = true
+  if show_image == false
+    assign card_show_image = false
+  endif
+  assign card_show_date = true
+  if show_date == false
+    assign card_show_date = false
+  endif
+  assign card_tag = heading_tag | default: 'h2'
+  assign card_sizes = sizes | default: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw'
+  if feature
+    assign card_sizes = '(min-width: 990px) 60vw, 100vw'
+  endif
+
+  assign meta_second = article.tags.first | default: blog_title
+
+  assign excerpt = article.excerpt_or_content | strip_html | strip | truncatewords: 40
+-%}
+<article class="pattern-article-card{% if feature %} pattern-article-card--feature{% endif %}">
+  {%- if card_show_image -%}
+    <div class="pattern-article-card__cover{% if article.image == blank %} pattern-stripe-dark{% endif %}">
+      {%- if article.image -%}
+        {{
+          article.image
+          | image_url: width: 1600
+          | image_tag:
+            loading: 'lazy',
+            widths: '375, 550, 750, 1100, 1600',
+            sizes: card_sizes,
+            alt: '',
+            class: 'pattern-article-card__image'
+        }}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="pattern-article-card__body">
+    <p class="pattern-label pattern-article-card__meta">
+      {%- if card_show_date -%}
+        {{- article.published_at | time_tag: format: 'date' -}}
+      {%- endif -%}
+      {%- if show_author and article.author != blank -%}
+        {%- if card_show_date %}<span aria-hidden="true"> · </span>{% endif -%}
+        <span>{{ article.author | escape }}</span>
+      {%- endif -%}
+      {%- if meta_second != blank -%}
+        {%- if card_show_date or show_author %}<span aria-hidden="true"> · </span>{% endif -%}
+        <span>{{ meta_second | escape }}</span>
+      {%- endif -%}
+    </p>
+    <{{ card_tag }} class="pattern-article-card__title">
+      <a href="{{ article.url }}" class="pattern-article-card__link">{{ article.title | escape }}</a>
+    </{{ card_tag }}>
+    {%- if excerpt != blank -%}
+      <p class="pattern-article-card__excerpt">{{ excerpt }}</p>
+    {%- endif -%}
+    <span class="pattern-link pattern-article-card__read" aria-hidden="true">
+      {{- 'blogs.article.pattern_read' | t -}}
+      {% render 'pattern-arrow' %}
+    </span>
+  </div>
+</article>

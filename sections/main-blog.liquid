@@ -1,6 +1,11 @@
-{{ 'component-article-card.css' | asset_url | stylesheet_tag }}
-{{ 'component-card.css' | asset_url | stylesheet_tag }}
-{{ 'section-main-blog.css' | asset_url | stylesheet_tag }}
+{%- comment -%}
+  Blog listing (Pattern): optional mono label, the blog's title in the display font, tag pills
+  (the collection page's genre pill style; hidden when the blog has no tags), then the posts as
+  Pattern article cards (snippets/pattern-article-card.liquid) in a 3 / 2 / 1 column grid, and
+  Dawn's pagination. "Feature the first post" shows the newest post larger across the full width
+  (first page, no tag filter). Styles: assets/pattern-blog.css.
+{%- endcomment -%}
+{{ 'pattern-blog.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -16,36 +21,88 @@
   }
 {%- endstyle -%}
 
-{%- paginate blog.articles by 6 -%}
-  <div class="main-blog page-width section-{{ section.id }}-padding">
-    <h1 class="title--primary{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-      {{ blog.title | escape }}
-    </h1>
-
-    <div class="blog-articles {% if section.settings.layout == 'collage' %}blog-articles--collage{% endif %}">
-      {%- for article in blog.articles -%}
-        <div
-          class="blog-articles__article article{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-          {% if settings.animations_reveal_on_scroll %}
-            data-cascade
-            style="--animation-order: {{ forloop.index }};"
-          {% endif %}
-        >
-          {%- render 'article-card',
-            article: article,
-            media_height: section.settings.image_height,
-            media_aspect_ratio: article.image.aspect_ratio,
-            show_image: section.settings.show_image,
-            show_date: section.settings.show_date,
-            show_author: section.settings.show_author,
-            show_excerpt: true
-          -%}
-        </div>
-      {%- endfor -%}
+{%- paginate blog.articles by section.settings.posts_per_page -%}
+  {%- liquid
+    assign feature_first = false
+    if section.settings.feature_first and paginate.current_page == 1 and current_tags == blank
+      assign feature_first = true
+    endif
+  -%}
+  <div class="pattern-wrap pattern-blog{% if section.settings.container_width == 'wide' %} pattern-blog--wide{% endif %} section-{{ section.id }}-padding">
+    <div class="pattern-blog__head">
+      {%- if section.settings.label != blank -%}
+        <p class="pattern-label pattern-blog__label">{{ section.settings.label | escape }}</p>
+      {%- endif -%}
+      <h1 class="pattern-blog__title">{{ blog.title | escape }}</h1>
     </div>
 
-    {%- if paginate.pages > 1 -%}
-      {%- render 'pagination', paginate: paginate -%}
+    {%- if blog.all_tags.size > 0 -%}
+      {{ 'component-genre-pills.css' | asset_url | stylesheet_tag }}
+      <nav class="pattern-blog__tags" aria-label="{{ 'blogs.article.pattern_tags' | t | escape }}">
+        <ul class="pattern-blog__tag-list" role="list">
+          <li>
+            <a
+              href="{{ blog.url }}"
+              class="genre-pill genre-pill--all{% if current_tags == blank %} genre-pill--active{% endif %}"
+              {% if current_tags == blank %}
+                aria-current="page"
+              {% endif %}
+            >
+              <span class="genre-pill__label">{{ 'products.facets.genre_pills.all' | t }}</span>
+            </a>
+          </li>
+          {%- for tag in blog.all_tags -%}
+            {%- liquid
+              assign tag_active = false
+              if current_tags contains tag
+                assign tag_active = true
+              endif
+              assign tag_handle = tag | handleize
+              assign tag_url = blog.url | append: '/tagged/' | append: tag_handle
+            -%}
+            <li>
+              <a
+                href="{{ tag_url }}"
+                class="genre-pill{% if tag_active %} genre-pill--active{% endif %}"
+                {% if tag_active %}
+                  aria-current="page"
+                {% endif %}
+              >
+                <span class="genre-pill__label">{{ tag | escape }}</span>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+
+    {%- if blog.articles.size > 0 -%}
+      <ul class="pattern-blog__grid" role="list">
+        {%- for article in blog.articles -%}
+          {%- liquid
+            assign is_feature = false
+            if feature_first and forloop.first
+              assign is_feature = true
+            endif
+          -%}
+          <li class="pattern-blog__item{% if is_feature %} pattern-blog__item--feature{% endif %}">
+            {%- render 'pattern-article-card',
+              article: article,
+              blog_title: blog.title,
+              show_image: section.settings.show_image,
+              show_date: section.settings.show_date,
+              show_author: section.settings.show_author,
+              feature: is_feature
+            -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if paginate.pages > 1 -%}
+        {%- render 'pagination', paginate: paginate -%}
+      {%- endif -%}
+    {%- else -%}
+      <p class="pattern-blog__empty">{{ 'blogs.article.pattern_no_posts' | t }}</p>
     {%- endif -%}
   </div>
 {%- endpaginate -%}
@@ -57,50 +114,43 @@
   "class": "section",
   "settings": [
     {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "info": "Optional small mono line above the title."
+    },
+    {
       "type": "select",
-      "id": "layout",
+      "id": "container_width",
+      "label": "Container width",
+      "info": "Wide runs up to ~1680px, as on the collection page's Wide setting.",
       "options": [
-        {
-          "value": "grid",
-          "label": "t:sections.main-blog.settings.layout.options__1.label"
-        },
-        {
-          "value": "collage",
-          "label": "t:sections.main-blog.settings.layout.options__2.label"
-        }
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" }
       ],
-      "default": "collage",
-      "label": "t:sections.main-blog.settings.layout.label"
+      "default": "standard"
+    },
+    {
+      "type": "checkbox",
+      "id": "feature_first",
+      "label": "Feature the first post",
+      "info": "Shows the newest post larger across the full width (first page only).",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "min": 3,
+      "max": 24,
+      "step": 3,
+      "label": "Posts per page",
+      "default": 9
     },
     {
       "type": "checkbox",
       "id": "show_image",
       "default": true,
       "label": "t:sections.main-blog.settings.show_image.label"
-    },
-    {
-      "type": "select",
-      "id": "image_height",
-      "options": [
-        {
-          "value": "adapt",
-          "label": "t:sections.main-blog.settings.image_height.options__1.label"
-        },
-        {
-          "value": "small",
-          "label": "t:sections.main-blog.settings.image_height.options__2.label"
-        },
-        {
-          "value": "medium",
-          "label": "t:sections.main-blog.settings.image_height.options__3.label"
-        },
-        {
-          "value": "large",
-          "label": "t:sections.main-blog.settings.image_height.options__4.label"
-        }
-      ],
-      "default": "medium",
-      "label": "t:sections.main-blog.settings.image_height.label"
     },
     {
       "type": "checkbox",

@@ -14,9 +14,7 @@
       "blocks": {
         "featured_image": {
           "type": "featured_image",
-          "settings": {
-            "image_height": "adapt"
-          }
+          "settings": {}
         },
         "title": {
           "type": "title",
@@ -37,10 +35,10 @@
         }
       },
       "block_order": [
-        "featured_image",
         "title",
-        "share",
-        "content"
+        "featured_image",
+        "content",
+        "share"
       ],
       "settings": {}
     }

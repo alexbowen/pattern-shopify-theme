@@ -1,99 +1,151 @@
+{%- comment -%}
+  Article (Pattern): header with a DM Mono meta line (date, author, tags) and the title in the
+  display font, the featured image across the container (wide ratio, capped height; the dark stripe
+  texture when there's none), the body in one reading column (assets/pattern-pages.css, shared with
+  the info pages) with article extras in assets/pattern-blog.css, then a footer: tags as pills, back
+  link, newer / older posts, "More from the shop" (latest other posts as Pattern article cards)
+  and comments (only when the blog has them on). Blocks are kept, so the order stays editable.
+{%- endcomment -%}
 {{ 'section-blog-post.css' | asset_url | stylesheet_tag }}
+{{ 'pattern-pages.css' | asset_url | stylesheet_tag }}
+{{ 'pattern-blog.css' | asset_url | stylesheet_tag }}
 
-<article class="article-template">
+<article class="article-template pattern-article">
   {%- for block in section.blocks -%}
     {%- case block.type -%}
       {%- when '@app' -%}
-        <div class="page-width page-width--narrow">
+        <div class="page-width pattern-page">
           {% render block %}
         </div>
-      {%- when 'featured_image' -%}
-        {%- if article.image -%}
-          <div
-            class="article-template__hero-container{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
-            {{ block.shopify_attributes }}
-          >
-            <div
-              class="article-template__hero-{{ block.settings.image_height }} media"
-              {% if block.settings.image_height == 'adapt' and article.image %}
-                style="padding-bottom: {{ 1 | divided_by: article.image.aspect_ratio | times: 100 }}%;"
-              {% endif %}
-            >
-              <img
-                srcset="
-                  {% if article.image.width >= 350 %}{{ article.image | image_url: width: 350 }} 350w,{% endif %}
-                  {% if article.image.width >= 750 %}{{ article.image | image_url: width: 750 }} 750w,{% endif %}
-                  {% if article.image.width >= 1100 %}{{ article.image | image_url: width: 1100 }} 1100w,{% endif %}
-                  {% if article.image.width >= 1500 %}{{ article.image | image_url: width: 1500 }} 1500w,{% endif %}
-                  {% if article.image.width >= 2200 %}{{ article.image | image_url: width: 2200 }} 2200w,{% endif %}
-                  {% if article.image.width >= 3000 %}{{ article.image | image_url: width: 3000 }} 3000w,{% endif %}
-                  {{ article.image | image_url }} {{ article.image.width }}w
-                "
-                sizes="(min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 }}px, (min-width: 750px) calc(100vw - 10rem), 100vw"
-                src="{{ article.image | image_url: width: 1100 }}"
-                loading="eager"
-                fetchpriority="high"
-                width="{{ article.image.width }}"
-                height="{{ article.image.height }}"
-                alt="{{ article.image.alt | escape }}"
-              >
-            </div>
-          </div>
-        {%- endif -%}
 
       {%- when 'title' -%}
-        <header
-          class="page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"
-          {{ block.shopify_attributes }}
-        >
-          <h1
-            class="article-template__title"
-          >
-            {{ article.title | escape }}
-          </h1>
-          {%- if block.settings.blog_show_date -%}
-            <span class="circle-divider caption-with-letter-spacing">
-              {{- article.published_at | time_tag: format: 'date' -}}
-            </span>
+        <header class="page-width pattern-page pattern-article__header" {{ block.shopify_attributes }}>
+          {%- liquid
+            assign show_date = block.settings.blog_show_date
+            assign show_author = false
+            if block.settings.blog_show_author and article.author != blank
+              assign show_author = true
+            endif
+          -%}
+          {%- if show_date or show_author or article.tags.size > 0 -%}
+            <p class="pattern-label pattern-article__meta">
+              {%- if show_date -%}
+                {{- article.published_at | time_tag: format: 'date' -}}
+              {%- endif -%}
+              {%- if show_author -%}
+                {%- if show_date %}<span aria-hidden="true"> · </span>{% endif -%}
+                <span>{{ article.author | escape }}</span>
+              {%- endif -%}
+              {%- if article.tags.size > 0 -%}
+                {%- if show_date or show_author %}<span aria-hidden="true"> · </span>{% endif -%}
+                {%- for tag in article.tags -%}
+                  {%- assign tag_handle = tag | handleize -%}
+                  <a href="{{ blog.url }}/tagged/{{ tag_handle }}" class="pattern-article__meta-tag">{{ tag | escape }}</a>
+                  {%- unless forloop.last %}, {% endunless -%}
+                {%- endfor -%}
+              {%- endif -%}
+            </p>
           {%- endif -%}
-          {%- if block.settings.blog_show_author -%}
-            <span class="caption-with-letter-spacing">
-              <span>{{ article.author }}</span>
-            </span>
-          {%- endif -%}
+          <h1 class="pattern-article__title">{{ article.title | escape }}</h1>
         </header>
 
+      {%- when 'featured_image' -%}
+        <div class="pattern-wrap pattern-article__hero" {{ block.shopify_attributes }}>
+          <div class="pattern-article__hero-frame{% if article.image == blank %} pattern-stripe-dark{% endif %}">
+            {%- if article.image -%}
+              {{
+                article.image
+                | image_url: width: 2400
+                | image_tag:
+                  loading: 'eager',
+                  fetchpriority: 'high',
+                  widths: '375, 750, 1100, 1500, 2000, 2400',
+                  sizes: '(min-width: 1440px) 1344px, calc(100vw - 4rem)',
+                  alt: article.image.alt,
+                  class: 'pattern-article__hero-image'
+              }}
+            {%- endif -%}
+          </div>
+        </div>
+
       {%- when 'content' -%}
-        <div
-          class="article-template__content page-width page-width--narrow rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-          {{ block.shopify_attributes }}
-        >
-          {{ article.content }}
+        <div class="page-width pattern-page pattern-article__content" {{ block.shopify_attributes }}>
+          <div class="rte">
+            {{ article.content }}
+          </div>
         </div>
 
       {%- when 'share' -%}
-        <div
-          class="article-template__social-sharing page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-          {{ block.shopify_attributes }}
-        >
+        <div class="page-width pattern-page pattern-article__share" {{ block.shopify_attributes }}>
           {% assign share_url = request.origin | append: article.url %}
           {% render 'share-button', block: block, share_link: share_url %}
         </div>
     {%- endcase -%}
   {%- endfor -%}
 
-  <div class="article-template__back element-margin-top center{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-    <a href="{{ blog.url }}" class="article-template__link link animate-arrow">
-      <span class="icon-wrap">
-        <span class="svg-wrapper">
-          {{- 'icon-arrow.svg' | inline_asset_content -}}
-        </span>
-      </span>
-      {{ 'blogs.article.back_to_blog' | t: title: blog.title | escape }}
-    </a>
-  </div>
+  <footer class="page-width pattern-page pattern-article__footer">
+    {%- if article.tags.size > 0 -%}
+      {{ 'component-genre-pills.css' | asset_url | stylesheet_tag }}
+      <ul class="pattern-blog__tag-list pattern-article__tags" role="list" aria-label="{{ 'blogs.article.pattern_tags' | t | escape }}">
+        {%- for tag in article.tags -%}
+          {%- assign tag_handle = tag | handleize -%}
+          <li>
+            <a href="{{ blog.url }}/tagged/{{ tag_handle }}" class="genre-pill"><span class="genre-pill__label">{{ tag | escape }}</span></a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    <nav class="pattern-article__nav" aria-label="{{ 'blogs.article.pattern_post_navigation' | t | escape }}">
+      <a href="{{ blog.url }}" class="pattern-link pattern-article__back">
+        {% render 'pattern-arrow' %}
+        {{- 'blogs.article.pattern_back' | t: title: blog.title -}}
+      </a>
+      {%- if blog.previous_article or blog.next_article -%}
+        <div class="pattern-article__pager">
+          {%- if blog.previous_article -%}
+            <a href="{{ blog.previous_article.url }}" class="pattern-article__pager-link pattern-article__pager-link--prev">
+              <span class="pattern-label">{{ 'blogs.article.pattern_previous' | t }}</span>
+              <span class="pattern-article__pager-title">{{ blog.previous_article.title | escape }}</span>
+            </a>
+          {%- endif -%}
+          {%- if blog.next_article -%}
+            <a href="{{ blog.next_article.url }}" class="pattern-article__pager-link pattern-article__pager-link--next">
+              <span class="pattern-label">{{ 'blogs.article.pattern_next' | t }}</span>
+              <span class="pattern-article__pager-title">{{ blog.next_article.title | escape }}</span>
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </nav>
+  </footer>
+
+  {%- liquid
+    assign more_count = 0
+    for other in blog.articles limit: 4
+      if other.id != article.id
+        assign more_count = more_count | plus: 1
+      endif
+    endfor
+  -%}
+  {%- if more_count > 0 -%}
+    <section class="pattern-wrap pattern-article__more" aria-labelledby="ArticleMoreHeading">
+      <h2 class="pattern-article__more-heading" id="ArticleMoreHeading">{{ 'blogs.article.pattern_more' | t }}</h2>
+      <ul class="pattern-blog__grid" role="list">
+        {%- assign shown = 0 -%}
+        {%- for other in blog.articles limit: 4 -%}
+          {%- if other.id == article.id or shown >= 3 -%}{%- continue -%}{%- endif -%}
+          {%- assign shown = shown | plus: 1 -%}
+          <li class="pattern-blog__item">
+            {% render 'pattern-article-card', article: other, blog_title: blog.title, heading_tag: 'h3' %}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </section>
+  {%- endif -%}
+
   {%- if blog.comments_enabled? -%}
-    <div class="article-template__comment-wrapper background-secondary">
+    <div class="article-template__comment-wrapper pattern-article__comments">
       <div
         id="comments"
         class="page-width page-width--narrow{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
@@ -288,6 +340,16 @@
   {%- endif -%}
 </article>
 
+<script>
+  (() => {
+    // Short block quotes (one line or so) read as pull quotes in the italic serif; longer ones
+    // stay plain. Measured once the text is there.
+    document.querySelectorAll('.pattern-article__content blockquote').forEach((quote) => {
+      if (quote.textContent.trim().length <= 160) quote.classList.add('is-short');
+    });
+  })();
+</script>
+
 <script type="application/ld+json">
   {{ article | structured_data }}
 </script>
@@ -304,33 +366,7 @@
     {
       "type": "featured_image",
       "name": "t:sections.main-article.blocks.featured_image.name",
-      "limit": 1,
-      "settings": [
-        {
-          "type": "select",
-          "id": "image_height",
-          "options": [
-            {
-              "value": "adapt",
-              "label": "t:sections.main-article.blocks.featured_image.settings.image_height.options__1.label"
-            },
-            {
-              "value": "small",
-              "label": "t:sections.main-article.blocks.featured_image.settings.image_height.options__2.label"
-            },
-            {
-              "value": "medium",
-              "label": "t:sections.main-article.blocks.featured_image.settings.image_height.options__3.label"
-            },
-            {
-              "value": "large",
-              "label": "t:sections.main-article.blocks.featured_image.settings.image_height.options__4.label"
-            }
-          ],
-          "default": "adapt",
-          "label": "t:sections.main-article.blocks.featured_image.settings.image_height.label"
-        }
-      ]
+      "limit": 1
     },
     {
       "type": "title",
