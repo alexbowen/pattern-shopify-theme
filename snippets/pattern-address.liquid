@@ -1,0 +1,61 @@
+{%- comment -%}
+  Pattern address: formats an address from its parts, skipping empty ones.
+
+  Accepts:
+  - address1, address2, zip, city, country: {String} parts (pass shop.address.* for the shop)
+  - show_country: {Boolean} print the country as the last line (default false). The maps query
+    always includes it, so the pin lands in the right country.
+  - Street lines and city are capitalised word by word (snippets/pattern-title-case.liquid).
+  - format: {String} 'lines' (default): escaped HTML, one part per line joined with <br>
+    ("zip city" share a line); 'query': plain text joined with ", " for a maps search
+
+  Usage:
+  {% render 'pattern-address', address1: shop.address.address1, city: shop.address.city, ... %}
+{%- endcomment -%}
+{%- liquid
+  comment
+    Street lines and city get each word capitalised (snippets/pattern-title-case.liquid)
+  endcomment
+  capture a1
+    render 'pattern-title-case', text: address1
+  endcapture
+  capture a2
+    render 'pattern-title-case', text: address2
+  endcapture
+  assign z = zip | strip
+  capture c
+    render 'pattern-title-case', text: city
+  endcapture
+  assign a1 = a1 | strip
+  assign a2 = a2 | strip
+  assign c = c | strip
+  assign co = country | strip
+
+  assign zip_city = z | append: ' ' | append: c | strip
+
+  assign sep = '|~|'
+  assign parts = ''
+  if a1 != blank
+    assign parts = parts | append: sep | append: a1
+  endif
+  if a2 != blank
+    assign parts = parts | append: sep | append: a2
+  endif
+  if zip_city != blank
+    assign parts = parts | append: sep | append: zip_city
+  endif
+  if co != blank
+    if show_country or format == 'query'
+      assign parts = parts | append: sep | append: co
+    endif
+  endif
+  assign parts = parts | remove_first: sep | split: sep
+-%}
+{%- if format == 'query' -%}
+  {{- parts | join: ', ' -}}
+{%- else -%}
+  {%- for part in parts -%}
+    {{- part | escape -}}
+    {%- unless forloop.last -%}<br>{%- endunless -%}
+  {%- endfor -%}
+{%- endif -%}

@@ -1,0 +1,35 @@
+{%- comment -%}
+  Pattern title case: capitalises the first letter of each word in one line of text, for
+  addresses ("rua de exemplo 12" → "Rua de Exemplo 12").
+  - Portuguese connecting words (de, da, do, das, dos, e) stay lowercase unless first.
+  - Words that already contain a capital are left as they are; the rest of a word is never
+    lowercased. Numbers and postcodes are unaffected.
+  Outputs plain (unescaped) text; escape it where it's printed.
+
+  Accepts:
+  - text: {String} one line
+
+  Usage:
+  {%- capture line -%}{% render 'pattern-title-case', text: 'rua de exemplo 12' %}{%- endcapture -%}
+{%- endcomment -%}
+{%- liquid
+  assign connectors = 'de,da,do,das,dos,e' | split: ','
+  assign words = text | split: ' '
+  for word in words
+    assign out = word
+    assign word_down = word | downcase
+    assign is_connector = false
+    if connectors contains word and forloop.first == false
+      assign is_connector = true
+    endif
+    if word == word_down and is_connector == false
+      assign first_letter = word | slice: 0 | upcase
+      assign rest = word | slice: 1, word.size
+      assign out = first_letter | append: rest
+    endif
+    echo out
+    unless forloop.last
+      echo ' '
+    endunless
+  endfor
+-%}

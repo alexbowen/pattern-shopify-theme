@@ -317,19 +317,6 @@
         "include_margins": false
       }
     },
-    "pattern_new_in": {
-      "type": "pattern-new-in",
-      "disabled": true,
-      "settings": {
-        "heading": "New in",
-        "heading_accent": "",
-        "collection": "all",
-        "products_to_show": 6,
-        "image_ratio": "square",
-        "link_label": "All new arrivals",
-        "link": "/collections/all?sort_by=created-descending"
-      }
-    },
     "pattern_new_in_views": {
       "type": "pattern-new-in-views",
       "blocks": {
@@ -415,214 +402,6 @@
         "include_margins": false
       }
     },
-    "featured_record_example_a": {
-      "type": "pattern-featured-record-section",
-      "blocks": {
-        "ex_a1": {
-          "type": "pattern-featured-record",
-          "settings": {
-            "product": "various-artists-jazzy-sport-past-forward-silver",
-            "label": "Staff pick",
-            "layout": "horizontal",
-            "size": "standard",
-            "background": "none",
-            "show_genres": true,
-            "show_description": true,
-            "description_lines": 3,
-            "description_override": "",
-            "show_comment": true,
-            "comment_override": "",
-            "show_button": true,
-            "show_add_to_cart": false
-          },
-          "blocks": {}
-        },
-        "ex_a2": {
-          "type": "pattern-featured-record",
-          "settings": {
-            "product": "nathan-haynes-the-soft-chaos",
-            "label": "Staff pick",
-            "layout": "horizontal",
-            "size": "standard",
-            "background": "none",
-            "show_genres": true,
-            "show_description": true,
-            "description_lines": 3,
-            "description_override": "",
-            "show_comment": true,
-            "comment_override": "[A line from the shop about why this one matters.]",
-            "show_button": true,
-            "show_add_to_cart": false
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ex_a1",
-        "ex_a2"
-      ],
-      "name": "Featured record (example) A: three records",
-      "settings": {
-        "eyebrow": "Example",
-        "heading": "Featured releases",
-        "background": "none"
-      }
-    },
-    "featured_record_example_a_audioly": {
-      "type": "apps",
-      "blocks": {
-        "audioly_example_a": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "weekly-electronic",
-            "productsToShow": 18,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_example_a"
-      ],
-      "name": "Featured record (example) A: Audioly play buttons",
-      "settings": {
-        "include_margins": false
-      }
-    },
-    "featured_record_example_b": {
-      "type": "pattern-columns",
-      "blocks": {
-        "ex_b_left": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "paper",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "top",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "ex_b_record": {
-              "type": "pattern-featured-record",
-              "settings": {
-                "product": "nail-more-time-lax12inch103-b2b",
-                "label": "Staff pick",
-                "layout": "vertical",
-                "size": "standard",
-                "background": "none",
-                "show_genres": true,
-                "show_description": true,
-                "description_lines": 3,
-                "description_override": "",
-                "show_comment": true,
-                "comment_override": "",
-                "show_button": true,
-                "show_add_to_cart": false
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "ex_b_record"
-          ]
-        },
-        "ex_b_right": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "stripes-clay",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "center",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "ex_b_heading": {
-              "type": "pattern-heading",
-              "settings": {
-                "eyebrow": "Featured record (example)",
-                "heading": "Staff picks",
-                "heading_accent": "",
-                "heading_end": "",
-                "size": "large",
-                "tag": "h2"
-              },
-              "blocks": {}
-            },
-            "ex_b_text": {
-              "type": "pattern-text",
-              "settings": {
-                "text": "<p>[Placeholder text: a couple of lines about this week&#39;s picks from the shop.]</p>",
-                "size": "large"
-              },
-              "blocks": {}
-            },
-            "ex_b_button": {
-              "type": "pattern-button",
-              "settings": {
-                "label": "All staff picks",
-                "link": "/collections/all",
-                "style": "accent"
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "ex_b_heading",
-            "ex_b_text",
-            "ex_b_button"
-          ]
-        }
-      },
-      "block_order": [
-        "ex_b_left",
-        "ex_b_right"
-      ],
-      "disabled": true,
-      "name": "Featured record (example) B: in columns",
-      "settings": {
-        "ratio": "50-50",
-        "width": "full",
-        "gap": "none",
-        "mobile_order": "normal",
-        "padding_top": 0,
-        "padding_bottom": 0
-      }
-    },
-    "featured_record_example_b_audioly": {
-      "type": "apps",
-      "blocks": {
-        "audioly_example_b": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "weekly-electronic",
-            "productsToShow": 18,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_example_b"
-      ],
-      "name": "Featured record (example) B: Audioly play buttons",
-      "settings": {
-        "include_margins": false
-      }
-    },
     "featured_record_example_c": {
       "type": "pattern-featured-record-section",
       "blocks": {
@@ -652,36 +431,8 @@
       "name": "Featured record (example) C: dark stripe",
       "settings": {
         "eyebrow": "",
-        "heading": "Featured record",
-        "background": "none"
-      }
-    },
-    "featured_record_example_c_audioly": {
-      "type": "apps",
-      "blocks": {
-        "audioly_example_c": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "weekly-electronic",
-            "productsToShow": 18,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_example_c"
-      ],
-      "name": "Featured record (example) C: Audioly play buttons",
-      "settings": {
-        "include_margins": false
+        "heading": "Featured release",
+        "background": "dark"
       }
     },
     "pattern_genre_tiles": {
@@ -863,7 +614,7 @@
       "settings": {
         "heading": "Browse by genre",
         "heading_accent": "",
-        "background": "stripes-dark",
+        "background": "paper",
         "text": "",
         "collection": "",
         "link_label": "All records",
@@ -918,13 +669,250 @@
       ],
       "settings": {
         "heading": "",
-        "background": "paper",
+        "background": "stripes-dark",
         "padding_top": 48,
         "padding_bottom": 96
       }
     },
+    "featured_record_example_a": {
+      "type": "pattern-featured-record-section",
+      "blocks": {
+        "ex_a1": {
+          "type": "pattern-featured-record",
+          "settings": {
+            "product": "various-artists-jazzy-sport-past-forward-silver",
+            "label": "Staff pick",
+            "layout": "horizontal",
+            "size": "standard",
+            "background": "none",
+            "show_genres": true,
+            "show_description": true,
+            "description_lines": 3,
+            "description_override": "",
+            "show_comment": true,
+            "comment_override": "The Idjut Boys remix is a bit saucy",
+            "show_button": true,
+            "show_add_to_cart": false
+          },
+          "blocks": {}
+        },
+        "ex_a2": {
+          "type": "pattern-featured-record",
+          "settings": {
+            "product": "nathan-haynes-the-soft-chaos",
+            "label": "Staff pick",
+            "layout": "horizontal",
+            "size": "standard",
+            "background": "none",
+            "show_genres": true,
+            "show_description": true,
+            "description_lines": 3,
+            "description_override": "",
+            "show_comment": true,
+            "comment_override": "",
+            "show_button": true,
+            "show_add_to_cart": false
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ex_a1",
+        "ex_a2"
+      ],
+      "name": "Featured record (example) A: three records",
+      "settings": {
+        "eyebrow": "Example",
+        "heading": "Featured releases",
+        "background": "none"
+      }
+    },
+    "featured_record_example_a_audioly": {
+      "type": "apps",
+      "blocks": {
+        "audioly_example_a": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "weekly-electronic",
+            "productsToShow": 18,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        }
+      },
+      "block_order": [
+        "audioly_example_a"
+      ],
+      "name": "Featured record (example) A: Audioly play buttons",
+      "settings": {
+        "include_margins": false
+      }
+    },
+    "featured_record_example_b": {
+      "type": "pattern-columns",
+      "blocks": {
+        "ex_b_left": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "paper",
+            "overlay_opacity": 50,
+            "padding": "medium",
+            "align": "top",
+            "min_height": "auto"
+          },
+          "blocks": {
+            "ex_b_record": {
+              "type": "pattern-featured-record",
+              "settings": {
+                "product": "nail-more-time-lax12inch103-b2b",
+                "label": "Staff pick",
+                "layout": "vertical",
+                "size": "standard",
+                "background": "none",
+                "show_genres": true,
+                "show_description": true,
+                "description_lines": 3,
+                "description_override": "",
+                "show_comment": true,
+                "comment_override": "",
+                "show_button": true,
+                "show_add_to_cart": false
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "ex_b_record"
+          ]
+        },
+        "ex_b_right": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "stripes-clay",
+            "overlay_opacity": 50,
+            "padding": "medium",
+            "align": "center",
+            "min_height": "auto"
+          },
+          "blocks": {
+            "ex_b_heading": {
+              "type": "pattern-heading",
+              "settings": {
+                "eyebrow": "Featured record (example)",
+                "heading": "Staff picks",
+                "heading_accent": "",
+                "heading_end": "",
+                "size": "large",
+                "tag": "h2"
+              },
+              "blocks": {}
+            },
+            "ex_b_text": {
+              "type": "pattern-text",
+              "settings": {
+                "text": "<p>[Placeholder text: a couple of lines about this week&#39;s picks from the shop.]</p>",
+                "size": "large"
+              },
+              "blocks": {}
+            },
+            "ex_b_button": {
+              "type": "pattern-button",
+              "settings": {
+                "label": "All staff picks",
+                "link": "/collections/all",
+                "style": "accent"
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "ex_b_heading",
+            "ex_b_text",
+            "ex_b_button"
+          ]
+        }
+      },
+      "block_order": [
+        "ex_b_left",
+        "ex_b_right"
+      ],
+      "disabled": true,
+      "name": "Featured record (example) B: in columns",
+      "settings": {
+        "ratio": "50-50",
+        "width": "full",
+        "gap": "none",
+        "mobile_order": "normal",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "featured_record_example_b_audioly": {
+      "type": "apps",
+      "blocks": {
+        "audioly_example_b": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "weekly-electronic",
+            "productsToShow": 18,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        }
+      },
+      "block_order": [
+        "audioly_example_b"
+      ],
+      "name": "Featured record (example) B: Audioly play buttons",
+      "settings": {
+        "include_margins": false
+      }
+    },
+    "featured_record_example_c_audioly": {
+      "type": "apps",
+      "blocks": {
+        "audioly_example_c": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "weekly-electronic",
+            "productsToShow": 18,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        }
+      },
+      "block_order": [
+        "audioly_example_c"
+      ],
+      "name": "Featured record (example) C: Audioly play buttons",
+      "settings": {
+        "include_margins": false
+      }
+    },
     "pattern_feature_split": {
       "type": "pattern-feature-split",
+      "disabled": true,
       "settings": {
         "image": "shopify://shop_images/20171116-.com.apple.Foundation.NSItemProvider.FgbqxL.jpg",
         "image_position": "left",
@@ -933,7 +921,7 @@
         "heading": "Bring us your",
         "heading_accent": "records",
         "heading_end": ".",
-        "text": "<p>We buy and exchange records. Bring a crate to the shop or send us a list, and we&#39;ll make you an offer or swap them for something new to you.</p>",
+        "text": "<p>We buy and exchange records. Bring a crate to the shop or send us a list, and we'll make you an offer or swap them for something new to you.</p>",
         "button_label": "How it works",
         "button_link": ""
       }
@@ -1191,10 +1179,9 @@
         "heading": "Come and listen.",
         "heading_accent": "",
         "heading_end": "",
-        "address": "[Street address]\nAlcântara, Lisboa",
         "hours": "[Opening hours]",
         "maps_label": "Open in Maps",
-        "maps_link": "",
+        "maps_link": "https://maps.app.goo.gl/ursp6mbRLt6D15di7",
         "show_newsletter": true,
         "newsletter_label": "Newsletter",
         "newsletter_heading": "New arrivals, first.",
@@ -1245,17 +1232,16 @@
     "apps_featured_records_demo",
     "pattern_columns_feature_demo",
     "apps_columns_feature_demo",
-    "pattern_new_in",
     "pattern_new_in_views",
     "apps_new_in_views_audioly",
+    "featured_record_example_c",
+    "pattern_genre_tiles",
+    "pattern_service_row",
     "featured_record_example_a",
     "featured_record_example_a_audioly",
     "featured_record_example_b",
     "featured_record_example_b_audioly",
-    "featured_record_example_c",
     "featured_record_example_c_audioly",
-    "pattern_genre_tiles",
-    "pattern_service_row",
     "pattern_feature_split",
     "pattern_columns_demo",
     "apps_columns_demo_audioly",

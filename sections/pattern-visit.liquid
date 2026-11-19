@@ -3,13 +3,52 @@
   side and a newsletter sign-up on the other (Shopify customer form, tagged "newsletter"), then a
   bottom bar with a copyright line and a menu.
 
-  The maps link falls back to a Google Maps search for the address when left empty.
+  Address: the "Address override" setting if it has text, otherwise the shop's address from
+  Settings > General (address1, address2, zip + city; country only if "Show country" is on), via
+  snippets/pattern-address.liquid. With "Use shop address" off and no override, nothing shows.
+
+  Maps link: the "Maps link override" setting if set, otherwise a Google Maps search for the
+  address shown (override lines, or the shop address joined with commas).
 {%- endcomment -%}
 {%- liquid
-  assign address_one_line = section.settings.address | newline_to_br | split: '<br />' | join: ', ' | strip_newlines
+  assign address_override = section.settings.address_override | strip
+  assign address_html = ''
+  assign address_query = ''
+  if address_override != blank
+    comment
+      One line per non-empty row (stray spaces and carriage returns dropped), each word
+      capitalised (snippets/pattern-title-case.liquid): <br> on the page, ", " in the maps query.
+    endcomment
+    assign override_lines = address_override | newline_to_br | split: '<br />'
+    for line in override_lines
+      assign line_text = line | strip_newlines | strip
+      if line_text != blank
+        capture line_text
+          render 'pattern-title-case', text: line_text
+        endcapture
+        if address_query != blank
+          assign address_query = address_query | append: ', '
+          assign address_html = address_html | append: '<br>'
+        endif
+        assign address_query = address_query | append: line_text
+        assign line_html = line_text | escape
+        assign address_html = address_html | append: line_html
+      endif
+    endfor
+  elsif section.settings.use_shop_address
+    capture address_html
+      render 'pattern-address', address1: shop.address.address1, address2: shop.address.address2, zip: shop.address.zip, city: shop.address.city, country: shop.address.country, show_country: section.settings.show_country
+    endcapture
+    capture address_query
+      render 'pattern-address', address1: shop.address.address1, address2: shop.address.address2, zip: shop.address.zip, city: shop.address.city, country: shop.address.country, format: 'query'
+    endcapture
+  endif
+  assign address_html = address_html | strip
+  assign address_query = address_query | strip
+
   assign maps_url = section.settings.maps_link
-  if maps_url == blank and section.settings.address != blank
-    assign maps_query = address_one_line | url_encode
+  if maps_url == blank and address_query != blank
+    assign maps_query = address_query | url_encode
     assign maps_url = 'https://www.google.com/maps/search/?api=1&query=' | append: maps_query
   endif
 -%}
@@ -27,10 +66,10 @@
           end: section.settings.heading_end
         -%}
       </h2>
-      {%- if section.settings.address != blank or section.settings.hours != blank -%}
+      {%- if address_html != blank or section.settings.hours != blank -%}
         <div class="pattern-visit__details">
-          {%- if section.settings.address != blank -%}
-            <address class="pattern-visit__address">{{ section.settings.address | escape | newline_to_br }}</address>
+          {%- if address_html != blank -%}
+            <address class="pattern-visit__address">{{ address_html }}</address>
           {%- endif -%}
           {%- if section.settings.hours != blank -%}
             <p class="pattern-visit__hours">{{ section.settings.hours | escape | newline_to_br }}</p>
@@ -337,10 +376,23 @@
       "label": "Heading: after the accent word"
     },
     {
+      "type": "checkbox",
+      "id": "use_shop_address",
+      "label": "Use shop address",
+      "info": "From Settings > General > Store address. Ignored when the override below has text.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_country",
+      "label": "Show country",
+      "default": false
+    },
+    {
       "type": "textarea",
-      "id": "address",
-      "label": "Address",
-      "default": "Street address\nAlcântara, Lisboa"
+      "id": "address_override",
+      "label": "Address override",
+      "info": "Optional. One line per row; shown instead of the shop address."
     },
     {
       "type": "textarea",
@@ -357,8 +409,8 @@
     {
       "type": "url",
       "id": "maps_link",
-      "label": "Maps link",
-      "info": "Paste a Google or Apple Maps share link. Leave empty to search Google Maps for the address."
+      "label": "Maps link override",
+      "info": "Optional: a Google or Apple Maps share link or pin. Leave empty to search Google Maps for the address shown."
     },
     {
       "type": "header",
