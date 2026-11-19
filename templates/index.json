@@ -1189,9 +1189,7 @@
         "email_label": "Email address",
         "email_placeholder": "you@example.com",
         "button_label": "Subscribe",
-        "success_message": "Thanks, you’re on the list.",
-        "copyright": "© Pattern Records · Alcântara, Lisboa",
-        "menu": "footer"
+        "success_message": "Thanks, you’re on the list."
       }
     },
     "featured_collection": {

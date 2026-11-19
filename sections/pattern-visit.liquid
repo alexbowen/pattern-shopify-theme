@@ -1,7 +1,6 @@
 {%- comment -%}
   Pattern visit + newsletter: ink band with the shop's address, hours and a maps link on one
-  side and a newsletter sign-up on the other (Shopify customer form, tagged "newsletter"), then a
-  bottom bar with a copyright line and a menu.
+  side and a newsletter sign-up on the other (Shopify customer form, tagged "newsletter").
 
   Address: the "Address override" setting if it has text, otherwise the shop's address from
   Settings > General (address1, address2, zip + city; country only if "Show country" is on), via
@@ -144,27 +143,6 @@
     {%- endif -%}
   </div>
 
-  {%- assign bar_menu = linklists[section.settings.menu] -%}
-  {%- if section.settings.copyright != blank or bar_menu.links.size > 0 -%}
-    <div class="pattern-wrap pattern-visit__bar">
-      {%- if section.settings.copyright != blank -%}
-        <p class="pattern-visit__copyright">{{ section.settings.copyright | escape }}</p>
-      {%- endif -%}
-      {%- if bar_menu.links.size > 0 -%}
-        <nav aria-label="{{ bar_menu.title | escape }}">
-          <ul class="pattern-visit__menu" role="list">
-            {%- for link in bar_menu.links -%}
-              <li>
-                <a href="{{ link.url }}" class="pattern-visit__menu-link"{% if link.current %} aria-current="page"{% endif %}>
-                  {{- link.title | escape -}}
-                </a>
-              </li>
-            {%- endfor -%}
-          </ul>
-        </nav>
-      {%- endif -%}
-    </div>
-  {%- endif -%}
 </section>
 
 {% stylesheet %}
@@ -179,7 +157,7 @@
     justify-content: space-between;
     gap: 5.6rem 9.6rem;
     padding-top: var(--pattern-section-space);
-    padding-bottom: 8rem;
+    padding-bottom: var(--pattern-section-space);
   }
 
   .pattern-visit__col {
@@ -287,49 +265,6 @@
     font-size: 1.5rem;
     line-height: 1.5;
     color: var(--pattern-paper);
-  }
-
-  .pattern-visit__bar {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.8rem 3.2rem;
-    padding-top: 1.6rem;
-    padding-bottom: 2.4rem;
-    border-top: 0.1rem solid color-mix(in srgb, var(--pattern-paper) 20%, transparent);
-    font-family: var(--font-mono);
-    font-size: 1.2rem;
-    letter-spacing: 0.04em;
-    color: var(--pattern-paper-dim);
-  }
-
-  .pattern-visit__copyright {
-    margin: 0;
-    padding: 0.8rem 0;
-  }
-
-  .pattern-visit__menu {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 2.4rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .pattern-visit__menu-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 4.4rem;
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .pattern-visit__menu-link:hover {
-    color: var(--pattern-paper);
-    text-decoration: underline;
-    text-underline-offset: 0.4rem;
   }
 {% endstylesheet %}
 
@@ -467,22 +402,6 @@
     {
       "type": "paragraph",
       "content": "Sign-ups are added to Customers with email marketing consent and the tag \"newsletter\"."
-    },
-    {
-      "type": "header",
-      "content": "Bottom bar"
-    },
-    {
-      "type": "text",
-      "id": "copyright",
-      "label": "Copyright line",
-      "default": "© Pattern Records · Alcântara, Lisboa"
-    },
-    {
-      "type": "link_list",
-      "id": "menu",
-      "label": "Menu",
-      "default": "footer"
     }
   ],
   "presets": [
