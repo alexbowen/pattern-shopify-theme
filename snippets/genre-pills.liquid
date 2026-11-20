@@ -19,7 +19,7 @@
   - description: {String} Optional rich text under the heading in the dark band
   - header_image: {Object} Optional image for the dark band: a cover image (crop from its focal
     point) under an ink overlay, replacing the stripe texture
-  - header_overlay: {Number} Overlay strength in percent (default 55)
+  - header_overlay: {Number} Overlay strength in percent (default 65)
   - show_sort: {Boolean} Render the record count and sort control (snippets/pattern-sort.liquid).
     False when the Pattern filter bar shows them instead.
     Its select is in this form, so sort_by is submitted with the genres on every filter change.
@@ -175,7 +175,7 @@
     <div
       class="genre-pills{% if band %} genre-pills--dark{% if band_image %} genre-pills--image{% else %} pattern-stripe-dark{% endif %}{% endif %}"
       {% if band_image %}
-        style="--band-overlay: {{ header_overlay | default: 55 | divided_by: 100.0 }};"
+        style="--band-overlay: {{ header_overlay | default: 65 | divided_by: 100.0 }};"
       {% endif %}
     >
       {%- if band_image -%}

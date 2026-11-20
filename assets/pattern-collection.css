@@ -509,10 +509,6 @@
   color: var(--on-accent);
 }
 
-:is(.template-collection, .template-search) .genre-pills--dark .genre-tray {
-  background-color: color-mix(in srgb, var(--pattern-paper) 8%, transparent);
-}
-
 :is(.template-collection, .template-search) .genre-pills--dark .genre-tray__label,
 :is(.template-collection, .template-search) .genre-pills--dark .origin-line__more,
 :is(.template-collection, .template-search) .genre-pills--dark .origin-panel__toggle {
@@ -613,6 +609,113 @@
 .genre-pills--image .genre-pills__total,
 .genre-pills--image .genre-pills__description {
   color: var(--pattern-paper);
+}
+
+/* Over a background image: pills carry their own dark, blurred fill so they read on any photo.
+   Unselected genre pills ink at 70% (hover 82%) with a paper hairline; origin and sub-genre pills
+   ink at 60% with their paper outline at 45%. Selected pills are unchanged. Without
+   backdrop-filter support the fills are more opaque (85%). Heading and count get a soft shadow. */
+:is(.template-collection, .template-search) .genre-pills--image {
+  --image-pill: color-mix(in srgb, var(--pattern-ink) 85%, transparent);
+  --image-pill-hover: color-mix(in srgb, var(--pattern-ink) 92%, transparent);
+  --image-outline-pill: color-mix(in srgb, var(--pattern-ink) 85%, transparent);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :is(.template-collection, .template-search) .genre-pills--image {
+    --image-pill: color-mix(in srgb, var(--pattern-ink) 70%, transparent);
+    --image-pill-hover: color-mix(in srgb, var(--pattern-ink) 82%, transparent);
+    --image-outline-pill: color-mix(in srgb, var(--pattern-ink) 60%, transparent);
+  }
+
+  :is(.template-collection, .template-search) .genre-pills--image :is(.genre-pill, .origin-pill):not(.genre-pill--active):not(.genre-pill--has-active-child):not(.origin-pill--active) {
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+}
+
+:is(.template-collection, .template-search) .genre-pills--image .genre-pill:not(.genre-pill--child):not(.genre-pill--active):not(.genre-pill--has-active-child) {
+  background-color: var(--image-pill);
+  border-color: color-mix(in srgb, var(--pattern-paper) 18%, transparent);
+}
+
+:is(.template-collection, .template-search) .genre-pills--image .genre-pill.genre-pill--child:not(.genre-pill--active),
+:is(.template-collection, .template-search) .genre-pills--image .origin-pill:not(.origin-pill--active) {
+  background-color: var(--image-outline-pill);
+  border-color: color-mix(in srgb, var(--pattern-paper) 45%, transparent);
+}
+
+@media (hover: hover) {
+  :is(.template-collection, .template-search) .genre-pills--image .genre-pill:not(.genre-pill--active):not(.genre-pill--has-active-child):not(.genre-pill--child):hover {
+    background-color: var(--image-pill-hover);
+    border-color: color-mix(in srgb, var(--pattern-paper) 18%, transparent);
+  }
+
+  :is(.template-collection, .template-search) .genre-pills--image .genre-pill.genre-pill--child:not(.genre-pill--active):hover,
+  :is(.template-collection, .template-search) .genre-pills--image .origin-pill:not(.origin-pill--active):hover {
+    background-color: var(--image-outline-pill);
+    border-color: var(--dark-outline-hover);
+  }
+}
+
+:is(.template-collection, .template-search) .genre-pills--image .genre-pill:not(.genre-pill--active):not(.genre-pill--has-active-child):not(.genre-pill--child):focus-visible {
+  background-color: var(--image-pill-hover);
+}
+
+:is(.template-collection, .template-search) .genre-pills--image .genre-pill.genre-pill--child:not(.genre-pill--active):focus-visible,
+:is(.template-collection, .template-search) .genre-pills--image .origin-pill:not(.origin-pill--active):focus-visible {
+  background-color: var(--image-outline-pill);
+}
+
+.genre-pills--image .genre-pills__title,
+.genre-pills--image .genre-pills__total,
+.genre-pills--image .genre-tray__label {
+  text-shadow: 0 0.1rem 1.2rem color-mix(in srgb, var(--pattern-ink) 40%, transparent);
+}
+
+/* Sub-genre row in the dark band: no indent or tinted box, flush with the genre pills above.
+   The parent label ("World Music ›") leads the row as small DM Mono text, then the pills, 8px
+   apart, with the pill rows' 10px row gap. 10px above it (as between genre rows) and the origin
+   line's usual 18px below it. */
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pills__children-inner {
+  gap: 1rem;
+  /* room for focus rings, which this overflow: hidden wrapper would clip at the left edge */
+  margin: 0 -0.4rem;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pills__children.is-open .genre-pills__children-inner {
+  padding-top: 1rem;
+  padding-bottom: 0.4rem;
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-tray {
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-tray__label {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, var(--pattern-paper) 70%, transparent);
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-tray .genre-pills__row {
+  gap: 1rem 0.8rem;
+  margin: 0;
+  padding: 0;
+}
+
+/* The bottom padding above makes room for focus rings; the origin line takes it back */
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pills__fieldset:has(.genre-pills__children.is-open) + .origin-line {
+  padding-top: 1.4rem;
 }
 
 /* Mobile: a shorter band so the cards start high */
