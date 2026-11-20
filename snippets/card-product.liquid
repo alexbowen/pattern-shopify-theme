@@ -259,7 +259,7 @@
               {%- assign card_meta_parts = card_meta | split: card_meta_sep -%}
               {%- for card_meta_part in card_meta_parts -%}
                 {%- unless forloop.first -%}<span class="card-pattern__sep" aria-hidden="true"> · </span>{%- endunless -%}
-                <span>{{ card_meta_part | escape }}</span>
+                <span{% if forloop.first and card_label != blank %} class="card-pattern__meta-label"{% endif %}>{{ card_meta_part | escape }}</span>
               {%- endfor -%}
             {%- endif -%}
           </p>

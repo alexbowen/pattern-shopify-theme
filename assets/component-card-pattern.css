@@ -141,6 +141,34 @@
   display: block;
 }
 
+/* When it doesn't fit, the label gives way first (ellipsis); format and genre stay whole. If
+   format and genre alone are still too wide, the line is cut from the left (label) side: it's
+   end-aligned, and the last item's auto margin keeps it left-aligned whenever it fits. */
+.card-pattern__meta:not(:empty) {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.card-pattern__meta > span:last-child {
+  margin-right: auto;
+}
+
+.card-pattern__meta > span {
+  flex: 0 0 auto;
+}
+
+.card-pattern__meta > .card-pattern__meta-label {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-pattern__sep {
+  white-space: pre;
+}
+
 .card-pattern__sep {
   white-space: pre;
 }

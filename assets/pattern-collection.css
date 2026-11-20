@@ -44,15 +44,23 @@
   max-width: 62ch;
 }
 
-/* ===== Compact filter block (vertical gaps about a third smaller) ===== */
+/* ===== Compact filter block =====
+   Pills: 10px between genre pills (both ways), 18px down to the origin line, 8px between origin
+   pills, then 24px down to the filter band. The band's own top hairline replaces the pill area's
+   bottom border. Heading-to-pills spacing is unchanged. */
 :is(.template-collection, .template-search) .genre-pills {
   position: static; /* the old sticky pill rows are replaced by the slim bar below */
-  margin-bottom: 0.8rem;
+  margin-bottom: 2.4rem;
+  border-bottom: 0;
 }
 
 :is(.template-collection, .template-search) .genre-pills__inner {
   padding-top: 0.5rem;
-  padding-bottom: 0.6rem;
+  padding-bottom: 0;
+}
+
+:is(.template-collection, .template-search) .genre-pills__row {
+  gap: 1rem;
 }
 
 :is(.template-collection, .template-search) .genre-pills__children.is-open .genre-pills__children-inner {
@@ -65,15 +73,51 @@
 }
 
 :is(.template-collection, .template-search) .origin-line {
-  padding-top: 0.5rem;
+  padding-top: 1.8rem;
 }
 
-:is(.template-collection, .template-search) .filter-bar__row {
-  padding: 0.2rem 0 0.6rem;
+/* Origin pills: a little larger (30px high on desktop, 12px padding, 13px text), 8px apart; same
+   outline and selected state */
+:is(.template-collection, .template-search) .origin-line__row.genre-pills__row {
+  gap: 0.8rem;
 }
 
+:is(.template-collection, .template-search) .origin-pill {
+  padding: 0 1.2rem;
+  font-size: 1.3rem;
+}
+
+@media screen and (min-width: 750px) {
+  :is(.template-collection, .template-search) .genre-pills {
+    --origin-pill-height: 3rem;
+  }
+}
+
+/* ===== Controls row: Format / In stock / Condition, Sort =====
+   On the paper background inside the shared container: 16px above and below, one hairline
+   underneath, 24px down to the first row of cards. Light controls: a softer border and no fill;
+   hover and focus darken the border to ink. */
 :is(.template-collection, .template-search) .facets-container {
-  padding-top: 0.6rem;
+  align-items: center;
+  margin-bottom: 2.4rem;
+  padding-top: 1.6rem;
+  padding-bottom: 1.6rem;
+  border-bottom: 0.1rem solid var(--pattern-hairline);
+}
+
+:is(.template-collection, .template-search) .facets-container .filter-bar__row {
+  padding: 0;
+}
+
+:is(.template-collection, .template-search) .facets-container,
+.pattern-filter-sticky {
+  --pal-quiet-border: color-mix(in srgb, var(--pattern-ink) 16%, transparent);
+}
+
+:is(.template-collection, .template-search) .facets-container .filter-chip,
+:is(.template-collection, .template-search) .facets-container .facets__summary.filter-chip,
+:is(.template-collection, .template-search) .facets-container .pattern-sort {
+  background-color: transparent;
 }
 
 /* The standalone active-filter row (chips + Clear all) is gone: "Clear all" sits in the utility
@@ -200,6 +244,7 @@
   left: 0;
   right: 0;
   z-index: 30;
+  /* Like the controls row: solid paper (cards never show through), one hairline underneath */
   background-color: var(--pattern-paper);
   border-bottom: 0.1rem solid var(--pattern-hairline);
   transform: translateY(-100%);
@@ -345,5 +390,243 @@
   .pattern-filter-sticky,
   .pattern-filters-out .pattern-filter-sticky {
     transition: none;
+  }
+}
+
+/* ===== Even row gaps while scrolling =====
+   Dawn's reveal-on-scroll slides every card up 2rem as it enters the viewport, with a delay per
+   card. Until a row has revealed it sits 20px lower, so the gap above it grows and a row can look
+   ragged mid-reveal. The card heights themselves are uniform. Here the cards keep the fade but
+   don't move. (animation-name only: Dawn's delay and fill mode stay.) */
+:is(.template-collection, .template-search) #ProductGridContainer .grid__item.scroll-trigger.animate--slide-in {
+  transform: none;
+}
+
+:is(.template-collection, .template-search) #ProductGridContainer .grid__item.scroll-trigger.animate--slide-in:not(.scroll-trigger--offscreen) {
+  animation-name: fadeIn;
+}
+
+/* ===== Dark header band (Header style: Dark stripe) =====
+   snippets/genre-pills.liquid with header_style 'dark': the title and record count, then the
+   genre and origin pills, on the dark stripe (.pattern-stripe-dark), full width with the content
+   on the shared container. The banner section above is hidden and the count moves out of the
+   filter strip, which sits directly beneath. Pill sizes, counts and behaviour are unchanged;
+   only their colours are set for the dark ground. Paper style: none of this applies. */
+.template-collection:has(.genre-pills--dark) .collection-hero,
+.template-collection:has(.genre-pills--dark) .filter-bar__count-value {
+  display: none;
+}
+
+:is(.template-collection, .template-search) .genre-pills.genre-pills--dark {
+  --dark-pill: color-mix(in srgb, var(--pattern-paper) 12%, transparent);
+  --dark-pill-hover: color-mix(in srgb, var(--pattern-paper) 22%, transparent);
+  --dark-outline: color-mix(in srgb, var(--pattern-paper) 40%, transparent);
+  --dark-outline-hover: color-mix(in srgb, var(--pattern-paper) 85%, transparent);
+  margin-bottom: 0;
+  background-color: var(--pattern-stripe-dark-a);
+  color: var(--pattern-paper);
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pills__inner {
+  padding-top: 4rem;
+  padding-bottom: 2.8rem;
+}
+
+.genre-pills__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem 2.4rem;
+  margin-bottom: 2rem;
+}
+
+.genre-pills__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3.2rem, 3vw, 4.8rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--pattern-paper);
+}
+
+.genre-pills__total {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  letter-spacing: 0.02em;
+  color: var(--pattern-paper-dim);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.genre-pills__description {
+  max-width: 62ch;
+  margin: -0.8rem 0 2rem;
+  color: var(--pattern-paper-dim);
+}
+
+.genre-pills__description a {
+  color: var(--pattern-paper);
+}
+
+/* Genre pills: paper at 12%, paper text, count at 60%; selected solid paper with ink text */
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill {
+  background-color: var(--dark-pill);
+  border-color: transparent;
+  color: var(--pattern-paper);
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill__count {
+  opacity: 0.6;
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill.genre-pill--active,
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill.genre-pill--has-active-child {
+  background-color: var(--pattern-paper);
+  border-color: var(--pattern-paper);
+  color: var(--pattern-ink);
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill--active .genre-pill__count,
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill--has-active-child .genre-pill__count {
+  opacity: 0.75;
+}
+
+/* Child genre pills (trays) and origin pills: paper outline at 40%, paper text */
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill.genre-pill--child,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-pill {
+  background-color: transparent;
+  border-color: var(--dark-outline);
+  color: var(--pattern-paper);
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill.genre-pill--child.genre-pill--active,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-pill.origin-pill--active {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-tray {
+  background-color: color-mix(in srgb, var(--pattern-paper) 8%, transparent);
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-tray__label,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-line__more,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-panel__toggle {
+  color: var(--pattern-paper);
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .origin-panel__toggle {
+  border-color: var(--dark-outline);
+}
+
+/* Hover: genre pills to 22%, outlines brighter (instead of the accent fill used on paper) */
+@media (hover: hover) {
+  :is(.template-collection, .template-search) .genre-pills--dark .genre-pill:not(.genre-pill--active):not(.genre-pill--has-active-child):not(.genre-pill--child):hover {
+    background-color: var(--dark-pill-hover);
+    border-color: transparent;
+    color: var(--pattern-paper);
+  }
+
+  :is(.template-collection, .template-search) .genre-pills--dark .genre-pill.genre-pill--child:not(.genre-pill--active):hover,
+  :is(.template-collection, .template-search) .genre-pills--dark .origin-pill:not(.origin-pill--active):hover {
+    background-color: transparent;
+    border-color: var(--dark-outline-hover);
+    color: var(--pattern-paper);
+  }
+
+  :is(.template-collection, .template-search) .genre-pills--dark .genre-pill:not(.genre-pill--active):hover .genre-pill__count,
+  :is(.template-collection, .template-search) .genre-pills--dark .origin-pill:not(.origin-pill--active):hover .origin-pill__count {
+    opacity: 0.6;
+  }
+}
+
+/* Keyboard focus: a paper ring with an offset; the pill takes its hover look */
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill:focus-visible,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-pill:focus-visible,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-line__more:focus-visible,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-panel__toggle:focus-visible {
+  outline: 0.2rem solid var(--pattern-paper);
+  outline-offset: 0.3rem;
+  box-shadow: none;
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill:not(.genre-pill--active):not(.genre-pill--has-active-child):not(.genre-pill--child):focus-visible {
+  background-color: var(--dark-pill-hover);
+  border-color: transparent;
+  color: var(--pattern-paper);
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill.genre-pill--child:not(.genre-pill--active):focus-visible,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-pill:not(.origin-pill--active):focus-visible {
+  background-color: transparent;
+  border-color: var(--dark-outline-hover);
+  color: var(--pattern-paper);
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill:not(.genre-pill--active):focus-visible .genre-pill__count,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-pill:not(.origin-pill--active):focus-visible .origin-pill__count {
+  opacity: 0.6;
+}
+
+/* Background image (optional): a cover image under an ink overlay instead of the stripe. The
+   image layer is absolutely positioned, so the band keeps its height; the content comes after it
+   in the DOM, so it paints on top without a new stacking context (which would trap the slim
+   sticky bar, a fixed element inside this band). */
+:is(.template-collection, .template-search) .genre-pills.genre-pills--image {
+  position: relative;
+  z-index: auto; /* component-genre-pills.css gives .genre-pills z-index 2 */
+  background-color: var(--pattern-ink);
+}
+
+.genre-pills__bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.genre-pills__bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.genre-pills__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--pattern-ink);
+  opacity: var(--band-overlay, 0.55);
+}
+
+.genre-pills--image .genre-pills__inner {
+  position: relative;
+}
+
+/* Over a photo the muted count would be the first thing to fade: full paper instead */
+.genre-pills--image .genre-pills__total,
+.genre-pills--image .genre-pills__description {
+  color: var(--pattern-paper);
+}
+
+/* Mobile: a shorter band so the cards start high */
+@media screen and (max-width: 749px) {
+  :is(.template-collection, .template-search) .genre-pills--dark .genre-pills__inner {
+    padding-top: 2.4rem;
+    padding-bottom: 2rem;
+  }
+
+  .genre-pills__head {
+    margin-bottom: 1.6rem;
+  }
+
+  .genre-pills__title {
+    font-size: 3.2rem;
   }
 }

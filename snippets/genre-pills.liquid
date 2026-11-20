@@ -12,6 +12,14 @@
   - param_name: {String} Param name of the genre filter, e.g. 'filter.p.m.custom.pattern_genre'
   - origin_param: {String} Optional. Param name of the origin filter (e.g. 'filter.p.m.custom.origin');
     rendered as a line under the genre pills by snippets/origin-line.liquid when it has values.
+  - header_style: {String} Optional. 'dark': the pills sit in a dark striped band, with the title
+    (h1) and record count in a row above them (inside #GenrePills, so facets.js keeps the count
+    current). Anything else: the plain pill area.
+  - title: {String} Heading for the dark band (e.g. collection.title)
+  - description: {String} Optional rich text under the heading in the dark band
+  - header_image: {Object} Optional image for the dark band: a cover image (crop from its focal
+    point) under an ink overlay, replacing the stripe texture
+  - header_overlay: {Number} Overlay strength in percent (default 55)
   - show_sort: {Boolean} Render the record count and sort control (snippets/pattern-sort.liquid).
     False when the Pattern filter bar shows them instead.
     Its select is in this form, so sort_by is submitted with the genres on every filter change.
@@ -154,7 +162,40 @@
     {%- if genre_filter.active_values.size > 0 -%}{%- assign any_active = true -%}{%- endif -%}
     {{ 'component-genre-pills.css' | asset_url | stylesheet_tag }}
     {%- comment -%} The outer div is the sticky bar (full-width background); content stays in page-width. {%- endcomment -%}
-    <div class="genre-pills">
+    {%- assign band = false -%}
+    {%- if header_style == 'dark' and title != blank -%}{%- assign band = true -%}{%- endif -%}
+    {%- liquid
+      assign band_image = false
+      if band and header_image != blank
+        assign band_image = true
+        assign band_focal = header_image.presentation.focal_point | default: 'center'
+        assign band_image_style = 'object-position: ' | append: band_focal | append: ';'
+      endif
+    -%}
+    <div
+      class="genre-pills{% if band %} genre-pills--dark{% if band_image %} genre-pills--image{% else %} pattern-stripe-dark{% endif %}{% endif %}"
+      {% if band_image %}
+        style="--band-overlay: {{ header_overlay | default: 55 | divided_by: 100.0 }};"
+      {% endif %}
+    >
+      {%- if band_image -%}
+        {%- comment -%} Top of the page: loaded eagerly. Absolutely positioned, so it never changes the band's height. {%- endcomment -%}
+        <div class="genre-pills__bg" aria-hidden="true">
+          {{
+            header_image
+            | image_url: width: 2000
+            | image_tag:
+              loading: 'eager',
+              fetchpriority: 'high',
+              decoding: 'async',
+              widths: '750, 1100, 1500, 2000',
+              sizes: '100vw',
+              alt: '',
+              class: 'genre-pills__bg-image',
+              style: band_image_style
+          }}
+        </div>
+      {%- endif -%}
       <facet-filters-form class="genre-pills__inner page-width">
         <form id="FacetGenrePillsForm">
           {%- comment -%}
@@ -165,6 +206,18 @@
             <input type="hidden" name="type" value="product">
           {%- endif -%}
           <div id="GenrePills">
+            {%- if band -%}
+              <div class="genre-pills__head">
+                <h1 class="genre-pills__title">
+                  <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
+                  {{- title | escape -}}
+                </h1>
+                <p class="genre-pills__total">{{ 'products.facets.genre_pills.records' | t: count: results_total }}</p>
+              </div>
+              {%- if description != blank -%}
+                <div class="genre-pills__description rte">{{ description }}</div>
+              {%- endif -%}
+            {%- endif -%}
             <fieldset class="genre-pills__fieldset">
               <legend class="visually-hidden">{{ genre_filter.label | escape }}</legend>
               <div class="genre-pills__top">

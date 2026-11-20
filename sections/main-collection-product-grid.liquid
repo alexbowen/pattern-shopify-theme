@@ -141,11 +141,33 @@
     {%- endif -%}
 
     {%- if genre_pills -%}
+      {%- comment -%}
+        Header style "Dark stripe": the collection title, record count, genre and origin pills sit
+        in a dark striped band (the banner section above is hidden by pattern-collection.css).
+        "Paper": the banner shows the title as before and the pills keep their paper styles.
+      {%- endcomment -%}
+      {%- liquid
+        assign header_style = section.settings.header_style | default: 'dark'
+        assign header_description = ''
+        if header_style == 'dark'
+          assign header_description = collection.description
+        endif
+        # Same heading as the banner: the all-products collection reads "All records"
+        assign header_title = collection.title
+        if collection.handle == 'all' or collection.title == 'Products'
+          assign header_title = 'All records'
+        endif
+      -%}
       {% render 'genre-pills',
         results: collection,
         param_name: genre_param,
         origin_param: origin_param,
-        show_sort: pills_show_sort
+        show_sort: pills_show_sort,
+        header_style: header_style,
+        title: header_title,
+        description: header_description,
+        header_image: section.settings.header_image,
+        header_overlay: section.settings.header_overlay
       %}
     {%- endif -%}
     {%- comment -%} After the filter UI's own stylesheet so the Pattern overrides win {%- endcomment -%}
@@ -459,6 +481,34 @@
       "default": true,
       "label": "Show genre pills",
       "info": "Shows the Pattern genre filter as pills above the grid instead of in the filter menu. Needs filtering enabled."
+    },
+    {
+      "type": "select",
+      "id": "header_style",
+      "label": "Header style",
+      "info": "Dark stripe puts the title, record count and pills in a dark striped band (needs genre pills). Paper is the plain header.",
+      "options": [
+        { "value": "dark", "label": "Dark stripe" },
+        { "value": "paper", "label": "Paper" }
+      ],
+      "default": "dark"
+    },
+    {
+      "type": "image_picker",
+      "id": "header_image",
+      "label": "Background image",
+      "info": "Dark stripe header only. Covers the band behind the title and pills, replacing the stripe. Set a focal point on the image to control the crop."
+    },
+    {
+      "type": "range",
+      "id": "header_overlay",
+      "min": 50,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay strength",
+      "info": "Dark overlay on the background image. 70% or more keeps the pills readable on bright images.",
+      "default": 55
     },
     {
       "type": "header",
