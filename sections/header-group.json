@@ -13,6 +13,7 @@
   "sections": {
     "pattern_announcement": {
       "type": "pattern-announcement",
+      "disabled": true,
       "settings": {
         "text": "Flat-rate shipping in Portugal & Spain · Ships across the EU & UK · Collect in store",
         "link": ""
@@ -21,6 +22,7 @@
     "pattern_header": {
       "type": "pattern-header",
       "settings": {
+        "header_style": "dark",
         "stripe_texture": false,
         "logo": "shopify://shop_images/pattern-records-black.png",
         "wordmark": "pattern",
