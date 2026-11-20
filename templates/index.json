@@ -253,25 +253,33 @@
             "background": "paper",
             "overlay_opacity": 50,
             "padding": "medium",
-            "align": "center",
+            "align": "top",
             "min_height": "auto"
           },
           "blocks": {
-            "h": {
-              "type": "pattern-heading",
+            "pattern_featured_record_KcyMd8": {
+              "type": "pattern-featured-record",
+              "name": "Featured record",
               "settings": {
-                "eyebrow": "In the shop",
-                "heading": "New",
-                "heading_accent": "this",
-                "heading_end": "week",
-                "size": "large",
-                "tag": "h2"
+                "product": "abacus-erotic-illusions",
+                "label": "Staff pick",
+                "layout": "horizontal",
+                "size": "standard",
+                "background": "dark",
+                "show_genres": true,
+                "show_description": true,
+                "description_lines": 3,
+                "description_override": "",
+                "show_comment": true,
+                "comment_override": "",
+                "show_button": true,
+                "show_add_to_cart": false
               },
               "blocks": {}
             }
           },
           "block_order": [
-            "h"
+            "pattern_featured_record_KcyMd8"
           ]
         }
       },
@@ -1203,9 +1211,9 @@
     "apps_this_week_audioly",
     "pattern_featured_records_demo",
     "apps_featured_records_demo",
-    "pattern_columns_feature_demo",
     "pattern_new_in_views",
     "apps_new_in_views_audioly",
+    "pattern_columns_feature_demo",
     "featured_record_example_c",
     "pattern_genre_tiles",
     "pattern_service_row",
