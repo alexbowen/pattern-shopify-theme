@@ -21,6 +21,7 @@
     "pattern_header": {
       "type": "pattern-header",
       "settings": {
+        "stripe_texture": false,
         "logo": "shopify://shop_images/pattern-records-black.png",
         "wordmark": "pattern",
         "wordmark_accent": "records",

@@ -16,20 +16,42 @@
 {{ 'pattern-search.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'pattern-search.js' | asset_url }}" defer="defer"></script>
 
-{%- assign menu_links = linklists[section.settings.menu].links -%}
+{%- liquid
+  assign menu_links = linklists[section.settings.menu].links
+  assign header_dark = false
+  if section.settings.header_style != 'paper'
+    assign header_dark = true
+  endif
+  # Dark style: the light logo if there is one, otherwise the normal logo inverted (a stopgap)
+  assign header_logo = section.settings.logo
+  assign logo_invert = false
+  if header_dark
+    if section.settings.logo_light != blank
+      assign header_logo = section.settings.logo_light
+    elsif section.settings.logo != blank
+      assign logo_invert = true
+    endif
+  endif
+-%}
 
-<div class="pattern-section pattern-header">
+<div class="pattern-section pattern-header{% if header_dark %} pattern-header--dark{% if section.settings.stripe_texture %} pattern-stripe-dark{% endif %}{% endif %}">
   <header class="pattern-wrap pattern-header__inner">
     <a href="{{ routes.root_url }}" class="pattern-header__wordmark">
-      {%- if section.settings.logo != blank -%}
+      {%- if header_logo != blank -%}
+        {%- liquid
+          assign logo_class = 'pattern-header__logo'
+          if logo_invert
+            assign logo_class = 'pattern-header__logo pattern-header__logo--invert'
+          endif
+        -%}
         {{
-          section.settings.logo
+          header_logo
           | image_url: width: 600
           | image_tag:
             widths: '150, 300, 450, 600',
             sizes: '(min-width: 750px) 220px, 160px',
             alt: shop.name,
-            class: 'pattern-header__logo',
+            class: logo_class,
             loading: 'eager'
         }}
       {%- else -%}
@@ -86,6 +108,33 @@
 </div>
 
 <script>
+  // Stripe joins: dark stripe areas that can touch (the dark header, the collection band, the
+  // hero without an image, the Visit block, the dark footer) anchor the stripe to the page, so
+  // where two meet the diagonals carry straight on with no seam.
+  (function () {
+    if (window.patternStripeJoinInit) return;
+    window.patternStripeJoinInit = true;
+    var selector = '.pattern-header--dark.pattern-stripe-dark, .genre-pills--dark.pattern-stripe-dark, .pattern-hero__bg.pattern-stripe-dark, .pattern-visit.pattern-stripe-dark, .pattern-footer--dark.pattern-stripe-dark';
+    // A diagonal gradient's phase depends on its box size as well as its position, so every
+    // joined area gets the same large box, shifted by its page offset modulo the stripe's
+    // vertical period (two stripe widths / sin 45deg).
+    var align = function () {
+      var width = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pattern-stripe-dark-width')) || 12;
+      var period = width * 2 * Math.SQRT2;
+      document.querySelectorAll(selector).forEach(function (el) {
+        var top = el.getBoundingClientRect().top + window.scrollY;
+        el.style.backgroundSize = '4000px 4000px';
+        el.style.backgroundRepeat = 'no-repeat';
+        el.style.backgroundPosition = '0 ' + -(top % period).toFixed(2) + 'px';
+      });
+    };
+    document.addEventListener('DOMContentLoaded', function () {
+      align();
+      if ('ResizeObserver' in window) new ResizeObserver(align).observe(document.body);
+    });
+    window.addEventListener('load', align);
+  })();
+
   document.addEventListener('DOMContentLoaded', function () {
     if (typeof subscribe !== 'function' || typeof PUB_SUB_EVENTS === 'undefined') return;
     subscribe(PUB_SUB_EVENTS.cartUpdate, function () {
@@ -187,6 +236,105 @@
     color: var(--accent-text);
   }
 
+  /* ===== Dark style: a flat charcoal masthead (the stripe's base tone; the stripe texture is an
+     option), paper text, and a 1px paper hairline at 8% underneath, which reads against the dark
+     hero and collection bands as well as paper content. ===== */
+  .pattern-header--dark {
+    --header-line: color-mix(in srgb, var(--pattern-paper) 12%, transparent);
+    background-color: var(--pattern-stripe-dark-a);
+    color: var(--pattern-paper);
+    border-bottom: 0.1rem solid color-mix(in srgb, var(--pattern-paper) 8%, transparent);
+  }
+
+  /* Current page: light accent text and underline (--accent-on-dark, 5.0:1 here) */
+  .pattern-header--dark .pattern-header__link[aria-current='page'] {
+    color: var(--accent-on-dark);
+  }
+
+  .pattern-header--dark .pattern-header__link:focus-visible,
+  .pattern-header--dark .pattern-header__wordmark:focus-visible {
+    outline: 0.2rem solid var(--pattern-paper);
+    outline-offset: 0.3rem;
+    box-shadow: none;
+  }
+
+  /* Stopgap for a dark logo without a light version */
+  .pattern-header__logo--invert {
+    filter: invert(1);
+  }
+
+  /* The announcement bar stays ink, with a faint paper line above the header */
+  body:has(.pattern-header--dark) .pattern-announcement {
+    box-shadow: inset 0 -0.1rem 0 color-mix(in srgb, var(--pattern-paper) 12%, transparent);
+  }
+
+  /* Search field on dark: filled a step lighter than the header (paper at 8% over it), a paper
+     border at 25%, paper text and icon; hover 40%; focus fills with paper (below). The results
+     dropdown keeps its paper panel and ink text (set on .pattern-search, untouched here). */
+  .pattern-header--dark .pattern-search__input {
+    background-color: color-mix(in srgb, var(--pattern-paper) 8%, var(--pattern-stripe-dark-a));
+    box-shadow: inset 0 0 0 0.1rem color-mix(in srgb, var(--pattern-paper) 25%, transparent);
+    color: var(--pattern-paper);
+  }
+
+  .pattern-header--dark .pattern-search__input::placeholder {
+    color: color-mix(in srgb, var(--pattern-paper) 65%, transparent);
+  }
+
+  .pattern-header--dark .pattern-search__input:hover {
+    box-shadow: inset 0 0 0 0.1rem color-mix(in srgb, var(--pattern-paper) 40%, transparent);
+  }
+
+  .pattern-header--dark .pattern-search__field .pattern-search__icon,
+  .pattern-header--dark .pattern-search--header .pattern-search__close {
+    color: var(--pattern-paper);
+  }
+
+  /* Focus: the field fills with paper (the focus indicator; no outline or ring), with ink text and
+     icon, a muted ink placeholder and a paper border so nothing jumps. It stays filled while the
+     results dropdown is open, since focus stays in the field. The dropdown (also paper) keeps its
+     gap below the field, hairline border and soft shadow, so the two never merge. */
+  .pattern-header--dark .pattern-search__input,
+  .pattern-header--dark .pattern-search__field .pattern-search__icon {
+    transition: background-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .pattern-header--dark .pattern-search__input:focus,
+  .pattern-header--dark .pattern-search__input:focus-visible {
+    outline: 0;
+    background-color: var(--pattern-paper);
+    box-shadow: inset 0 0 0 0.1rem var(--pattern-paper);
+    color: var(--pattern-ink);
+  }
+
+  .pattern-header--dark .pattern-search__input:focus::placeholder {
+    color: color-mix(in srgb, var(--pattern-ink) 60%, transparent);
+  }
+
+  .pattern-header--dark .pattern-search__field:focus-within .pattern-search__icon {
+    color: var(--pattern-ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pattern-header--dark .pattern-search__input,
+    .pattern-header--dark .pattern-search__field .pattern-search__icon {
+      transition: none;
+    }
+  }
+
+  /* Forced colours drop the fill: a system outline instead */
+  @media (forced-colors: active) {
+    .pattern-header--dark .pattern-search__input:focus {
+      outline: 2px solid Highlight;
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    .pattern-header--dark .pattern-search--header.is-open {
+      background-color: var(--pattern-stripe-dark-a);
+    }
+  }
+
   /* Mobile: wordmark and Search / Cart on the first row; the menu scrolls sideways underneath */
   @media screen and (max-width: 749px) {
     .pattern-header__inner {
@@ -212,6 +360,10 @@
       border-top: 0.1rem solid var(--pattern-hairline);
     }
 
+    .pattern-header--dark .pattern-header__nav {
+      border-top-color: var(--header-line);
+    }
+
     .pattern-header__menu {
       flex-wrap: nowrap;
       gap: 0 2.4rem;
@@ -234,10 +386,33 @@
   "enabled_on": { "groups": ["header"] },
   "settings": [
     {
+      "type": "select",
+      "id": "header_style",
+      "label": "Header style",
+      "options": [
+        { "value": "dark", "label": "Dark" },
+        { "value": "paper", "label": "Paper" }
+      ],
+      "default": "dark"
+    },
+    {
+      "type": "checkbox",
+      "id": "stripe_texture",
+      "label": "Stripe texture",
+      "info": "Dark style only. Off: flat charcoal.",
+      "default": false
+    },
+    {
       "type": "image_picker",
       "id": "logo",
       "label": "Logo image",
       "info": "Optional. Replaces the text wordmark."
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_light",
+      "label": "Light logo",
+      "info": "Used with the Dark style. Without one, the logo above is inverted."
     },
     {
       "type": "text",

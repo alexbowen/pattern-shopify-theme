@@ -1,7 +1,7 @@
 /* Pattern footer polish (sections/footer.liquid, loaded after Dawn's footer styles): the bottom
    area only. Same container as the other sections; even 2.4rem spacing between the country
    selector, payment icons, copyright and policy links; stacked and left-aligned on mobile.
-   Payment icons small, greyscale, 60% opacity. The country / language selector restyled as a
+   Payment icons small, greyscale, 75% opacity. The country / language selector restyled as a
    hairline box in DM Mono with a subtle chevron; its dropdown uses the same hairline.
    Values from snippets/pattern-tokens.liquid. Settings, links and copy are Dawn's, unchanged. */
 
@@ -81,7 +81,7 @@
   text-align: left;
 }
 
-/* ===== Payment icons: ~22px high, greyscale, 60% opacity, one wrapping row ===== */
+/* ===== Payment icons: ~22px high, greyscale, 75% opacity, one wrapping row ===== */
 .footer .list-payment {
   justify-content: flex-end;
   gap: 0.8rem;
@@ -97,7 +97,7 @@
   width: auto;
   height: 2.2rem;
   filter: grayscale(1);
-  opacity: 0.6;
+  opacity: 0.75;
 }
 
 /* ===== Country / language selector ===== */
@@ -258,4 +258,62 @@
   .footer .policies li::before {
     display: none;
   }
+}
+
+/* ===== Dark footer (Footer style: Dark) =====
+   The dark stripe with paper text; hairlines in paper at low opacity. No border at the top, so a
+   dark Visit block above joins it as one block (and paper content above needs none). The country
+   dropdown keeps its paper panel and ink text. */
+.footer.pattern-footer--dark {
+  --footer-line: color-mix(in srgb, var(--pattern-paper) 14%, transparent);
+  background-color: var(--pattern-stripe-dark-a);
+  color: var(--pattern-paper);
+}
+
+.footer.pattern-footer--dark .footer__content-bottom {
+  border-top: 0;
+}
+
+.footer.pattern-footer--dark .footer__copyright,
+.footer.pattern-footer--dark .footer__localization h2 {
+  color: var(--pattern-paper-dim);
+}
+
+.footer.pattern-footer--dark .copyright__content a {
+  color: var(--pattern-paper);
+}
+
+.footer.pattern-footer--dark .disclosure__button.localization-form__select {
+  border-color: color-mix(in srgb, var(--pattern-paper) 35%, transparent);
+  background: transparent;
+  color: var(--pattern-paper);
+}
+
+.footer.pattern-footer--dark .disclosure__button.localization-form__select:hover {
+  border-color: color-mix(in srgb, var(--pattern-paper) 75%, transparent);
+}
+
+.footer.pattern-footer--dark .disclosure__button.localization-form__select:focus-visible {
+  outline-color: var(--pattern-paper);
+}
+
+.footer.pattern-footer--dark .localization-form__select .icon-caret {
+  color: var(--pattern-paper-dim);
+}
+
+.footer.pattern-footer--dark .disclosure__list-wrapper {
+  color: var(--pattern-ink);
+}
+
+.footer.pattern-footer--dark .footer :is(a, button):focus-visible,
+.footer.pattern-footer--dark a:focus-visible {
+  outline: 0.2rem solid var(--pattern-paper);
+  outline-offset: 0.3rem;
+  box-shadow: none;
+}
+
+/* Joining a dark Visit block (the last section on the page): no extra space between them */
+body:has(#MainContent > .shopify-section:last-child .pattern-visit) .footer.pattern-footer--dark {
+  margin-top: 0;
+  padding-top: 0;
 }

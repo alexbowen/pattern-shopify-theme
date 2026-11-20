@@ -62,6 +62,9 @@
     --on-accent-hover: {{ on_accent_hover }};
     --accent-text: {{ accent_text }};
     --accent-ring: color-mix(in srgb, var(--accent) 25%, transparent);
+    /* Accent-coloured text on the dark stripe (the dark header's current page): 5.0:1 against
+       --pattern-stripe-dark-a. Fixed, so it doesn't follow the accent setting. */
+    --accent-on-dark: #F07A45;
 
     /* Pattern names for the same values */
     --pattern-accent: var(--accent);
