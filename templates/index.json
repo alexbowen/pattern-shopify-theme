@@ -230,7 +230,7 @@
                 "label": "Record of the week",
                 "layout": "horizontal",
                 "size": "standard",
-                "background": "clay",
+                "background": "dark",
                 "show_genres": true,
                 "show_description": true,
                 "description_lines": 3,
@@ -250,7 +250,7 @@
         "col_b": {
           "type": "pattern-column",
           "settings": {
-            "background": "stripes-dark",
+            "background": "paper",
             "overlay_opacity": 50,
             "padding": "medium",
             "align": "center",
@@ -261,9 +261,9 @@
               "type": "pattern-heading",
               "settings": {
                 "eyebrow": "In the shop",
-                "heading": "New this week",
-                "heading_accent": "",
-                "heading_end": "",
+                "heading": "New",
+                "heading_accent": "this",
+                "heading_end": "week",
                 "size": "large",
                 "tag": "h2"
               },
@@ -279,42 +279,13 @@
         "col_a",
         "col_b"
       ],
-      "disabled": true,
       "settings": {
-        "ratio": "60-40",
+        "ratio": "50-50",
         "width": "full",
         "gap": "none",
         "mobile_order": "normal",
         "padding_top": 0,
         "padding_bottom": 0
-      }
-    },
-    "apps_columns_feature_demo": {
-      "type": "apps",
-      "blocks": {
-        "audioly_columns_feature_play_buttons": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "weekly-electronic",
-            "productsToShow": 18,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_columns_feature_play_buttons"
-      ],
-      "disabled": true,
-      "settings": {
-        "include_margins": false
       }
     },
     "pattern_new_in_views": {
@@ -428,6 +399,7 @@
       "block_order": [
         "ex_c1"
       ],
+      "disabled": true,
       "name": "Featured record (example) C: dark stripe",
       "settings": {
         "eyebrow": "",
@@ -1232,7 +1204,6 @@
     "pattern_featured_records_demo",
     "apps_featured_records_demo",
     "pattern_columns_feature_demo",
-    "apps_columns_feature_demo",
     "pattern_new_in_views",
     "apps_new_in_views_audioly",
     "featured_record_example_c",
