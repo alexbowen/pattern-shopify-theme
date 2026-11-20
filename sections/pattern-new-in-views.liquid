@@ -41,7 +41,19 @@
       endif
     endif
   endfor
+
+  # Products on mobile (under 750px): the cards past this number are hidden with CSS, so every
+  # card stays in the DOM and Audioly's per-view blocks still match them all.
+  assign mobile_count = section.settings.products_on_mobile | default: 6
+  assign mobile_hide_from = mobile_count | plus: 1
 -%}
+{%- style -%}
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ section.id }} .pattern-new-in-views__grid > .grid__item:nth-child(n + {{ mobile_hide_from }}) {
+      display: none;
+    }
+  }
+{%- endstyle -%}
 <pattern-new-in-views
   class="pattern-section pattern-new-in-views pattern-new-in-views-collection{% if section.settings.container_width == 'wide' %} pattern-new-in-views--wide{% endif %}"
   data-section-id="{{ section.id }}"
@@ -334,7 +346,8 @@
     }
   }
 
-  @media screen and (max-width: 560px) {
+  /* Under 750px: two columns ("Products on mobile" sets how many show, above) */
+  @media screen and (max-width: 749px) {
     .pattern-new-in-views .pattern-new-in-views__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 3.2rem 1.2rem;
@@ -451,6 +464,16 @@
       "step": 1,
       "label": "Products per view",
       "default": 8
+    },
+    {
+      "type": "range",
+      "id": "products_on_mobile",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "label": "Products on mobile",
+      "info": "Under 750px wide, in two columns. Can't show more than Products per view.",
+      "default": 6
     },
     {
       "type": "select",

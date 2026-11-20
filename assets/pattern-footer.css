@@ -1,0 +1,261 @@
+/* Pattern footer polish (sections/footer.liquid, loaded after Dawn's footer styles): the bottom
+   area only. Same container as the other sections; even 2.4rem spacing between the country
+   selector, payment icons, copyright and policy links; stacked and left-aligned on mobile.
+   Payment icons small, greyscale, 60% opacity. The country / language selector restyled as a
+   hairline box in DM Mono with a subtle chevron; its dropdown uses the same hairline.
+   Values from snippets/pattern-tokens.liquid. Settings, links and copy are Dawn's, unchanged. */
+
+/* ===== Layout ===== */
+.footer .footer__content-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+  padding-top: 3.2rem;
+  border-top: 0.1rem solid var(--pattern-hairline);
+}
+
+.footer .footer__content-bottom-wrapper.page-width {
+  box-sizing: border-box;
+  max-width: var(--pattern-wrap-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--pattern-gutter);
+  padding-right: var(--pattern-gutter);
+}
+
+/* Row 1: selector(s) left, payment icons right */
+.footer .footer__content-bottom-wrapper:first-child {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2.4rem;
+}
+
+.footer .footer__content-bottom-wrapper:first-child:has(.footer__localization:empty) {
+  justify-content: flex-end;
+}
+
+.footer .footer__column {
+  width: auto;
+}
+
+.footer .footer__localization {
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 1.6rem 2.4rem;
+  padding: 0;
+}
+
+.footer .footer__localization localization-form {
+  display: block;
+}
+
+.footer .footer__localization .localization-form {
+  margin: 0;
+  padding: 0;
+}
+
+/* margin-left: auto keeps the icons on the right edge when they wrap below the selector */
+.footer .footer__column--info {
+  align-items: flex-end;
+  margin-left: auto;
+  padding: 0;
+}
+
+.footer .footer__payment {
+  margin: 0;
+}
+
+/* Row 2: copyright, powered by and policy links on one line, left-aligned */
+.footer .footer__content-bottom-wrapper + .footer__content-bottom-wrapper {
+  justify-content: flex-start;
+}
+
+.footer .footer__copyright {
+  margin: 0;
+  text-align: left;
+  color: var(--pattern-muted);
+}
+
+.footer .footer__content-bottom-wrapper:not(.footer__content-bottom-wrapper--center) .footer__copyright {
+  text-align: left;
+}
+
+/* ===== Payment icons: ~22px high, greyscale, 60% opacity, one wrapping row ===== */
+.footer .list-payment {
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+}
+
+.footer .list-payment__item {
+  padding: 0;
+}
+
+.footer .list-payment__item .icon {
+  width: auto;
+  height: 2.2rem;
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
+/* ===== Country / language selector ===== */
+.footer .footer__localization h2 {
+  margin: 0 0 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pattern-muted);
+}
+
+.footer .disclosure__button.localization-form__select {
+  box-sizing: border-box;
+  width: auto;
+  min-width: 0;
+  height: auto;
+  min-height: 4.4rem;
+  margin: 0;
+  padding: 0 4rem 0 1.4rem;
+  border: 0.1rem solid var(--pattern-hairline);
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--pattern-paper);
+  color: var(--pattern-ink);
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+  transition: border-color 0.15s ease;
+}
+
+/* Dawn draws its input box with these */
+.footer .disclosure__button.localization-form__select::before,
+.footer .disclosure__button.localization-form__select::after {
+  display: none;
+}
+
+.footer .disclosure__button.localization-form__select:hover {
+  border-color: color-mix(in srgb, var(--pattern-ink) 45%, transparent);
+}
+
+.footer .disclosure__button.localization-form__select:focus-visible {
+  outline: 0.2rem solid var(--pattern-ink);
+  outline-offset: 0.3rem;
+  box-shadow: none;
+}
+
+.footer .localization-form__select .icon-caret {
+  right: 1.4rem;
+  top: 50%;
+  width: 1rem;
+  height: 0.6rem;
+  transform: translateY(-50%);
+  color: var(--pattern-muted);
+}
+
+.footer .disclosure__button[aria-expanded='true'] .icon-caret {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Dropdown: the same hairline, no shadow or radius */
+.footer .disclosure__list-wrapper {
+  border: 0.1rem solid var(--pattern-hairline);
+  border-radius: 0;
+  box-shadow: none;
+  background-color: var(--pattern-paper);
+}
+
+.footer .disclosure__link {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+}
+
+.footer .country-filter .field::before,
+.footer .country-filter .field::after {
+  display: none;
+}
+
+.footer .country-filter .field__input {
+  border: 0.1rem solid var(--pattern-hairline);
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--pattern-paper);
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+}
+
+.footer .country-filter .field__label {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+}
+
+.footer .country-filter .field__input:focus,
+.footer .country-filter .field__input:focus-visible {
+  border-color: var(--pattern-ink);
+  outline: none;
+  box-shadow: none;
+}
+
+.footer .country-selector__list .popular-countries {
+  border-bottom-color: var(--pattern-hairline);
+}
+
+/* ===== Mobile: everything stacked and left-aligned, 2.4rem apart ===== */
+@media screen and (max-width: 749px) {
+  .footer .footer__content-bottom {
+    padding-top: 3.2rem;
+    row-gap: 2.4rem;
+  }
+
+  .footer .footer__content-bottom-wrapper,
+  .footer .footer__content-bottom-wrapper:first-child {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    row-gap: 2.4rem;
+  }
+
+  .footer .footer__column,
+  .footer .footer__column--info {
+    width: 100%;
+    margin-left: 0;
+    align-items: flex-start;
+  }
+
+  .footer .footer__localization:empty + .footer__column {
+    padding-top: 0;
+  }
+
+  .footer .list-payment {
+    justify-content: flex-start;
+  }
+
+  /* The bottom sheet Dawn opens on mobile: a hairline top edge instead of nothing */
+  .footer .disclosure__list-wrapper.country-selector {
+    border: 0;
+    border-top: 0.1rem solid var(--pattern-hairline);
+  }
+
+  /* Copyright, powered by and policies: one line each group, links wrapping */
+  .footer .footer__copyright {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+
+  .footer .policies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.6rem;
+    margin: 0;
+  }
+
+  .footer .policies li::before {
+    display: none;
+  }
+}
