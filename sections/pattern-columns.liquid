@@ -62,6 +62,89 @@
       flex-direction: column-reverse;
     }
   }
+
+  /* ===== Card rows =====
+     A row where every column is a paper column holding only Featured record blocks: the paper
+     column draws no panel of its own, so the record card is the panel. The row then sits in the
+     shared container (same left/right edges as other sections, whatever the Width setting), with
+     24px between cards; the columns keep their top/bottom padding but drop their side padding.
+     Each card fills its column's height and its View record button sits at the bottom, so
+     buttons line up across the row. A single card fills the container. Rows with any other
+     column (a coloured band, text, a listen list) are unchanged. The long selector below is
+     that test: has a featured record, no non-paper column, nothing but featured records. */
+  .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: var(--pattern-wrap-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--pattern-gutter);
+    padding-right: var(--pattern-gutter);
+    gap: 2.4rem;
+  }
+
+  .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))):has(> .pattern-column:only-child) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) .pattern-column__inner {
+    justify-content: flex-start;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Fill the column's height: content > block > card wrap > card */
+  .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) .pattern-column__content,
+  .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) .pattern-featured-record,
+  .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) .pattern-feature-wrap {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) .pattern-feature {
+    flex: 1 1 auto;
+  }
+
+  /* The cover keeps its size; the text column takes the extra height, button at the bottom */
+  .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) .pattern-feature__cover {
+    align-self: start;
+  }
+
+  .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) .pattern-feature__body {
+    align-self: stretch;
+  }
+
+  .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) .pattern-feature__actions {
+    margin-top: auto;
+    padding-top: 0.4rem;
+  }
+
+  /* Stacked cards (vertical, or horizontal in a narrow column): the extra height goes to the
+     text row, not the cover row */
+  .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) .pattern-feature--vertical {
+    grid-template-rows: auto 1fr;
+  }
+
+  @container (max-width: 560px) {
+    .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) .pattern-feature--horizontal {
+      grid-template-rows: auto 1fr;
+    }
+  }
+
+  /* Stacked on mobile: 24px between cards (the gap) instead of two columns' worth of padding.
+     The outer cards keep their top / bottom padding, in either mobile order. */
+  @media screen and (max-width: 749px) {
+    .pattern-columns--mobile-normal .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) > .pattern-column:not(:first-child) .pattern-column__inner,
+    .pattern-columns--mobile-reverse .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) > .pattern-column:not(:last-child) .pattern-column__inner {
+      padding-top: 0;
+    }
+
+    .pattern-columns--mobile-normal .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) > .pattern-column:not(:last-child) .pattern-column__inner,
+    .pattern-columns--mobile-reverse .pattern-columns__grid:has(.pattern-featured-record):not(:has(.pattern-column__inner:not(.pattern-column--bg-paper))):not(:has(.pattern-column__content > :not(.pattern-featured-record))) > .pattern-column:not(:first-child) .pattern-column__inner {
+      padding-bottom: 0;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
