@@ -1132,7 +1132,7 @@
           "settings": {
             "image": "shopify://shop_images/Ni5qcGVn_c1987202-a066-4fb4-9a4d-3315ee71f5f6.jpg",
             "tag": "Mix",
-            "title": "[Mix title]",
+            "title": "Don Cherry",
             "blurb": "[One line on the mix and who made it.]",
             "link": ""
           }
@@ -1152,7 +1152,7 @@
           "settings": {
             "image": "shopify://shop_images/11_-_jazzy_sport_music_shop_tokyo_2.jpg",
             "tag": "Staff pick",
-            "title": "[Artist] — [Release title]",
+            "title": "Jazzy Sport",
             "blurb": "[One line from whoever picked it.]",
             "link": ""
           }
