@@ -210,6 +210,91 @@
         "include_margins": false
       }
     },
+    "pattern_new_in_views": {
+      "type": "pattern-new-in-views",
+      "blocks": {
+        "view_electronic": {
+          "type": "view",
+          "settings": {
+            "label": "Electronic",
+            "collection": "new-in-electronic",
+            "see_all_label": "See all"
+          }
+        },
+        "view_flipside": {
+          "type": "view",
+          "settings": {
+            "label": "Flipside",
+            "collection": "new-in-flipside",
+            "see_all_label": "See all"
+          }
+        },
+        "view_popular": {
+          "type": "view",
+          "settings": {
+            "label": "Popular",
+            "collection": "new-in-popular",
+            "see_all_label": "See all"
+          }
+        }
+      },
+      "block_order": [
+        "view_electronic",
+        "view_flipside",
+        "view_popular"
+      ],
+      "settings": {
+        "heading": "New in",
+        "products_to_show": 12,
+        "container_width": "standard",
+        "image_ratio": "square"
+      }
+    },
+    "apps_new_in_views_audioly": {
+      "type": "apps",
+      "blocks": {
+        "audioly_new_in_electronic": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "new-in-electronic",
+            "productsToShow": 12,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        },
+        "audioly_new_in_flipside": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "new-in-flipside",
+            "productsToShow": 12,
+            "size": 56,
+            "position": "center",
+            "padding": 0,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 56,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 0,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        }
+      },
+      "block_order": [
+        "audioly_new_in_electronic",
+        "audioly_new_in_flipside"
+      ],
+      "name": "New in: Audioly play buttons (one block per view)",
+      "settings": {
+        "include_margins": false
+      }
+    },
     "pattern_columns_feature_demo": {
       "type": "pattern-columns",
       "blocks": {
@@ -294,91 +379,6 @@
         "mobile_order": "normal",
         "padding_top": 0,
         "padding_bottom": 0
-      }
-    },
-    "pattern_new_in_views": {
-      "type": "pattern-new-in-views",
-      "blocks": {
-        "view_electronic": {
-          "type": "view",
-          "settings": {
-            "label": "Electronic",
-            "collection": "new-in-electronic",
-            "see_all_label": "See all"
-          }
-        },
-        "view_flipside": {
-          "type": "view",
-          "settings": {
-            "label": "Flipside",
-            "collection": "new-in-flipside",
-            "see_all_label": "See all"
-          }
-        },
-        "view_popular": {
-          "type": "view",
-          "settings": {
-            "label": "Popular",
-            "collection": "new-in-popular",
-            "see_all_label": "See all"
-          }
-        }
-      },
-      "block_order": [
-        "view_electronic",
-        "view_flipside",
-        "view_popular"
-      ],
-      "settings": {
-        "heading": "New in",
-        "products_to_show": 12,
-        "container_width": "standard",
-        "image_ratio": "square"
-      }
-    },
-    "apps_new_in_views_audioly": {
-      "type": "apps",
-      "blocks": {
-        "audioly_new_in_electronic": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "new-in-electronic",
-            "productsToShow": 12,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        },
-        "audioly_new_in_flipside": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "new-in-flipside",
-            "productsToShow": 12,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_new_in_electronic",
-        "audioly_new_in_flipside"
-      ],
-      "name": "New in: Audioly play buttons (one block per view)",
-      "settings": {
-        "include_margins": false
       }
     },
     "featured_record_example_c": {
@@ -612,9 +612,9 @@
           "type": "service",
           "settings": {
             "icon": "parcel",
-            "label": "Postage · PT & ES",
-            "highlight": "One flat rate",
-            "text": "Flat-rate postage to Portugal and Spain for up to 4 items.",
+            "label": "POSTAGE · EU & UK",
+            "highlight": "Flat rate in PT & ES",
+            "text": "Flat-rate postage to Portugal and Spain for up to 4 items. We also ship across the EU and the UK, with rates shown at checkout.",
             "link": "/policies/shipping-policy",
             "link_label": "Shipping details"
           }
