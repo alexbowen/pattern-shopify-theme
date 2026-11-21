@@ -208,6 +208,28 @@
   color: var(--pattern-muted);
 }
 
+.pattern-article-card--excerpt-2 .pattern-article-card__excerpt {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+/* First tag as a category marker: ink mono label with the small accent square */
+.pattern-article-card__marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0;
+  color: var(--pattern-ink);
+}
+
+.pattern-article-card__marker::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 0.8rem;
+  height: 0.8rem;
+  background-color: var(--pattern-accent);
+}
+
 .pattern-article-card__read {
   margin-top: auto;
   align-self: flex-start;

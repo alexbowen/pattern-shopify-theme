@@ -1,85 +1,151 @@
 {%- comment -%}
-  Pattern editorial row ("From the shop"): heading with an italic accent word, an "all stories"
-  link, and up to 4 story blocks (image, tag, title, blurb, link). Images fall back to the striped
-  placeholder. The title is the story's link; the image repeats it for pointer users only.
+  Pattern blog posts ("From the shop"). An ordinary section for any template: optional mono label,
+  a display heading (optional italic accent word) with a "See all" link, then a row of cards in
+  the blog listing's style (snippets/pattern-article-card.liquid, styles in assets/pattern-blog.css).
+
+  Content:
+  - Blog posts (default): the latest posts from the chosen blog (falls back to the "news" blog),
+    2–6 of them. Fewer posts show what exists; none hides the section (a note shows in the editor).
+  - Stories: hand-made Story blocks (image, tag, title, blurb, link), the section's original
+    content; the homepage uses these. Same card look.
+
+  Desktop columns 2 / 3 / 4, two on tablet, one on mobile (or a horizontal swipe row). Background
+  Paper / Sand / Clay / Ink / Dark stripe; on Ink and Dark stripe the text, hairlines and card meta
+  switch to paper colours. Container Standard or Wide.
 {%- endcomment -%}
-<section class="pattern-section pattern-editorial" aria-labelledby="PatternEditorialHeading-{{ section.id }}">
-  <div class="pattern-wrap pattern-editorial__inner">
-    <div class="pattern-editorial__head">
-      <h2 class="pattern-display pattern-editorial__heading" id="PatternEditorialHeading-{{ section.id }}">
-        {%- render 'pattern-heading-text',
-          start: section.settings.heading,
-          accent: section.settings.heading_accent,
-          end: section.settings.heading_end
-        -%}
-      </h2>
-      {%- if section.settings.link_label != blank and section.settings.link != blank -%}
-        <a href="{{ section.settings.link }}" class="pattern-link">
-          {{- section.settings.link_label | escape -}}
-          {% render 'pattern-arrow' %}
-        </a>
+{{ 'pattern-blog.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign source = section.settings.source | default: 'blog'
+  assign posts_blog = section.settings.blog
+  if posts_blog == blank
+    assign posts_blog = blogs['news']
+  endif
+
+  assign card_count = 0
+  if source == 'stories'
+    assign card_count = section.blocks.size
+  elsif posts_blog != blank
+    assign card_count = posts_blog.articles_count | at_most: section.settings.posts_count
+  endif
+
+  assign see_all_url = section.settings.link
+  if see_all_url == blank and source == 'blog' and posts_blog != blank
+    assign see_all_url = posts_blog.url
+  endif
+
+  assign tag_style = 'none'
+  if section.settings.show_tag
+    assign tag_style = 'marker'
+  endif
+
+  assign background = section.settings.background | default: 'paper'
+  assign is_dark = false
+  if background == 'ink' or background == 'stripes-dark'
+    assign is_dark = true
+  endif
+
+  case section.settings.columns
+    when '2'
+      assign card_sizes = '(min-width: 990px) 50vw, (min-width: 750px) 50vw, 100vw'
+    when '4'
+      assign card_sizes = '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw'
+    else
+      assign card_sizes = '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw'
+  endcase
+-%}
+
+{%- if card_count > 0 or request.design_mode -%}
+  <section
+    class="pattern-section pattern-blog-posts pattern-blog-posts--{{ background }}{% if background == 'stripes-dark' %} pattern-stripe-dark{% endif %}{% if is_dark %} pattern-blog-posts--dark{% endif %}"
+    aria-labelledby="PatternBlogPostsHeading-{{ section.id }}"
+  >
+    <div class="pattern-wrap pattern-blog-posts__inner{% if section.settings.container_width == 'wide' %} pattern-blog-posts__inner--wide{% endif %}">
+      <div class="pattern-blog-posts__head">
+        <div class="pattern-blog-posts__titles">
+          {%- if section.settings.label != blank -%}
+            <p class="pattern-label pattern-blog-posts__label">{{ section.settings.label | escape }}</p>
+          {%- endif -%}
+          <h2 class="pattern-display pattern-blog-posts__heading" id="PatternBlogPostsHeading-{{ section.id }}">
+            {%- render 'pattern-heading-text',
+              start: section.settings.heading,
+              accent: section.settings.heading_accent,
+              end: section.settings.heading_end
+            -%}
+          </h2>
+        </div>
+        {%- if section.settings.link_label != blank and see_all_url != blank and card_count > 0 -%}
+          <a href="{{ see_all_url }}" class="pattern-link pattern-blog-posts__all">
+            {{- section.settings.link_label | escape -}}
+            {% render 'pattern-arrow' %}
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- if card_count > 0 -%}
+        <ul
+          class="pattern-blog-posts__grid pattern-blog-posts__grid--cols-{{ section.settings.columns }}{% if section.settings.mobile_layout == 'swipe' %} pattern-blog-posts__grid--swipe{% endif %}"
+          role="list"
+        >
+          {%- if source == 'stories' -%}
+            {%- for block in section.blocks -%}
+              <li class="pattern-blog-posts__item" {{ block.shopify_attributes }}>
+                {%- render 'pattern-article-card',
+                  title: block.settings.title,
+                  url: block.settings.link,
+                  image: block.settings.image,
+                  tag: block.settings.tag,
+                  excerpt: block.settings.blurb,
+                  tag_style: tag_style,
+                  show_excerpt: section.settings.show_excerpt,
+                  excerpt_lines: 2,
+                  heading_tag: 'h3',
+                  sizes: card_sizes
+                -%}
+              </li>
+            {%- endfor -%}
+          {%- else -%}
+            {%- for article in posts_blog.articles limit: section.settings.posts_count -%}
+              <li class="pattern-blog-posts__item">
+                {%- render 'pattern-article-card',
+                  article: article,
+                  blog_title: posts_blog.title,
+                  show_date: section.settings.show_date,
+                  tag_style: tag_style,
+                  show_excerpt: section.settings.show_excerpt,
+                  excerpt_lines: 2,
+                  heading_tag: 'h3',
+                  sizes: card_sizes
+                -%}
+              </li>
+            {%- endfor -%}
+          {%- endif -%}
+        </ul>
+      {%- else -%}
+        <p class="pattern-blog-posts__empty">
+          {%- if source == 'stories' -%}
+            Add Story blocks, or set Content to Blog posts. This note only shows in the theme editor.
+          {%- else -%}
+            The chosen blog has no posts yet, so this section is hidden on the live site. This note only shows in the theme editor.
+          {%- endif -%}
+        </p>
       {%- endif -%}
     </div>
-
-    {%- if section.blocks.size > 0 -%}
-      <ul class="pattern-editorial__grid" role="list">
-        {%- for block in section.blocks -%}
-          {%- assign story_link = block.settings.link -%}
-          <li class="pattern-editorial__story" {{ block.shopify_attributes }}>
-            {%- capture story_media -%}
-              <div class="pattern-editorial__media{% if block.settings.image == blank %} pattern-placeholder{% endif %}">
-                {%- if block.settings.image != blank -%}
-                  {%- liquid
-                    assign focal_point = block.settings.image.presentation.focal_point | default: 'center'
-                    assign image_style = 'object-position: ' | append: focal_point | append: ';'
-                  -%}
-                  {{
-                    block.settings.image
-                    | image_url: width: 1200
-                    | image_tag:
-                      loading: 'lazy',
-                      widths: '375, 550, 750, 900, 1200',
-                      sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw',
-                      alt: block.settings.image.alt,
-                      class: 'pattern-editorial__image',
-                      style: image_style
-                  }}
-                {%- endif -%}
-              </div>
-            {%- endcapture -%}
-
-            {%- if story_link != blank -%}
-              <a href="{{ story_link }}" class="pattern-editorial__media-link" tabindex="-1" aria-hidden="true">
-                {{- story_media -}}
-              </a>
-            {%- else -%}
-              {{- story_media -}}
-            {%- endif -%}
-
-            {%- if block.settings.tag != blank -%}
-              <p class="pattern-label pattern-editorial__tag">{{ block.settings.tag | escape }}</p>
-            {%- endif -%}
-            {%- if block.settings.title != blank -%}
-              <h3 class="pattern-editorial__title">
-                {%- if story_link != blank -%}
-                  <a href="{{ story_link }}" class="pattern-editorial__title-link">{{ block.settings.title | escape }}</a>
-                {%- else -%}
-                  {{- block.settings.title | escape -}}
-                {%- endif -%}
-              </h3>
-            {%- endif -%}
-            {%- if block.settings.blurb != blank -%}
-              <p class="pattern-editorial__blurb">{{ block.settings.blurb | escape }}</p>
-            {%- endif -%}
-          </li>
-        {%- endfor -%}
-      </ul>
-    {%- endif -%}
-  </div>
-</section>
+  </section>
+{%- endif -%}
 
 {% stylesheet %}
-  .pattern-editorial__inner {
+  .pattern-blog-posts {
+    color: var(--pattern-ink);
+    background-color: var(--pattern-paper);
+  }
+
+  .pattern-blog-posts--sand { background-color: var(--pattern-sand); }
+  .pattern-blog-posts--clay { background-color: var(--pattern-clay); }
+  .pattern-blog-posts--ink { background-color: var(--pattern-ink); }
+  .pattern-blog-posts--stripes-dark { background-color: var(--pattern-stripe-dark-a); }
+
+  .pattern-blog-posts__inner {
     display: flex;
     flex-direction: column;
     gap: 4rem;
@@ -87,131 +153,164 @@
     padding-bottom: var(--pattern-section-space);
   }
 
-  .pattern-editorial__head {
+  .pattern-blog-posts__inner--wide {
+    max-width: 168rem;
+  }
+
+  .pattern-blog-posts__head {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: flex-end;
-    gap: 1.2rem;
+    gap: 1.2rem 2.4rem;
   }
 
-  .pattern-editorial__heading {
+  .pattern-blog-posts__titles {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    min-width: 0;
+  }
+
+  .pattern-blog-posts__label {
+    color: var(--pattern-muted);
+  }
+
+  .pattern-blog-posts__heading {
     font-size: clamp(4rem, 5vw, 7.2rem);
     line-height: 1;
     letter-spacing: -0.04em;
+    overflow-wrap: break-word;
   }
 
-  .pattern-editorial__grid {
+  .pattern-blog-posts__all:focus-visible {
+    outline: 0.2rem solid currentColor;
+    outline-offset: 0.3rem;
+  }
+
+  /* Grid: desktop 2 / 3 / 4, tablet 2, mobile 1 (or a swipe row) */
+  .pattern-blog-posts__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(30rem, 100%), 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: 4rem 2.4rem;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .pattern-editorial__story {
-    display: flex;
-    flex-direction: column;
-    gap: 1.4rem;
+  .pattern-blog-posts__item {
     min-width: 0;
   }
 
-  .pattern-editorial__media-link {
-    display: block;
+  @media screen and (min-width: 750px) {
+    .pattern-blog-posts__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
-  .pattern-editorial__media {
-    position: relative;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
+  @media screen and (min-width: 990px) {
+    .pattern-blog-posts__grid--cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pattern-blog-posts__grid--cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   }
 
-  .pattern-editorial__image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
+  @media screen and (max-width: 749px) {
+    .pattern-blog-posts__grid--swipe {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 82%;
+      gap: 1.6rem;
+      margin-left: calc(var(--pattern-gutter) * -1);
+      margin-right: calc(var(--pattern-gutter) * -1);
+      padding: 0.6rem var(--pattern-gutter) 0.8rem;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-left: var(--pattern-gutter);
+      scrollbar-width: none;
+    }
+
+    .pattern-blog-posts__grid--swipe::-webkit-scrollbar {
+      display: none;
+    }
+
+    .pattern-blog-posts__grid--swipe > .pattern-blog-posts__item {
+      scroll-snap-align: start;
+    }
   }
 
-  .pattern-editorial__story:hover .pattern-editorial__image {
-    transform: scale(1.03);
-  }
-
-  /* Tag: charcoal text with a small accent square (accent text on paper would be too faint) */
-  .pattern-editorial__tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.8rem;
-    color: var(--pattern-ink);
-  }
-
-  .pattern-editorial__tag::before {
-    content: '';
-    flex: 0 0 auto;
-    width: 0.8rem;
-    height: 0.8rem;
-    background-color: var(--pattern-accent);
-  }
-
-  .pattern-editorial__title {
+  .pattern-blog-posts__empty {
     margin: 0;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 2.6rem;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    color: inherit;
-  }
-
-  .pattern-editorial__title-link {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .pattern-editorial__story:hover .pattern-editorial__title-link,
-  .pattern-editorial__title-link:focus-visible {
-    text-decoration: underline;
-    text-underline-offset: 0.4rem;
-  }
-
-  .pattern-editorial__blurb {
-    margin: 0;
-    font-size: 1.6rem;
-    line-height: 1.5;
+    padding: 2.4rem;
+    border: 0.1rem dashed var(--pattern-hairline);
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
     color: var(--pattern-muted);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .pattern-editorial__image {
-      transition: none;
-    }
+  /* ===== Ink / Dark stripe: paper text, hairlines and card meta ===== */
+  .pattern-blog-posts--dark,
+  .pattern-blog-posts--dark .pattern-article-card,
+  .pattern-blog-posts--dark .pattern-article-card__title,
+  .pattern-blog-posts--dark .pattern-article-card__marker {
+    color: var(--pattern-paper);
+  }
 
-    .pattern-editorial__story:hover .pattern-editorial__image {
-      transform: none;
-    }
+  .pattern-blog-posts--dark .pattern-blog-posts__label,
+  .pattern-blog-posts--dark .pattern-article-card__meta,
+  .pattern-blog-posts--dark .pattern-article-card__excerpt,
+  .pattern-blog-posts--dark .pattern-blog-posts__empty {
+    color: var(--pattern-paper-dim);
+  }
+
+  .pattern-blog-posts--dark .pattern-article-card__cover::after {
+    box-shadow: inset 0 0 0 0.1rem var(--pattern-hairline-on-dark);
+  }
+
+  .pattern-blog-posts--dark .pattern-article-card:is(:hover, :has(.pattern-article-card__link:focus-visible)) .pattern-article-card__cover::after {
+    box-shadow: inset 0 0 0 0.1rem color-mix(in srgb, var(--pattern-paper) 60%, transparent);
+  }
+
+  .pattern-blog-posts--dark .pattern-article-card:has(.pattern-article-card__link:focus-visible) {
+    outline-color: var(--pattern-paper);
+  }
+
+  .pattern-blog-posts--dark .pattern-blog-posts__empty {
+    border-color: var(--pattern-hairline-on-dark);
+  }
+
+  /* No image on a dark ground: the stripe placeholder gets a visible edge */
+  .pattern-blog-posts--dark .pattern-article-card__cover.pattern-stripe-dark {
+    background-color: var(--pattern-stripe-dark-b);
   }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "Pattern editorial row",
+  "name": "Pattern blog posts",
   "tag": "div",
-  "max_blocks": 4,
+  "class": "pattern-blog-posts-section",
+  "max_blocks": 6,
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
   "settings": [
     {
       "type": "text",
+      "id": "label",
+      "label": "Label above the heading",
+      "info": "Small mono text. Optional."
+    },
+    {
+      "type": "text",
       "id": "heading",
-      "label": "Heading: before the accent word",
+      "label": "Heading",
       "default": "From the shop"
     },
     {
       "type": "text",
       "id": "heading_accent",
       "label": "Heading: accent word (italic)",
-      "info": "Optional."
+      "info": "Optional, after the heading."
     },
     {
       "type": "text",
@@ -221,14 +320,113 @@
     {
       "type": "text",
       "id": "link_label",
-      "label": "Link label",
-      "default": "All news"
+      "label": "See all link label",
+      "default": "See all",
+      "info": "Leave empty to hide the link."
     },
     {
       "type": "url",
       "id": "link",
-      "label": "Link",
-      "info": "e.g. your blog. The link hides until this is set."
+      "label": "See all link",
+      "info": "Leave empty to link to the blog."
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Show",
+      "options": [
+        { "value": "blog", "label": "Blog posts" },
+        { "value": "stories", "label": "Stories (blocks)" }
+      ],
+      "default": "blog",
+      "info": "Stories are cards you add as blocks, each with its own image, tag, title and link."
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Leave empty for the News blog."
+    },
+    {
+      "type": "range",
+      "id": "posts_count",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "label": "Number of posts",
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tag",
+      "label": "Show first tag as a category marker",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns on desktop",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "3",
+      "info": "Two on tablet."
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile",
+      "options": [
+        { "value": "stacked", "label": "Stacked" },
+        { "value": "swipe", "label": "Swipe row" }
+      ],
+      "default": "stacked"
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        { "value": "paper", "label": "Paper" },
+        { "value": "sand", "label": "Sand" },
+        { "value": "clay", "label": "Clay" },
+        { "value": "ink", "label": "Ink" },
+        { "value": "stripes-dark", "label": "Stripes, dark" }
+      ],
+      "default": "paper"
+    },
+    {
+      "type": "select",
+      "id": "container_width",
+      "label": "Container width",
+      "info": "Wide runs up to ~1680px, as on the collection page's Wide setting.",
+      "options": [
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" }
+      ],
+      "default": "standard"
     }
   ],
   "blocks": [
@@ -237,10 +435,14 @@
       "name": "Story",
       "settings": [
         {
+          "type": "paragraph",
+          "content": "Shown when Show is set to Stories."
+        },
+        {
           "type": "image_picker",
           "id": "image",
           "label": "Image",
-          "info": "Shown at 4:3. Without an image the card shows a striped placeholder."
+          "info": "Without an image the card shows the dark stripe."
         },
         {
           "type": "text",
@@ -271,12 +473,11 @@
   ],
   "presets": [
     {
-      "name": "Pattern editorial row",
-      "blocks": [
-        { "type": "story", "settings": { "tag": "Mix" } },
-        { "type": "story", "settings": { "tag": "Label spotlight" } },
-        { "type": "story", "settings": { "tag": "Staff pick" } }
-      ]
+      "name": "Pattern blog posts",
+      "settings": {
+        "source": "blog",
+        "posts_count": 3
+      }
     }
   ]
 }

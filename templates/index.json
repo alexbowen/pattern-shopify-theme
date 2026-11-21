@@ -1125,6 +1125,7 @@
         "story_pick"
       ],
       "settings": {
+        "source": "stories",
         "heading": "From the shop",
         "heading_accent": "",
         "heading_end": "",

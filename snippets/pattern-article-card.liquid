@@ -14,6 +14,14 @@
   - feature: {Boolean} larger, full-width layout (the blog's "Feature the first post")
   - heading_tag: {String} default 'h2'
   - sizes: {String} image sizes attribute (optional)
+  - tag_style: {String} 'meta' (default): first tag in the meta line; 'marker': first tag as a
+    small mono marker with the accent square above the title; 'none': no tag
+  - show_excerpt: {Boolean} default true
+  - excerpt_lines: {Number} 2 or 3 (default 3)
+  Without an article (hand-made "story" cards in sections/pattern-editorial-row.liquid), pass the
+  fields instead; the card looks the same, and without a url the title isn't a link and there's
+  no "Read":
+  - title, url, image, tag, excerpt
 
   Usage:
   {% render 'pattern-article-card', article: article, blog_title: blog.title %}
@@ -33,16 +41,41 @@
     assign card_sizes = '(min-width: 990px) 60vw, 100vw'
   endif
 
-  assign meta_second = article.tags.first | default: blog_title
+  assign card_tag_style = tag_style | default: 'meta'
+  assign card_show_excerpt = true
+  if show_excerpt == false
+    assign card_show_excerpt = false
+  endif
 
-  assign excerpt = article.excerpt_or_content | strip_html | strip | truncatewords: 40
+  if article
+    assign card_title = article.title
+    assign card_url = article.url
+    assign card_image = article.image
+    assign first_tag = article.tags.first
+    assign excerpt = article.excerpt_or_content | strip_html | strip | truncatewords: 40
+  else
+    assign card_title = title
+    assign card_url = url
+    assign card_image = image
+    assign first_tag = tag
+    assign excerpt = excerpt | strip_html | strip | escape
+    assign card_show_date = false
+  endif
+
+  assign meta_second = ''
+  if card_tag_style == 'meta'
+    assign meta_second = first_tag | default: blog_title
+  endif
+  if card_show_excerpt == false
+    assign excerpt = ''
+  endif
 -%}
-<article class="pattern-article-card{% if feature %} pattern-article-card--feature{% endif %}">
+<article class="pattern-article-card{% if feature %} pattern-article-card--feature{% endif %}{% if excerpt_lines == 2 %} pattern-article-card--excerpt-2{% endif %}">
   {%- if card_show_image -%}
-    <div class="pattern-article-card__cover{% if article.image == blank %} pattern-stripe-dark{% endif %}">
-      {%- if article.image -%}
+    <div class="pattern-article-card__cover{% if card_image == blank %} pattern-stripe-dark{% endif %}">
+      {%- if card_image != blank -%}
         {{
-          article.image
+          card_image
           | image_url: width: 1600
           | image_tag:
             loading: 'lazy',
@@ -56,6 +89,10 @@
   {%- endif -%}
 
   <div class="pattern-article-card__body">
+    {%- if card_tag_style == 'marker' and first_tag != blank -%}
+      <p class="pattern-label pattern-article-card__marker">{{ first_tag | escape }}</p>
+    {%- endif -%}
+    {%- if card_show_date or show_author and article.author != blank or meta_second != blank -%}
     <p class="pattern-label pattern-article-card__meta">
       {%- if card_show_date -%}
         {{- article.published_at | time_tag: format: 'date' -}}
@@ -69,15 +106,24 @@
         <span>{{ meta_second | escape }}</span>
       {%- endif -%}
     </p>
-    <{{ card_tag }} class="pattern-article-card__title">
-      <a href="{{ article.url }}" class="pattern-article-card__link">{{ article.title | escape }}</a>
-    </{{ card_tag }}>
+    {%- endif -%}
+    {%- if card_title != blank -%}
+      <{{ card_tag }} class="pattern-article-card__title">
+        {%- if card_url != blank -%}
+          <a href="{{ card_url }}" class="pattern-article-card__link">{{ card_title | escape }}</a>
+        {%- else -%}
+          {{- card_title | escape -}}
+        {%- endif -%}
+      </{{ card_tag }}>
+    {%- endif -%}
     {%- if excerpt != blank -%}
       <p class="pattern-article-card__excerpt">{{ excerpt }}</p>
     {%- endif -%}
-    <span class="pattern-link pattern-article-card__read" aria-hidden="true">
-      {{- 'blogs.article.pattern_read' | t -}}
-      {% render 'pattern-arrow' %}
-    </span>
+    {%- if card_url != blank -%}
+      <span class="pattern-link pattern-article-card__read" aria-hidden="true">
+        {{- 'blogs.article.pattern_read' | t -}}
+        {% render 'pattern-arrow' %}
+      </span>
+    {%- endif -%}
   </div>
 </article>
