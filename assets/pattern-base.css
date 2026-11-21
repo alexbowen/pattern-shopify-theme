@@ -85,6 +85,36 @@
   color: var(--pattern-ink);
 }
 
+/* Quiet text link (cart Remove / Add a note / View cart, empty-state and 404 secondary links):
+   body text in ink, underline on hover, accent ring on keyboard focus */
+.pattern-text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--pattern-ink);
+  font-family: var(--font-body);
+  font-size: 1.4rem;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--pattern-ink) 35%, transparent);
+  text-decoration-thickness: 0.1rem;
+  text-underline-offset: 0.3rem;
+  cursor: pointer;
+  transition: text-decoration-color 0.12s ease;
+}
+
+.pattern-text-link:hover {
+  text-decoration-color: currentColor;
+}
+
+.pattern-text-link:focus-visible {
+  outline: 0.2rem solid var(--accent);
+  outline-offset: 0.2rem;
+  box-shadow: none;
+}
+
 /* Small mono tag (snippets/pattern-tag.liquid): condition / format on product cards and the
    product page price row. One outlined style for every tag (New, Used, format, Sold out). */
 .pattern-tag {

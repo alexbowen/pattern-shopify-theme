@@ -1,0 +1,302 @@
+/* Pattern light touch for the remaining default pages: the 404 page (sections/main-404.liquid)
+   and Dawn's customer account pages (login, register, reset password, activate, account,
+   addresses, order). Loaded after customer.css; markup unchanged apart from the 404. Same
+   container, display-font heading and form style (hairline inputs on paper, accent button, red
+   errors) as the info pages and contact form in pattern-pages.css. Values from
+   snippets/pattern-tokens.liquid. */
+
+/* ===================================================================== */
+/* 404                                                                    */
+/* ===================================================================== */
+.template-404 #MainContent {
+  background-color: var(--pattern-paper);
+}
+
+.pattern-notfound {
+  box-sizing: border-box;
+  max-width: calc(60rem + var(--pattern-gutter) * 2);
+  margin: 0 auto;
+  padding: clamp(6.4rem, 10vw, 12rem) var(--pattern-gutter) var(--pattern-section-space);
+  text-align: center;
+  color: var(--pattern-ink);
+}
+
+.pattern-notfound__label {
+  margin: 0 0 1.6rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pattern-muted);
+}
+
+.pattern-notfound__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3.6rem, 4.4vw, 5.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--pattern-ink);
+  overflow-wrap: break-word;
+}
+
+.pattern-notfound__text {
+  margin: 1.6rem 0 0;
+  font-size: 1.7rem;
+  line-height: 1.55;
+  color: var(--pattern-muted);
+}
+
+.pattern-notfound__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem 2.8rem;
+  margin-top: 3.2rem;
+}
+
+.pattern-notfound .pattern-button:focus-visible {
+  outline: 0.2rem solid var(--pattern-ink);
+  outline-offset: 0.3rem;
+}
+
+/* ===================================================================== */
+/* Customer account pages                                                 */
+/* ===================================================================== */
+:is(.template-login, .template-register, .template-reset_password, .template-activate_account, .template-account, .template-addresses, .template-order) #MainContent {
+  background-color: var(--pattern-paper);
+}
+
+.customer {
+  /* No token exists for an error colour; the contact form's red, 6.6:1 on paper */
+  --pattern-account-error: #a4262c;
+  --pattern-account-field-line: color-mix(in srgb, var(--pattern-ink) 55%, transparent);
+  color: var(--pattern-ink);
+  font-family: var(--font-body);
+}
+
+/* Login, register, reset, activate: one narrow centred column (~420px), left-aligned text */
+.customer:not(.account):not(.order):not(.addresses) {
+  box-sizing: content-box;
+  max-width: 42rem;
+  padding-left: var(--pattern-gutter);
+  padding-right: var(--pattern-gutter);
+  text-align: left;
+}
+
+/* Account, addresses, order: the shared container */
+.customer:is(.account, .order, .addresses) {
+  box-sizing: border-box;
+  max-width: var(--pattern-wrap-max);
+  padding-left: var(--pattern-gutter);
+  padding-right: var(--pattern-gutter);
+}
+
+/* Headings */
+.customer h1 {
+  margin: 0 0 2.4rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(3.2rem, 3.6vw, 4.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--pattern-ink);
+}
+
+.customer h2:not(.form__message),
+.customer h3:not(.form__message) {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--pattern-ink);
+}
+
+.customer p {
+  color: var(--pattern-muted);
+  line-height: 1.55;
+}
+
+/* Fields: hairline box drawn inside the input (as the contact form) */
+.customer .field::before,
+.customer .field::after {
+  box-shadow: none;
+}
+
+.customer .field__input,
+.customer .field input,
+.customer select,
+.customer .select__select {
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: inset 0 0 0 0.1rem var(--pattern-account-field-line);
+  color: var(--pattern-ink);
+  font-family: var(--font-body);
+  font-size: 1.6rem;
+}
+
+.customer .field input:hover,
+.customer select:hover {
+  box-shadow: inset 0 0 0 0.1rem var(--pattern-ink);
+}
+
+.customer .field input:focus,
+.customer .field input:focus-visible,
+.customer select:focus-visible {
+  outline: 0;
+  box-shadow: inset 0 0 0 0.2rem var(--pattern-ink);
+}
+
+.customer .field label {
+  color: var(--pattern-muted);
+  font-family: var(--font-body);
+}
+
+.customer .field input[aria-invalid='true'] {
+  box-shadow: inset 0 0 0 0.2rem var(--pattern-account-error);
+}
+
+/* Errors and success messages */
+.customer .form__message {
+  align-items: flex-start;
+  color: var(--pattern-account-error);
+  font-size: 1.4rem;
+  line-height: 1.4;
+}
+
+.customer h2.form__message,
+.customer h3.form__message {
+  display: flex;
+  gap: 1rem;
+  margin: 0 0 1.6rem;
+  padding: 1.4rem 1.6rem;
+  border-left: 0.3rem solid var(--pattern-account-error);
+  background-color: var(--pattern-sand);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: 0;
+  color: var(--pattern-account-error);
+}
+
+/* Recover-password success (h3) is good news: ink bar */
+.customer h3.form__message {
+  border-left-color: var(--pattern-ink);
+  color: var(--pattern-ink);
+}
+
+.customer .form__message .svg-wrapper,
+.customer .form__message svg {
+  flex: 0 0 auto;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-top: 0.2rem;
+}
+
+.customer .errors ul,
+.customer form > .errors {
+  margin: 0 0 1.6rem;
+  padding: 1.2rem 1.6rem 1.2rem 3.2rem;
+  border-left: 0.3rem solid var(--pattern-account-error);
+  background-color: var(--pattern-sand);
+  color: var(--pattern-account-error);
+  font-size: 1.4rem;
+  text-align: left;
+}
+
+/* Buttons: submits are the primary accent button; reset / toggle buttons are quiet outlines */
+.customer button {
+  min-height: 5.2rem;
+  padding: 0 3.2rem;
+  border: 0;
+  border-radius: 0;
+  background-color: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.6rem;
+  letter-spacing: 0;
+  box-shadow: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.customer button::before,
+.customer button::after {
+  box-shadow: none;
+}
+
+.customer button:hover {
+  background-color: var(--accent-hover);
+  color: var(--on-accent-hover);
+}
+
+.customer button:focus-visible {
+  outline: 0.2rem solid var(--pattern-ink);
+  outline-offset: 0.3rem;
+  box-shadow: none;
+}
+
+.customer:not(.account):not(.order):not(.addresses) form button {
+  width: 100%;
+}
+
+.customer button[type='reset'],
+.customer button[type='button'],
+.customer button[name='decline'] {
+  background-color: transparent;
+  color: var(--pattern-ink);
+  box-shadow: inset 0 0 0 0.1rem var(--pattern-ink);
+}
+
+.customer button[type='reset']:hover,
+.customer button[type='button']:hover,
+.customer button[name='decline']:hover {
+  background-color: color-mix(in srgb, var(--pattern-ink) 6%, transparent);
+  color: var(--pattern-ink);
+}
+
+/* Links */
+.customer a {
+  color: var(--pattern-ink);
+  text-decoration-thickness: 0.1rem;
+  text-underline-offset: 0.3rem;
+}
+
+.customer a:hover {
+  text-decoration-thickness: 0.2rem;
+}
+
+.customer a:focus-visible {
+  outline: 0.2rem solid var(--accent);
+  outline-offset: 0.2rem;
+  box-shadow: none;
+}
+
+/* Order / account tables: hairlines, mono figures */
+.customer table {
+  border-color: var(--pattern-hairline);
+}
+
+.customer thead th {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pattern-muted);
+}
+
+.customer tbody tr,
+.customer tbody td,
+.customer tfoot td {
+  border-color: var(--pattern-hairline);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .customer button {
+    transition: none;
+  }
+}

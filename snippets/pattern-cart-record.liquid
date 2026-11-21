@@ -1,0 +1,132 @@
+{%- comment -%}
+  Record text for a cart line (cart page and the "added to cart" notification), with the same
+  logic as the product cards (snippets/card-product.liquid):
+  - Artist (display font, bold) and title (body font, muted), split from "Artist - Title" on the
+    first " - "; no artist line when there's no split.
+  - The record label as a small muted DM Mono line (hidden when empty).
+  - A DM Mono meta line: format (with item count, "2LP" / "2×12\" Single") · parent genre.
+  - The condition as the shared outlined tag (snippets/pattern-tag.liquid), when known.
+  Missing parts are left out with no stray separators. Styles: assets/pattern-cart.css.
+
+  Accepts:
+  - product: {Object} the line item's product
+  - url: {String} link for the artist / title (the line item URL)
+  - heading_tag: {String} optional, 'h3' (default) or 'p'
+  - show_tag: {Boolean} optional, default true: render the condition tag here
+  - price: {String} optional formatted unit price, shown before the tag as on the cards
+    ("€18,00 [NEW]")
+  - compare_price: {String} optional formatted original price, struck through before it
+{%- endcomment -%}
+{%- liquid
+  assign record_tag = heading_tag | default: 'h3'
+
+  assign full_title = product.title | strip
+  assign record_artist = ''
+  assign record_title = full_title
+  if full_title contains ' - '
+    assign split_artist = full_title | split: ' - ' | first | strip
+    assign split_prefix = full_title | split: ' - ' | first | append: ' - '
+    assign split_title = full_title | remove_first: split_prefix | strip
+    if split_artist != blank and split_title != blank
+      assign record_artist = split_artist
+      assign record_title = split_title
+    endif
+  endif
+
+  assign record_label = product.metafields.custom.label.value | strip
+
+  assign record_meta = ''
+  assign meta_sep = '|~|'
+  assign record_format = product.metafields.custom.format.value | strip
+  assign item_count = product.metafields.custom.item_count.value | default: 0 | plus: 0
+  if record_format != blank
+    if item_count > 1
+      assign format_key = record_format | downcase
+      if format_key == 'lp'
+        assign record_format = item_count | append: 'LP'
+      else
+        assign record_format = item_count | append: '×' | append: record_format
+      endif
+    endif
+    assign record_meta = record_format
+  endif
+
+  assign parent_genre = ''
+  assign genres = product.metafields.custom.pattern_genre.value
+  for genre in genres
+    if genre.parent == blank
+      assign parent_genre = genre.label.value | default: genre.label | strip
+      break
+    endif
+  endfor
+  if parent_genre == blank and genres.size > 0
+    assign first_child = genres | first
+    assign parent_genre = first_child.parent.value.label.value | strip
+    if parent_genre == blank
+      capture genre_map
+        render 'pattern-genres'
+      endcapture
+      assign child_label = first_child.label.value | default: first_child.label | strip
+      assign child_key = '|' | append: child_label | append: '='
+      if genre_map contains child_key
+        assign parent_handle = genre_map | split: child_key | last | split: '|' | first | split: '>' | last
+        assign parent_key = '=' | append: parent_handle | append: '>'
+        if genre_map contains parent_key
+          assign parent_genre = genre_map | split: parent_key | first | split: '|' | last | strip
+        endif
+      endif
+    endif
+  endif
+  if parent_genre != blank
+    if record_meta != blank
+      assign record_meta = record_meta | append: meta_sep
+    endif
+    assign record_meta = record_meta | append: parent_genre
+  endif
+
+  assign record_condition = product.metafields.custom.condition.value | strip
+  assign condition_key = record_condition | downcase
+  if condition_key == 'new'
+    assign record_condition = 'products.card.condition_new' | t
+  elsif condition_key == 'used'
+    assign record_condition = 'products.card.condition_used' | t
+  endif
+-%}
+<{{ record_tag }} class="pattern-cart-record__heading">
+  <a href="{{ url }}" class="pattern-cart-record__link">
+    {%- if record_artist != blank -%}
+      <span class="pattern-cart-record__artist">{{ record_artist | escape }}</span>
+      <span class="visually-hidden"> - </span>
+    {%- endif -%}
+    <span class="pattern-cart-record__title">{{ record_title | escape }}</span>
+  </a>
+</{{ record_tag }}>
+{%- if record_label != blank -%}
+  <p class="pattern-cart-record__label">{{ record_label | escape }}</p>
+{%- endif -%}
+{%- if record_meta != blank -%}
+  <p class="pattern-cart-record__meta">
+    {%- assign meta_parts = record_meta | split: meta_sep -%}
+    {%- for part in meta_parts -%}
+      {%- unless forloop.first -%}<span aria-hidden="true"> · </span>{%- endunless -%}
+      <span>{{ part | escape }}</span>
+    {%- endfor -%}
+  </p>
+{%- endif -%}
+{%- if price != blank -%}
+  <div class="pattern-cart-record__price-row">
+    {%- if compare_price != blank -%}
+      <span class="visually-hidden">{{ 'products.product.price.regular_price' | t }}</span>
+      <s class="pattern-cart-record__compare">{{ compare_price }}</s>
+      <span class="visually-hidden">{{ 'products.product.price.sale_price' | t }}</span>
+    {%- endif -%}
+    <span class="pattern-cart-record__price">{{ price }}</span>
+    {%- unless show_tag == false -%}
+      {%- render 'pattern-tag', text: record_condition -%}
+    {%- endunless -%}
+  </div>
+{%- else -%}
+  {%- unless show_tag == false -%}
+    {%- render 'pattern-tag', text: record_condition, class: 'pattern-cart-record__tag' -%}
+  {%- endunless -%}
+{%- endif -%}
