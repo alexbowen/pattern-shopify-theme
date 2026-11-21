@@ -3,9 +3,11 @@
 
   Desktop (#FacetFiltersForm): one row of chips. List filters are dropdown chips (Dawn
   details.disclosure-has-popup popovers, so facets.js renderCounts updates an open popover in
-  place); availability is an "In stock" toggle; price (if ever enabled) uses Dawn's default
-  markup. Record count and sort sit at the right end. Active filters, genres included, are listed
-  underneath as removable chips (Dawn's .active-facets-desktop, re-rendered by facets.js).
+  place), then a "Clear" link for just those filters while one of them is active. Price (if ever
+  enabled) uses Dawn's default markup. On the right: the record count (paper header only), the
+  "In stock" on/off toggle and sort. There is no global "Clear all": each group has its own Clear
+  (genre and origin in snippets/genre-pills.liquid and origin-line.liquid), and none of them
+  touches In stock or sort.
 
   Mobile (#FacetFiltersFormMobile inside menu-drawer): a "Filters" button with an active-count
   badge opens a bottom sheet with the same controls and a "Show N records" button. Sort sits next
@@ -35,21 +37,50 @@
     assign clear_all_url = routes.search_url | append: '?q=' | append: clear_terms | append: '&type=product&options%5Bprefix%5D=last&sort_by=' | append: sort_by
   endif
 
-  # Mobile sheet "Clear": remove the sheet's filters but keep genres and sort.
+  # Mobile sheet "Clear": remove the sheet's filters but keep genres, origin, In stock and sort.
   assign clear_sheet_url = clear_all_url
+  # Row "Clear" (after Format / Condition): remove only the row's list filters (everything in the
+  # row except In stock and price); keep every other filter, In stock and sort. No page param.
+  assign row_clear_url = clear_all_url
+  assign row_active = false
+  assign row_labels = ''
   assign active_count = 0
-  # Any filter at all (genres included): drives the single "Clear all".
-  assign any_active = false
   for filter in results.filters
-    if filter.active_values.size > 0 or filter.min_value.value != null or filter.max_value.value != null
-      assign any_active = true
-    endif
     assign filter_key = ',' | append: filter.param_name | append: ','
-    if discovery_params contains filter_key
+    assign in_row = false
+    unless utility_excludes contains filter_key or filter.param_name == 'filter.v.availability' or filter.type == 'price_range'
+      assign in_row = true
+    endunless
+    if in_row
+      if filter.active_values.size > 0
+        assign row_active = true
+      endif
+      if row_labels == blank
+        assign row_labels = filter.label
+      else
+        assign row_labels = row_labels | append: ', ' | append: filter.label
+      endif
+    else
+      for value in filter.active_values
+        assign encoded_value = value.value | url_encode
+        assign row_clear_url = row_clear_url | append: '&' | append: value.param_name | append: '=' | append: encoded_value
+      endfor
+      if filter.type == 'price_range'
+        if filter.min_value.value != null
+          assign row_clear_url = row_clear_url | append: '&' | append: filter.min_value.param_name | append: '=' | append: filter.min_value.value
+        endif
+        if filter.max_value.value != null
+          assign row_clear_url = row_clear_url | append: '&' | append: filter.max_value.param_name | append: '=' | append: filter.max_value.value
+        endif
+      endif
+    endif
+    if discovery_params contains filter_key or filter.param_name == 'filter.v.availability'
       for value in filter.active_values
         assign encoded_value = value.value | url_encode
         assign clear_sheet_url = clear_sheet_url | append: '&' | append: value.param_name | append: '=' | append: encoded_value
       endfor
+    endif
+    if discovery_params contains filter_key
       continue
     endif
     if utility_excludes contains filter_key
@@ -91,25 +122,7 @@
             {%- case filter.type -%}
               {%- when 'boolean', 'list' -%}
                 {%- if filter.param_name == 'filter.v.availability' -%}
-                  {%- assign in_stock = filter.values | where: 'value', '1' | first -%}
-                  {%- comment -%} "In stock" toggle: ticks availability=1 only. {%- endcomment -%}
-                  <div id="Details-{{ filter.param_name | escape }}-{{ section.id }}" class="filter-bar__item js-filter">
-                    {%- if in_stock and in_stock.count > 0 or in_stock.active -%}
-                      <label class="filter-chip filter-chip--toggle{% if in_stock.active %} filter-chip--active{% endif %}" for="FilterToggle-{{ filter.param_name | escape }}">
-                        <input
-                          type="checkbox"
-                          class="filter-chip__toggle-input visually-hidden"
-                          id="FilterToggle-{{ filter.param_name | escape }}"
-                          name="{{ in_stock.param_name }}"
-                          value="{{ in_stock.value }}"
-                          {% if in_stock.active %}
-                            checked
-                          {% endif %}
-                        >
-                        <span class="filter-chip__label">{{ 'products.facets.filter_bar.in_stock' | t }}</span>
-                      </label>
-                    {%- endif -%}
-                  </div>
+                  {%- comment -%} In stock: rendered on the right, before sort (below). {%- endcomment -%}
                 {%- else -%}
                   {%- comment -%} Wrapper is the .js-filter so the hidden state re-renders with innerHTML. {%- endcomment -%}
                   <div id="Details-{{ filter.param_name | escape }}-{{ section.id }}" class="filter-bar__item js-filter">
@@ -195,23 +208,53 @@
                 </details>
             {%- endcase -%}
           {%- endfor -%}
+          {%- comment -%}
+            Clear for the row's filters (Format, Condition). facets.js re-renders this wrapper
+            (renderFilterBarCount), so it appears and goes with the filters.
+          {%- endcomment -%}
+          <div class="filter-bar__clear" id="FilterBarClear">
+            {%- if row_active -%}
+              <facet-remove>
+                <a href="{{ row_clear_url }}" class="pattern-clear-link">
+                  {{- 'products.facets.clear' | t -}}
+                  <span class="visually-hidden">: {{ row_labels | escape }}</span>
+                </a>
+              </facet-remove>
+            {%- endif -%}
+          </div>
         </div>
 
         <div class="filter-bar__meta">
-          {%- comment -%}
-            "Clear all" sits inline before the count, only when a filter is active. It lives inside
-            #FilterBarCount, which facets.js re-renders on every refresh, so it appears and goes
-            with the filters. (The standalone chip row below is hidden; chips show in the slim
-            sticky bar instead, see snippets/genre-pills.liquid.)
-          {%- endcomment -%}
+          {%- comment -%} The count is hidden when the dark header band shows it instead. {%- endcomment -%}
           <p class="filter-bar__count" id="FilterBarCount">
-            {%- if any_active -%}
-              <facet-remove class="filter-bar__clear-inline">
-                <a href="{{ clear_all_url }}" class="pattern-collection__clear">{{ 'products.facets.filter_bar.clear_all' | t }}</a>
-              </facet-remove>
-            {%- endif -%}
             <span class="filter-bar__count-value">{{ 'products.facets.genre_pills.records' | t: count: results_total }}</span>
           </p>
+          {%- for filter in results.filters -%}
+            {%- assign filter_key = ',' | append: filter.param_name | append: ',' -%}
+            {%- if utility_excludes contains filter_key -%}{%- continue -%}{%- endif -%}
+            {%- if filter.param_name == 'filter.v.availability' -%}
+              {%- assign in_stock = filter.values | where: 'value', '1' | first -%}
+              {%- comment -%} "In stock" on/off toggle (a native checkbox, so its role and state are announced): ticks availability=1 only. {%- endcomment -%}
+              <div id="Details-{{ filter.param_name | escape }}-{{ section.id }}" class="filter-bar__item js-filter">
+                {%- if in_stock and in_stock.count > 0 or in_stock.active -%}
+                  <label class="filter-chip filter-chip--toggle{% if in_stock.active %} filter-chip--active{% endif %}" for="FilterToggle-{{ filter.param_name | escape }}">
+                    <input
+                      type="checkbox"
+                      class="filter-chip__toggle-input visually-hidden"
+                      id="FilterToggle-{{ filter.param_name | escape }}"
+                      name="{{ in_stock.param_name }}"
+                      value="{{ in_stock.value }}"
+                      {% if in_stock.active %}
+                        checked
+                      {% endif %}
+                    >
+                    <span class="filter-chip__check svg-wrapper" aria-hidden="true">{{- 'icon-checkmark.svg' | inline_asset_content -}}</span>
+                    <span class="filter-chip__label">{{ 'products.facets.filter_bar.in_stock' | t }}</span>
+                  </label>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
           <div class="filter-bar__sort">
             {% render 'pattern-sort', results: results, id: 'PatternSort' %}
           </div>
@@ -254,13 +297,6 @@
             {%- endif -%}
           {%- endif -%}
         {%- endfor -%}
-        {%- if any_active -%}
-          <facet-remove class="active-facets__button-wrapper filter-bar__clear-all">
-            <a href="{{ clear_all_url }}" class="active-facets__button-remove underlined-link">
-              <span>{{ 'products.facets.filter_bar.clear_all' | t }}</span>
-            </a>
-          </facet-remove>
-        {%- endif -%}
       </div>
     </form>
   </facet-filters-form>
@@ -340,6 +376,7 @@
                                       checked
                                     {% endif %}
                                   >
+                                  <span class="filter-chip__check svg-wrapper" aria-hidden="true">{{- 'icon-checkmark.svg' | inline_asset_content -}}</span>
                                   <span class="filter-chip__label">{{ 'products.facets.filter_bar.in_stock' | t }}</span>
                                 </label>
                               </li>
@@ -456,13 +493,6 @@
         {%- endif -%}
       {%- endif -%}
     {%- endfor -%}
-    {%- if any_active -%}
-      <facet-remove class="active-facets__button-wrapper filter-bar__clear-all">
-        <a href="{{ clear_all_url }}" class="active-facets__button-remove underlined-link">
-          <span>{{ 'products.facets.filter_bar.clear_all' | t }}</span>
-        </a>
-      </facet-remove>
-    {%- endif -%}
   </div>
 
   {%- comment -%} Dawn's count: kept off-screen as the live status facets.js updates (#ProductCount is required). {%- endcomment -%}

@@ -5,7 +5,7 @@
   - part 'pills': all the product's genres as pills (parents, each followed by its children, then
     children whose parent isn't on the product) and the origin pill, linking to the filtered collection
   - part 'specs': hairline spec list (Label, Format, Condition, Genre, Origin); empty rows hidden
-  - part 'tags': condition tag (New filled, Used outlined) and format tag (with item count), for
+  - part 'tags': condition tag (New and Used both outlined) and format tag (with item count), for
     the price row; missing ones are left out (shared snippets/pattern-tag.liquid)
 
   Genres follow the product cards: primary = the first top-level genre; if the product only has
@@ -133,11 +133,7 @@
 {%- case part -%}
   {%- when 'tags' -%}
     {%- liquid
-      assign condition_new = false
-      if condition_key == 'new'
-        assign condition_new = true
-      endif
-      render 'pattern-tag', text: condition, filled: condition_new, class: 'pattern-price-row__tag'
+      render 'pattern-tag', text: condition, class: 'pattern-price-row__tag'
       render 'pattern-tag', text: format, class: 'pattern-price-row__tag'
     -%}
 

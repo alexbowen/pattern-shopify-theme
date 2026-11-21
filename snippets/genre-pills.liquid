@@ -212,7 +212,6 @@
                   <span class="visually-hidden">{{ 'sections.collection_template.title' | t }}: </span>
                   {{- title | escape -}}
                 </h1>
-                <p class="genre-pills__total">{{ 'products.facets.genre_pills.records' | t: count: results_total }}</p>
               </div>
               {%- if description != blank -%}
                 <div class="genre-pills__description rte">{{ description }}</div>
@@ -234,6 +233,16 @@
                     </a>
                   </facet-remove>
                   {{- parents_html -}}
+                  {%- comment -%}
+                    Clear: removes the genre values only (url_to_remove keeps the other filters and
+                    sort). Rendered always so facets.js can show it the moment a pill is pressed.
+                  {%- endcomment -%}
+                  <facet-remove class="genre-pills__clear-wrapper"{% unless any_active %} hidden{% endunless %}>
+                    <a href="{{ genre_filter.url_to_remove }}" id="GenreClear" class="pattern-clear-link" data-genre-clear>
+                      {{- 'products.facets.clear' | t -}}
+                      <span class="visually-hidden">: {{ genre_filter.label | escape }}</span>
+                    </a>
+                  </facet-remove>
                 </div>
                 {%- if show_sort -%}
                 <div class="genre-pills__meta">

@@ -164,6 +164,7 @@
           {%- else -%}
             <div class="collection page-width">
               <div class="loading-overlay gradient"></div>
+              {% render 'pattern-results-count', paginate: paginate, page_size: search.results.size, terms: search.terms %}
               <ul
                 id="product-grid"
                 data-id="{{ section.id }}"

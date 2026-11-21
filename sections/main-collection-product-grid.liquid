@@ -237,6 +237,7 @@
             class="collection{% if section.settings.filter_type != 'vertical' %} page-width{% endif %}"
           >
             <div class="loading-overlay gradient"></div>
+            {% render 'pattern-results-count', paginate: paginate, page_size: collection.products.size %}
             <ul
               id="product-grid"
               data-id="{{ section.id }}"

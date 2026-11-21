@@ -23,14 +23,30 @@ class FacetFiltersForm extends HTMLElement {
     form.addEventListener('click', (event) => {
       const pill = event.target.closest('.genre-pill[data-genre-handle]');
       if (pill) {
-        FacetFiltersForm.setGenrePillPressed(pill, pill.getAttribute('aria-pressed') !== 'true');
+        const pressed = pill.getAttribute('aria-pressed') !== 'true';
+        FacetFiltersForm.setGenrePillPressed(pill, pressed);
+        // Shopify ORs values of one filter, so a parent and its child together return the whole
+        // parent. Selecting a child replaces its parent; selecting a parent replaces its
+        // children. Other parents (and their children) stay as they are.
+        if (pressed) {
+          const parentHandle = pill.dataset.genreParent;
+          const replaced = parentHandle
+            ? form.querySelectorAll(`.genre-pill[data-genre-handle="${CSS.escape(parentHandle)}"]`)
+            : form.querySelectorAll(`.genre-pill[data-genre-parent="${CSS.escape(pill.dataset.genreHandle)}"]`);
+          replaced.forEach((other) => FacetFiltersForm.setGenrePillPressed(other, false));
+        }
         FacetFiltersForm.syncGenrePills(form);
         pill.dispatchEvent(new Event('input', { bubbles: true }));
         return;
       }
       // "All" and "Clear" are facet-remove links (url_to_remove), which do the AJAX render.
       // Clear the pills here too so a pending debounced submit can't re-apply old genres.
-      if (event.target.closest('[data-genre-clear]')) {
+      const genreClear = event.target.closest('[data-genre-clear]');
+      if (genreClear) {
+        // Keyboard on the Clear link, which hides itself: move focus to "All" first, so it isn't lost.
+        if (genreClear.id === 'GenreClear' && genreClear.matches(':focus-visible')) {
+          document.getElementById('GenrePill-all')?.focus({ preventScroll: true });
+        }
         form.querySelectorAll('.genre-pill[data-genre-handle]').forEach((p) => FacetFiltersForm.setGenrePillPressed(p, false));
         FacetFiltersForm.syncGenrePills(form);
       }
@@ -60,6 +76,16 @@ class FacetFiltersForm extends HTMLElement {
       }
       if (event.target.closest('[data-origin-close]')) {
         FacetFiltersForm.closeOriginPanel(form, true);
+      }
+      // Origin "Clear" is a facet-remove link (url_to_remove). Unselect here too so a pending
+      // debounced submit can't re-apply the old origins.
+      const originClear = event.target.closest('[data-origin-clear]');
+      if (originClear) {
+        // Keyboard on the Clear link, which hides itself: move focus to the first origin pill first.
+        if (originClear.matches(':focus-visible')) form.querySelector('.origin-pill')?.focus({ preventScroll: true });
+        form.querySelectorAll('[data-origin-input]').forEach((input) => {
+          FacetFiltersForm.setOriginSelected(form, input.dataset.originInput, false);
+        });
       }
     });
 
@@ -136,6 +162,8 @@ class FacetFiltersForm extends HTMLElement {
     const countLabel = form.querySelector('[data-origin-count]');
     if (countLabel) countLabel.textContent = selectedCount > 0 ? ` · ${selectedCount}` : '';
     form.querySelector('.origin-panel__toggle')?.classList.toggle('origin-panel__toggle--active', selectedCount > 0);
+    const clear = form.querySelector('.origin-line__clear-wrapper');
+    if (clear) clear.hidden = selectedCount === 0;
   }
 
   // Focusable controls in the open panel that are actually visible right now (search hides list
@@ -510,12 +538,17 @@ class FacetFiltersForm extends HTMLElement {
     if (focusTarget) focusTarget.focus({ preventScroll: true });
   }
 
-  // Filter bar pieces outside the .js-filter blocks: record count and the sheet's Clear link
-  // (its URL keeps the current genres and sort, so it must follow every render).
+  // Filter bar pieces outside the .js-filter blocks: record count, the row's Clear link and the
+  // sheet's Clear link (their URLs keep the other filters and sort, so they follow every render).
   static renderFilterBarCount(html) {
-    const source = html.getElementById('FilterBarCount');
-    const target = document.getElementById('FilterBarCount');
-    if (source && target) target.innerHTML = source.innerHTML;
+    const clearHadFocus = Boolean(document.getElementById('FilterBarClear')?.contains(document.activeElement));
+    ['FilterBarCount', 'FilterBarClear'].forEach((id) => {
+      const source = html.getElementById(id);
+      const target = document.getElementById(id);
+      if (source && target) target.innerHTML = source.innerHTML;
+    });
+    // The row's Clear goes once it has cleared: keep keyboard focus in the row (first control).
+    if (clearHadFocus) document.querySelector('#FilterBarFilters summary.filter-chip')?.focus({ preventScroll: true });
 
     const clearSource = html.getElementById('FilterSheetClear');
     const clearTarget = document.getElementById('FilterSheetClear');
@@ -620,8 +653,12 @@ class FacetFiltersForm extends HTMLElement {
     });
     if (focusedId && focusWasVisible && !originState) {
       let focusTarget = document.getElementById(focusedId);
-      // Clear is hidden once nothing is selected; move focus to "All" instead of losing it.
-      if (!focusTarget || focusTarget.closest('[hidden]')) focusTarget = document.getElementById('GenrePill-all');
+      // A Clear link is hidden once its group has nothing selected: move focus to the group's first
+      // pill (origin) or "All" (genre) instead of losing it.
+      if (!focusTarget || focusTarget.closest('[hidden]')) {
+        focusTarget =
+          (focusedId === 'OriginClear' && target.querySelector('.origin-pill')) || document.getElementById('GenrePill-all');
+      }
       if (focusTarget) focusTarget.focus({ preventScroll: true });
     }
 

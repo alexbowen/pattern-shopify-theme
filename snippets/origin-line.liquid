@@ -109,6 +109,13 @@
           </span>
         </button>
       {%- endif -%}
+      {%- comment -%} Clear: removes the origin values only; shown while an origin is selected. {%- endcomment -%}
+      <facet-remove class="origin-line__clear-wrapper"{% if origin_filter.active_values.size == 0 %} hidden{% endif %}>
+        <a href="{{ origin_filter.url_to_remove }}" id="OriginClear" class="pattern-clear-link" data-origin-clear>
+          {{- 'products.facets.clear' | t -}}
+          <span class="visually-hidden">: {{ origin_filter.label | escape }}</span>
+        </a>
+      </facet-remove>
     </div>
 
     <div class="origin-line__inputs" hidden>

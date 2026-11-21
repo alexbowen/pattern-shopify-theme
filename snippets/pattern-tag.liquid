@@ -4,14 +4,13 @@
 
   Accepts:
   - text: {String} tag text (renders nothing when blank)
-  - filled: {Boolean} filled charcoal with paper text (e.g. New); default outlined (e.g. Used)
   - class: {String} extra classes (optional)
 
   Usage:
-  {% render 'pattern-tag', text: 'New', filled: true %}
+  {% render 'pattern-tag', text: 'New' %}
 {%- endcomment -%}
 {%- if text != blank -%}
-  <span class="pattern-tag{% if filled %} pattern-tag--filled{% endif %}{% if class != blank %} {{ class }}{% endif %}">
+  <span class="pattern-tag{% if class != blank %} {{ class }}{% endif %}">
     {{- text | escape -}}
   </span>
 {%- endif -%}

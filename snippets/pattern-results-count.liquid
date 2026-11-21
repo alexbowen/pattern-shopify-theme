@@ -1,0 +1,75 @@
+{%- comment -%}
+  Results count line above the product grid: "Showing 1–24 of 2,501 records" (or, on search,
+  "… results for 'query'"). Small DM Mono, muted. Lives inside #ProductGridContainer, so facets.js
+  replaces it with the grid on every filter, sort or page change. Renders nothing with no results.
+
+  Numbers get the locale's thousands separator (products.facets.results_count.thousands_separator).
+
+  Accepts:
+  - paginate: {Object} the paginate object (current_offset, items = filtered total)
+  - page_size: {Number} products on this page
+  - terms: {String} optional search query; switches to the "results for" wording
+{%- endcomment -%}
+{%- liquid
+  assign total = paginate.items | default: 0
+  assign terms_escaped = terms | escape
+  assign first = paginate.current_offset | plus: 1
+  assign last = paginate.current_offset | plus: page_size
+  # Shopify caps search totals at 1,000 while pages carry on past it: never show a total below
+  # the last record on the page.
+  if last > total
+    assign total = last
+  endif
+  assign separator = 'products.facets.results_count.thousands_separator' | t
+
+  # Thousands separators: walk the digits from the right, a separator every third.
+  assign formatted = ''
+  for n in (1..3)
+    case n
+      when 1
+        assign number = first
+      when 2
+        assign number = last
+      when 3
+        assign number = total
+    endcase
+    assign digits = number | append: '' | split: ''
+    assign out = ''
+    assign count = 0
+    for d in digits reversed
+      if count > 0
+        assign mod = count | modulo: 3
+        if mod == 0
+          assign out = separator | append: out
+        endif
+      endif
+      assign out = d | append: out
+      assign count = count | plus: 1
+    endfor
+    case n
+      when 1
+        assign first_f = out
+      when 2
+        assign last_f = out
+      when 3
+        assign total_f = out
+    endcase
+  endfor
+
+  assign key = 'products.facets.results_count.records'
+  if terms != blank
+    assign key = 'products.facets.results_count.results'
+  endif
+  if total == 1
+    assign key = key | append: '_one'
+  elsif first == last
+    assign key = key | append: '_single'
+  else
+    assign key = key | append: '_range'
+  endif
+-%}
+{%- if total > 0 and page_size > 0 -%}
+  <p class="pattern-results-count">
+    {{- key | t: start: first_f, end: last_f, total: total_f, terms: terms_escaped -}}
+  </p>
+{%- endif -%}

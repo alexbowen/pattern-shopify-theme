@@ -86,7 +86,7 @@
 }
 
 /* Small mono tag (snippets/pattern-tag.liquid): condition / format on product cards and the
-   product page price row. Outlined by default (Used); filled charcoal with paper text (New). */
+   product page price row. One outlined style for every tag (New, Used, format, Sold out). */
 .pattern-tag {
   flex: 0 0 auto;
   display: inline-flex;
@@ -103,11 +103,6 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
-}
-
-.pattern-tag--filled {
-  background-color: var(--pattern-ink);
-  color: var(--pattern-paper);
 }
 
 /* Genre / origin pills (snippets/pattern-product-info.liquid 'pills'): product page and the

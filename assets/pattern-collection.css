@@ -99,7 +99,8 @@
    hover and focus darken the border to ink. */
 :is(.template-collection, .template-search) .facets-container {
   align-items: center;
-  margin-bottom: 2.4rem;
+  /* 14px down to the results count line, which keeps 20px above the cards */
+  margin-bottom: 1.4rem;
   padding-top: 1.6rem;
   padding-bottom: 1.6rem;
   border-bottom: 0.1rem solid var(--pattern-hairline);
@@ -120,8 +121,8 @@
   background-color: transparent;
 }
 
-/* The standalone active-filter row (chips + Clear all) is gone: "Clear all" sits in the utility
-   row before the count, and the chips show in the slim sticky bar. */
+/* The standalone active-filter row is hidden: the chips show in the slim sticky bar, and each
+   group has its own Clear link. */
 :is(.template-collection, .template-search) .filter-bar-container .filter-bar__active {
   display: none;
 }
@@ -132,16 +133,106 @@
   gap: 1.2rem;
 }
 
-.pattern-collection__clear {
+/* ===== Per-group Clear links =====
+   Genre (end of the genre row), origin (end of the origin line) and the controls row (after
+   Format / Condition). Small DM Mono text, no underline until hover; as tall as the pills or
+   controls beside it, so it's an easy tap target on mobile. Muted ink on paper; paper at 70% in
+   the dark header band. Each is only rendered (or unhidden) while its group has a selection. */
+.pattern-clear-link {
+  /* positioned, so its visually-hidden text stays inside the scrolling pill row */
+  position: relative;
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  min-height: 2.4rem;
-  color: var(--pattern-ink);
-  font-size: 1.3rem;
-  text-decoration: underline;
+  min-height: var(--utility-height, 4rem);
+  padding: 0 0.6rem;
+  color: var(--pattern-muted);
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
   text-decoration-thickness: 0.1rem;
   text-underline-offset: 0.3rem;
-  transition: text-decoration-color 0.12s ease;
+  cursor: pointer;
+}
+
+.genre-pills__row .pattern-clear-link {
+  min-height: var(--genre-pill-height);
+}
+
+.origin-line__row .pattern-clear-link {
+  min-height: var(--origin-pill-height);
+}
+
+@media (hover: hover) {
+  .pattern-clear-link:hover {
+    color: var(--pattern-ink);
+    text-decoration-line: underline;
+  }
+}
+
+.genre-pills--dark .pattern-clear-link {
+  color: color-mix(in srgb, var(--pattern-paper) 70%, transparent);
+}
+
+@media (hover: hover) {
+  .genre-pills--dark .pattern-clear-link:hover {
+    color: color-mix(in srgb, var(--pattern-paper) 70%, transparent);
+  }
+}
+
+.genre-pills__clear-wrapper:not([hidden]),
+.origin-line__clear-wrapper:not([hidden]) {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.pattern-clear-link:focus {
+  outline: none;
+}
+
+.pattern-clear-link:focus-visible {
+  outline: 0.2rem solid var(--accent);
+  outline-offset: 0.2rem;
+}
+
+/* Controls row: Clear right after the last filter; nothing there when inactive */
+.filter-bar__clear {
+  display: flex;
+  align-items: center;
+}
+
+.filter-bar__clear:not(:has(a)) {
+  display: none;
+}
+
+/* ===== In stock: an on/off toggle =====
+   Off: the outlined control like Format / Condition. On: filled ink, paper text, a small check.
+   :has(input:checked) gives instant feedback before the AJAX render. */
+.filter-chip--toggle .filter-chip__check {
+  display: none;
+}
+
+:is(.template-collection, .template-search) .filter-chip.filter-chip--toggle:has(input:checked) {
+  border-color: var(--pattern-ink);
+  box-shadow: none;
+  background-color: var(--pattern-ink);
+  color: var(--pattern-paper);
+  font-weight: inherit;
+}
+
+:is(.template-collection, .template-search) .filter-chip--toggle:has(input:checked) .filter-chip__check {
+  display: inline-flex;
+  width: 1.1rem;
+  height: 1.1rem;
+  align-items: center;
+}
+
+.filter-chip--toggle .filter-chip__check .icon {
+  width: 1.1rem;
+  height: auto;
 }
 
 /* ===== Accents: hover and keyboard focus fill pills with the accent (charcoal stays selected) ===== */
@@ -188,7 +279,6 @@
 
 /* Text links: underline in the text colour on hover */
 @media (hover: hover) {
-  .pattern-collection__clear:hover,
   :is(.template-collection, .template-search) .origin-panel__toggle:hover,
   :is(.template-collection, .template-search) .filter-bar__clear-all a:hover {
     text-decoration-line: underline;
@@ -222,7 +312,6 @@
 :is(.template-collection, .template-search) .pattern-sort:has(.pattern-sort__select:focus-visible),
 :is(.template-collection, .template-search) .pattern-filter-sticky a:focus-visible,
 :is(.template-collection, .template-search) .pattern-filter-sticky button:focus-visible,
-.pattern-collection__clear:focus-visible,
 .pattern-collection-empty a:focus-visible {
   outline: 0.2rem solid var(--accent);
   outline-offset: 0.2rem;
@@ -386,7 +475,6 @@
   :is(.template-collection, .template-search) .origin-pill,
   :is(.template-collection, .template-search) .pattern-filter-sticky__chip,
   :is(.template-collection, .template-search) .pattern-filter-sticky__jump,
-  .pattern-collection__clear,
   .pattern-filter-sticky,
   .pattern-filters-out .pattern-filter-sticky {
     transition: none;
@@ -419,9 +507,9 @@
 
 :is(.template-collection, .template-search) .genre-pills.genre-pills--dark {
   --dark-pill: color-mix(in srgb, var(--pattern-paper) 12%, transparent);
-  --dark-pill-hover: color-mix(in srgb, var(--pattern-paper) 22%, transparent);
   --dark-outline: color-mix(in srgb, var(--pattern-paper) 40%, transparent);
-  --dark-outline-hover: color-mix(in srgb, var(--pattern-paper) 85%, transparent);
+  --dark-hover-tint: color-mix(in srgb, var(--pattern-paper) 18%, transparent);
+  --dark-hover-border: color-mix(in srgb, var(--pattern-paper) 60%, transparent);
   margin-bottom: 0;
   background-color: var(--pattern-stripe-dark-a);
   color: var(--pattern-paper);
@@ -451,6 +539,20 @@
   color: var(--pattern-paper);
 }
 
+/* Results count above the grid (snippets/pattern-results-count.liquid): "Showing 1–24 of 2,501
+   records". Small muted DM Mono, left on the container, 20px above the first row of cards. Not
+   sticky: it scrolls away with the grid. Wraps on narrow screens. */
+.pattern-results-count {
+  margin: 0 0 2rem;
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--pattern-muted);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
 .genre-pills__total {
   margin: 0;
   font-family: var(--font-mono);
@@ -471,9 +573,11 @@
   color: var(--pattern-paper);
 }
 
-/* Genre pills: paper at 12%, paper text, count at 60%; selected solid paper with ink text */
+/* Genre pills: paper at 12%, paper text, count at 60%; selected solid paper with ink text.
+   --pill-bg is each pill's resting fill, kept on hover (the hover tint is layered over it). */
 :is(.template-collection, .template-search) .genre-pills--dark .genre-pill {
-  background-color: var(--dark-pill);
+  --pill-bg: var(--dark-pill);
+  background-color: var(--pill-bg);
   border-color: transparent;
   color: var(--pattern-paper);
 }
@@ -497,7 +601,8 @@
 /* Child genre pills (trays) and origin pills: paper outline at 40%, paper text */
 :is(.template-collection, .template-search) .genre-pills--dark .genre-pill.genre-pill--child,
 :is(.template-collection, .template-search) .genre-pills--dark .origin-pill {
-  background-color: transparent;
+  --pill-bg: transparent;
+  background-color: var(--pill-bg);
   border-color: var(--dark-outline);
   color: var(--pattern-paper);
 }
@@ -519,53 +624,56 @@
   border-color: var(--dark-outline);
 }
 
-/* Hover: genre pills to 22%, outlines brighter (instead of the accent fill used on paper) */
+/* Hover, the same for every pill type (genre, sub-genre, origin; stripe or image): paper at 18%
+   laid over the pill's own fill (an inset shadow, so it can fade in), border paper at 60%, text
+   unchanged. 120ms; none with reduced motion. Selected pills don't change. Keyboard focus takes
+   the same look plus a paper ring with an offset, on every pill type. */
+:is(.template-collection, .template-search) .genre-pills--dark :is(.genre-pill, .origin-pill) {
+  box-shadow: inset 0 0 0 10rem transparent;
+  transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
 @media (hover: hover) {
-  :is(.template-collection, .template-search) .genre-pills--dark .genre-pill:not(.genre-pill--active):not(.genre-pill--has-active-child):not(.genre-pill--child):hover {
-    background-color: var(--dark-pill-hover);
-    border-color: transparent;
+  :is(.template-collection, .template-search) .genre-pills--dark :is(.genre-pill, .origin-pill):not(.genre-pill--active):not(.genre-pill--has-active-child):not(.origin-pill--active):hover {
+    background-color: var(--pill-bg);
+    border-color: var(--dark-hover-border);
     color: var(--pattern-paper);
-  }
-
-  :is(.template-collection, .template-search) .genre-pills--dark .genre-pill.genre-pill--child:not(.genre-pill--active):hover,
-  :is(.template-collection, .template-search) .genre-pills--dark .origin-pill:not(.origin-pill--active):hover {
-    background-color: transparent;
-    border-color: var(--dark-outline-hover);
-    color: var(--pattern-paper);
-  }
-
-  :is(.template-collection, .template-search) .genre-pills--dark .genre-pill:not(.genre-pill--active):hover .genre-pill__count,
-  :is(.template-collection, .template-search) .genre-pills--dark .origin-pill:not(.origin-pill--active):hover .origin-pill__count {
-    opacity: 0.6;
+    box-shadow: inset 0 0 0 10rem var(--dark-hover-tint);
   }
 }
 
-/* Keyboard focus: a paper ring with an offset; the pill takes its hover look */
-:is(.template-collection, .template-search) .genre-pills--dark .genre-pill:focus-visible,
-:is(.template-collection, .template-search) .genre-pills--dark .origin-pill:focus-visible,
-:is(.template-collection, .template-search) .genre-pills--dark .origin-line__more:focus-visible,
-:is(.template-collection, .template-search) .genre-pills--dark .origin-panel__toggle:focus-visible {
-  outline: 0.2rem solid var(--pattern-paper);
-  outline-offset: 0.3rem;
+:is(.template-collection, .template-search) .genre-pills--dark :is(.genre-pill, .origin-pill):not(.genre-pill--active):not(.genre-pill--has-active-child):not(.origin-pill--active):focus-visible {
+  background-color: var(--pill-bg);
+  border-color: var(--dark-hover-border);
+  color: var(--pattern-paper);
+  box-shadow: inset 0 0 0 10rem var(--dark-hover-tint);
+}
+
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill:not(.genre-pill--active):hover .genre-pill__count,
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill:not(.genre-pill--active):focus-visible .genre-pill__count,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-pill:not(.origin-pill--active):hover .origin-pill__count,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-pill:not(.origin-pill--active):focus-visible .origin-pill__count {
+  opacity: 0.6;
+}
+
+/* Selected pills keep their look when focused; only the ring is added */
+:is(.template-collection, .template-search) .genre-pills--dark :is(.genre-pill--active, .genre-pill--has-active-child, .origin-pill--active):focus-visible {
   box-shadow: none;
 }
 
-:is(.template-collection, .template-search) .genre-pills--dark .genre-pill:not(.genre-pill--active):not(.genre-pill--has-active-child):not(.genre-pill--child):focus-visible {
-  background-color: var(--dark-pill-hover);
-  border-color: transparent;
-  color: var(--pattern-paper);
+:is(.template-collection, .template-search) .genre-pills--dark .genre-pill:focus-visible,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-pill:focus-visible,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-line__more:focus-visible,
+:is(.template-collection, .template-search) .genre-pills--dark .origin-panel__toggle:focus-visible,
+:is(.template-collection, .template-search) .genre-pills--dark .pattern-clear-link:focus-visible {
+  outline: 0.2rem solid var(--pattern-paper);
+  outline-offset: 0.3rem;
 }
 
-:is(.template-collection, .template-search) .genre-pills--dark .genre-pill.genre-pill--child:not(.genre-pill--active):focus-visible,
-:is(.template-collection, .template-search) .genre-pills--dark .origin-pill:not(.origin-pill--active):focus-visible {
-  background-color: transparent;
-  border-color: var(--dark-outline-hover);
-  color: var(--pattern-paper);
-}
-
-:is(.template-collection, .template-search) .genre-pills--dark .genre-pill:not(.genre-pill--active):focus-visible .genre-pill__count,
-:is(.template-collection, .template-search) .genre-pills--dark .origin-pill:not(.origin-pill--active):focus-visible .origin-pill__count {
-  opacity: 0.6;
+@media (prefers-reduced-motion: reduce) {
+  :is(.template-collection, .template-search) .genre-pills--dark :is(.genre-pill, .origin-pill) {
+    transition: none;
+  }
 }
 
 /* Background image (optional): a cover image under an ink overlay instead of the stripe. The
@@ -612,22 +720,15 @@
 }
 
 /* Over a background image: pills carry their own dark, blurred fill so they read on any photo.
-   Unselected genre pills ink at 70% (hover 82%) with a paper hairline; origin and sub-genre pills
-   ink at 60% with their paper outline at 45%. Selected pills are unchanged. Without
-   backdrop-filter support the fills are more opaque (85%). Heading and count get a soft shadow. */
+   Every unselected pill (genre, sub-genre, origin) is ink at 85% behind a 6px backdrop blur; genre
+   pills keep a paper hairline at 18%, sub-genre and origin pills their paper outline at 45%.
+   Selected pills are solid, as on the stripe. Hover and focus are the shared dark-band rules
+   above. Heading and count get a soft shadow. */
 :is(.template-collection, .template-search) .genre-pills--image {
   --image-pill: color-mix(in srgb, var(--pattern-ink) 85%, transparent);
-  --image-pill-hover: color-mix(in srgb, var(--pattern-ink) 92%, transparent);
-  --image-outline-pill: color-mix(in srgb, var(--pattern-ink) 85%, transparent);
 }
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  :is(.template-collection, .template-search) .genre-pills--image {
-    --image-pill: color-mix(in srgb, var(--pattern-ink) 70%, transparent);
-    --image-pill-hover: color-mix(in srgb, var(--pattern-ink) 82%, transparent);
-    --image-outline-pill: color-mix(in srgb, var(--pattern-ink) 60%, transparent);
-  }
-
   :is(.template-collection, .template-search) .genre-pills--image :is(.genre-pill, .origin-pill):not(.genre-pill--active):not(.genre-pill--has-active-child):not(.origin-pill--active) {
     -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
@@ -635,36 +736,16 @@
 }
 
 :is(.template-collection, .template-search) .genre-pills--image .genre-pill:not(.genre-pill--child):not(.genre-pill--active):not(.genre-pill--has-active-child) {
-  background-color: var(--image-pill);
+  --pill-bg: var(--image-pill);
+  background-color: var(--pill-bg);
   border-color: color-mix(in srgb, var(--pattern-paper) 18%, transparent);
 }
 
 :is(.template-collection, .template-search) .genre-pills--image .genre-pill.genre-pill--child:not(.genre-pill--active),
 :is(.template-collection, .template-search) .genre-pills--image .origin-pill:not(.origin-pill--active) {
-  background-color: var(--image-outline-pill);
+  --pill-bg: var(--image-pill);
+  background-color: var(--pill-bg);
   border-color: color-mix(in srgb, var(--pattern-paper) 45%, transparent);
-}
-
-@media (hover: hover) {
-  :is(.template-collection, .template-search) .genre-pills--image .genre-pill:not(.genre-pill--active):not(.genre-pill--has-active-child):not(.genre-pill--child):hover {
-    background-color: var(--image-pill-hover);
-    border-color: color-mix(in srgb, var(--pattern-paper) 18%, transparent);
-  }
-
-  :is(.template-collection, .template-search) .genre-pills--image .genre-pill.genre-pill--child:not(.genre-pill--active):hover,
-  :is(.template-collection, .template-search) .genre-pills--image .origin-pill:not(.origin-pill--active):hover {
-    background-color: var(--image-outline-pill);
-    border-color: var(--dark-outline-hover);
-  }
-}
-
-:is(.template-collection, .template-search) .genre-pills--image .genre-pill:not(.genre-pill--active):not(.genre-pill--has-active-child):not(.genre-pill--child):focus-visible {
-  background-color: var(--image-pill-hover);
-}
-
-:is(.template-collection, .template-search) .genre-pills--image .genre-pill.genre-pill--child:not(.genre-pill--active):focus-visible,
-:is(.template-collection, .template-search) .genre-pills--image .origin-pill:not(.origin-pill--active):focus-visible {
-  background-color: var(--image-outline-pill);
 }
 
 .genre-pills--image .genre-pills__title,

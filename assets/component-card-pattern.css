@@ -5,7 +5,7 @@
      body font, regular, 15px, muted), line-height 1.35, up to two lines with ellipsis. Meta: mono 12px (label · format · genre). Space is reserved for all three so
      cards in a row line up.
    - Price row under a hairline: amount without the currency code in the display font, then the
-     condition as a small mono tag (New = filled charcoal, Used = outlined).
+     condition as a small outlined mono tag (New and Used share one style).
    - Cover: 1px inset outline so pale sleeves keep an edge; hover / keyboard focus scales the image
      slightly inside its frame and underlines the artist in the text colour.
    The image container (.card__inner, .card__media) and badges are Dawn's: badges are left where

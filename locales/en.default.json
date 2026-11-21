@@ -230,6 +230,15 @@
           "other": "Show {{ count }} records"
         }
       },
+      "results_count": {
+        "thousands_separator": ",",
+        "records_one": "Showing 1 record",
+        "records_single": "Showing {{ end }} of {{ total }} records",
+        "records_range": "Showing {{ start }}–{{ end }} of {{ total }} records",
+        "results_one": "Showing 1 result for '{{ terms }}'",
+        "results_single": "Showing {{ end }} of {{ total }} results for '{{ terms }}'",
+        "results_range": "Showing {{ start }}–{{ end }} of {{ total }} results for '{{ terms }}'"
+      },
       "pattern_sort": {
         "label": "Sort",
         "manual": "Featured",

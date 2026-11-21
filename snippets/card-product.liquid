@@ -309,17 +309,11 @@
 
             {%- comment -%}
               Catalogue-label price row: amount without the currency code (cards only), then the
-              condition as a small tag (New = filled, Used = outlined) when known.
+              condition as a small outlined tag (New and Used look the same) when known.
             {%- endcomment -%}
             <div class="card-pattern__price-row">
               {% render 'price', product: card_product, price_class: '', show_compare_at_price: true, hide_currency_code: true %}
-              {%- liquid
-                assign card_condition_new = false
-                if card_condition_key == 'new'
-                  assign card_condition_new = true
-                endif
-                render 'pattern-tag', text: card_condition, filled: card_condition_new, class: 'card-pattern__condition'
-              -%}
+              {%- render 'pattern-tag', text: card_condition, class: 'card-pattern__condition' -%}
             </div>
             {%- if card_product.quantity_price_breaks_configured? -%}
               {% if card_product.variants_count == 1 and quick_add == 'bulk' %}
