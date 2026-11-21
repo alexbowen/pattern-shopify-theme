@@ -87,92 +87,6 @@
         "include_margins": false
       }
     },
-    "pattern_columns_feature_demo": {
-      "type": "pattern-columns",
-      "blocks": {
-        "col_a": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "paper",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "center",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "feat": {
-              "type": "pattern-featured-record",
-              "settings": {
-                "product": "vakula-firecracker-ep5-phonogra",
-                "label": "Record of the week",
-                "layout": "horizontal",
-                "size": "standard",
-                "background": "dark",
-                "show_genres": true,
-                "show_description": true,
-                "description_lines": 3,
-                "description_override": "",
-                "show_comment": true,
-                "comment_override": "Three tracks, all killers.",
-                "show_button": true,
-                "show_add_to_cart": false
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "feat"
-          ]
-        },
-        "col_b": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "paper",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "top",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "pattern_featured_record_KcyMd8": {
-              "type": "pattern-featured-record",
-              "name": "Featured record",
-              "settings": {
-                "product": "abacus-erotic-illusions",
-                "label": "Staff pick",
-                "layout": "horizontal",
-                "size": "standard",
-                "background": "dark",
-                "show_genres": true,
-                "show_description": true,
-                "description_lines": 3,
-                "description_override": "",
-                "show_comment": true,
-                "comment_override": "",
-                "show_button": true,
-                "show_add_to_cart": false
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "pattern_featured_record_KcyMd8"
-          ]
-        }
-      },
-      "block_order": [
-        "col_a",
-        "col_b"
-      ],
-      "settings": {
-        "ratio": "50-50",
-        "width": "full",
-        "gap": "none",
-        "mobile_order": "normal",
-        "padding_top": 0,
-        "padding_bottom": 0
-      }
-    },
     "pattern_featured_records_demo": {
       "type": "pattern-featured-record-section",
       "blocks": {
@@ -358,6 +272,92 @@
       "name": "New in: Audioly play buttons (one block per view)",
       "settings": {
         "include_margins": false
+      }
+    },
+    "pattern_columns_feature_demo": {
+      "type": "pattern-columns",
+      "blocks": {
+        "col_a": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "paper",
+            "overlay_opacity": 50,
+            "padding": "medium",
+            "align": "center",
+            "min_height": "auto"
+          },
+          "blocks": {
+            "feat": {
+              "type": "pattern-featured-record",
+              "settings": {
+                "product": "vakula-firecracker-ep5-phonogra",
+                "label": "Record of the week",
+                "layout": "horizontal",
+                "size": "standard",
+                "background": "dark",
+                "show_genres": true,
+                "show_description": true,
+                "description_lines": 3,
+                "description_override": "",
+                "show_comment": true,
+                "comment_override": "Three tracks, all killers.",
+                "show_button": true,
+                "show_add_to_cart": false
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "feat"
+          ]
+        },
+        "col_b": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "paper",
+            "overlay_opacity": 50,
+            "padding": "medium",
+            "align": "top",
+            "min_height": "auto"
+          },
+          "blocks": {
+            "pattern_featured_record_KcyMd8": {
+              "type": "pattern-featured-record",
+              "name": "Featured record",
+              "settings": {
+                "product": "abacus-erotic-illusions",
+                "label": "Staff pick",
+                "layout": "horizontal",
+                "size": "standard",
+                "background": "dark",
+                "show_genres": true,
+                "show_description": true,
+                "description_lines": 3,
+                "description_override": "",
+                "show_comment": true,
+                "comment_override": "",
+                "show_button": true,
+                "show_add_to_cart": false
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "pattern_featured_record_KcyMd8"
+          ]
+        }
+      },
+      "block_order": [
+        "col_a",
+        "col_b"
+      ],
+      "settings": {
+        "ratio": "50-50",
+        "width": "full",
+        "gap": "none",
+        "mobile_order": "normal",
+        "padding_top": 0,
+        "padding_bottom": 0
       }
     },
     "featured_record_example_c": {
@@ -604,7 +604,7 @@
             "icon": "storefront",
             "label": "Collect · Alcântara",
             "highlight": "Collect in store",
-            "text": "Place an order, select collect from store and it is immediately reserved for you.",
+            "text": "Place an order and select collect from store  at checkout. Once confirmed you can collect your order during opening hours.",
             "link": "/policies/shipping-policy",
             "link_label": "How collection works"
           }
@@ -615,7 +615,7 @@
             "icon": "clock",
             "label": "Delivery · Lisbon",
             "highlight": "Lisbon in 24 hours",
-            "text": "Flat-fee express delivery on up to 4 items within Lisbon postcodes.",
+            "text": "Flat-fee 24 hour express delivery on up to 4 items within Lisbon postcodes.",
             "link": "/policies/shipping-policy",
             "link_label": "Delivery zones"
           }
@@ -1138,7 +1138,7 @@
       "settings": {
         "background_texture": "stripes",
         "label": "Visit",
-        "heading": "Alcantara Store",
+        "heading": "",
         "heading_accent": "",
         "heading_end": "",
         "use_shop_address": true,
@@ -1149,7 +1149,7 @@
         "maps_link": "https://maps.app.goo.gl/ursp6mbRLt6D15di7",
         "show_newsletter": true,
         "newsletter_label": "Newsletter",
-        "newsletter_heading": "What's Fresh",
+        "newsletter_heading": "",
         "newsletter_text": "All the latest news delivered to your inbox every 2 weeks",
         "email_label": "Email address",
         "email_placeholder": "you@example.com",
@@ -1191,11 +1191,11 @@
     "pattern_hero",
     "pattern_this_week",
     "apps_this_week_audioly",
-    "pattern_columns_feature_demo",
     "pattern_featured_records_demo",
     "apps_featured_records_demo",
     "pattern_new_in_views",
     "apps_new_in_views_audioly",
+    "pattern_columns_feature_demo",
     "featured_record_example_c",
     "pattern_genre_tiles",
     "pattern_service_row",
