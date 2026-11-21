@@ -604,7 +604,7 @@
             "icon": "storefront",
             "label": "Collect · Alcântara",
             "highlight": "Collect in store",
-            "text": "Place an order, select collect from store and it is immediately reserved for you.",
+            "text": "Place an order and select collect from store  at checkout. Once confirmed you can collect your order during opening hours.",
             "link": "/policies/shipping-policy",
             "link_label": "How collection works"
           }
@@ -615,7 +615,7 @@
             "icon": "clock",
             "label": "Delivery · Lisbon",
             "highlight": "Lisbon in 24 hours",
-            "text": "Flat-fee express delivery on up to 4 items within Lisbon postcodes.",
+            "text": "Flat-fee 24 hour express delivery on up to 4 items within Lisbon postcodes.",
             "link": "/policies/shipping-policy",
             "link_label": "Delivery zones"
           }
