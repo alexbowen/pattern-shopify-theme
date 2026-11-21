@@ -1137,7 +1137,7 @@
       "settings": {
         "background_texture": "stripes",
         "label": "Visit",
-        "heading": "Alcantara Store",
+        "heading": "",
         "heading_accent": "",
         "heading_end": "",
         "use_shop_address": true,
@@ -1148,7 +1148,7 @@
         "maps_link": "https://maps.app.goo.gl/ursp6mbRLt6D15di7",
         "show_newsletter": true,
         "newsletter_label": "Newsletter",
-        "newsletter_heading": "What's Fresh",
+        "newsletter_heading": "",
         "newsletter_text": "All the latest news delivered to your inbox every 2 weeks",
         "email_label": "Email address",
         "email_placeholder": "you@example.com",
