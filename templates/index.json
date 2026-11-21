@@ -222,7 +222,7 @@
         "view_popular"
       ],
       "settings": {
-        "heading": "New in",
+        "heading": "Latest Arrivals",
         "products_to_show": 12,
         "products_on_mobile": 6,
         "container_width": "standard",
