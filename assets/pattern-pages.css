@@ -373,7 +373,70 @@
   }
 }
 
+/* ===== Heading anchors (assets/pattern-anchors.js) =====
+   h2 / h3 in the page or policy text get ids; jumps land clear of a sticky header (offset set by
+   the script: header height when sticky, plus 16px); the targeted heading gets a short accent bar
+   in the left gutter (text doesn't move); a quiet "#" link shows on hover / keyboard focus. */
+:is(.shopify-policy__body, .pattern-page__body) :is(h2, h3) {
+  position: relative;
+  scroll-margin-top: var(--pattern-anchor-offset, 1.6rem);
+}
+
+:is(.shopify-policy__body, .pattern-page__body) :is(h2, h3):is(:target, .pattern-anchor-target)::before {
+  content: '';
+  position: absolute;
+  left: -1.4rem;
+  top: 0.15em;
+  height: 1em;
+  width: 0.3rem;
+  background-color: var(--accent);
+}
+
+/* Zero-width box after the text: the "#" shows to its right without changing how the heading wraps */
+.pattern-anchor-link {
+  display: inline-block;
+  width: 0;
+  overflow: visible;
+  white-space: nowrap;
+  padding-left: 0.35em;
+  color: var(--pattern-muted);
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 0.75em;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.pattern-page .rte a.pattern-anchor-link,
+#MainContent .shopify-policy__body .rte a.pattern-anchor-link {
+  color: var(--pattern-muted);
+  text-decoration: none;
+}
+
+:is(h2, h3):hover > .pattern-anchor-link,
+.pattern-anchor-link:focus-visible {
+  opacity: 1;
+}
+
+.pattern-anchor-link:hover {
+  color: var(--pattern-ink);
+}
+
+.pattern-anchor-link:focus-visible {
+  outline: 0.2rem solid var(--accent);
+  outline-offset: 0.2rem;
+}
+
+/* Smooth scrolling for same-page anchors, unless reduced motion is preferred */
+@media (prefers-reduced-motion: no-preference) {
+  html:has(:is(.pattern-page, .shopify-policy__container)) {
+    scroll-behavior: smooth;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .pattern-anchor-link,
   .pattern-page .rte a,
   #MainContent .shopify-policy__body .rte a,
   #MainContent .contact__button .button {
