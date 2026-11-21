@@ -14,7 +14,7 @@
 
   Accepts:
   - name: {String} parcel | storefront | clock | bike | van | disc | headphones | map-pin | swap |
-    search | x
+    search | x | arrow-up-right
     (none or blank renders nothing)
   - size: {Number} pixel size, default 32
   - class: {String} extra classes (optional)
@@ -50,6 +50,8 @@
       <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
     {%- when 'x' -%}
       <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+    {%- when 'arrow-up-right' -%}
+      <path d="M7 7h10v10"/><path d="M7 17 17 7"/>
   {%- endcase -%}
 {%- endcapture -%}
 {%- if icon_paths != blank -%}

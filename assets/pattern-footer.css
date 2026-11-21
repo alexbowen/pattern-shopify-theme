@@ -204,6 +204,51 @@
   border-bottom-color: var(--pattern-hairline);
 }
 
+/* ===== Social links (snippets/pattern-social-links.liquid) =====
+   A row of plain DM Mono links above the policy links, in the footer's text colour, each with a
+   small north-east arrow; underline on hover in currentColor. Same 2.4rem gap as the other rows. */
+.footer .pattern-footer-social {
+  justify-content: flex-start;
+}
+
+.pattern-social-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem 3.2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.pattern-social-links__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.4rem;
+  color: currentColor;
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-decoration-thickness: 0.1rem;
+  text-underline-offset: 0.3rem;
+}
+
+.pattern-social-links__link:hover {
+  text-decoration-line: underline;
+  text-decoration-color: currentColor;
+}
+
+.pattern-social-links__link:focus-visible {
+  outline: 0.2rem solid currentColor;
+  outline-offset: 0.3rem;
+  box-shadow: none;
+}
+
+.pattern-social-links__arrow {
+  flex: 0 0 auto;
+}
+
 /* ===== Mobile: everything stacked and left-aligned, 2.4rem apart ===== */
 @media screen and (max-width: 749px) {
   .footer .footer__content-bottom {

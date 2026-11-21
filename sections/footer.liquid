@@ -129,9 +129,6 @@
                       {%- if settings.brand_description != blank -%}
                         <div class="rte">{{ settings.brand_description }}</div>
                       {%- endif -%}
-                      {%- if block.settings.show_social and has_social_icons -%}
-                        {%- render 'social-icons', class: 'footer__list-social' -%}
-                      {%- endif -%}
                     </div>
                   {%- when 'image' -%}
                     <div class="footer-block__details-content footer-block-image {{ block.settings.alignment }}">
@@ -243,9 +240,6 @@
             </div>
           {%- endif -%}
 
-          {%- if section.settings.show_social and has_social_icons -%}
-            {%- render 'social-icons', class: 'footer__list-social' -%}
-          {%- endif -%}
         </div>
       </div>
     {%- endunless -%}
@@ -298,6 +292,24 @@
         {%- endif -%}
       </div>
     </div>
+    {%- comment -%}
+      Social links (Theme settings > Social media) as a text row above the policy links, in place of
+      Dawn's round icons. Shown when the footer's "Show social media icons" setting (or a Brand
+      information block's) is on and at least one link is set.
+    {%- endcomment -%}
+    {%- liquid
+      assign show_social_row = section.settings.show_social
+      for block in section.blocks
+        if block.type == 'brand_information' and block.settings.show_social
+          assign show_social_row = true
+        endif
+      endfor
+    -%}
+    {%- if show_social_row and has_social_icons -%}
+      <div class="footer__content-bottom-wrapper page-width pattern-footer-social">
+        {%- render 'pattern-social-links' -%}
+      </div>
+    {%- endif -%}
     <div class="footer__content-bottom-wrapper page-width{% if section.settings.enable_country_selector == false and section.settings.enable_language_selector == false %} footer__content-bottom-wrapper--center{% endif %}">
       <div class="footer__copyright caption">
         <small class="copyright__content"

@@ -25,6 +25,7 @@
         "share_on_twitter": "Share on X",
         "share_on_pinterest": "Pin on Pinterest"
       },
+      "pattern_new_tab": "{{ network }}, opens in a new tab",
       "links": {
         "twitter": "X (Twitter)",
         "facebook": "Facebook",

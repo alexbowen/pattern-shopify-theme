@@ -1,0 +1,42 @@
+{%- comment -%}
+  Social links as plain text (DM Mono, footer text colour) with a small north-east arrow, from the
+  theme's social media settings (Theme settings > Social media). Networks without a link are left
+  out; renders nothing when none is set. Each opens in a new tab. Styles: assets/pattern-footer.css.
+
+  Usage:
+  {% render 'pattern-social-links' %}
+{%- endcomment -%}
+{%- liquid
+  assign networks = 'instagram,facebook,tiktok,youtube,twitter,pinterest,snapchat,tumblr,vimeo' | split: ','
+  assign any_link = false
+  for network in networks
+    assign setting_key = 'social_' | append: network | append: '_link'
+    if settings[setting_key] != blank
+      assign any_link = true
+      break
+    endif
+  endfor
+-%}
+{%- if any_link -%}
+  <ul class="pattern-social-links list-unstyled" role="list">
+    {%- for network in networks -%}
+      {%- assign setting_key = 'social_' | append: network | append: '_link' -%}
+      {%- if settings[setting_key] != blank -%}
+        {%- assign label_key = 'general.social.links.' | append: network -%}
+        {%- assign network_name = label_key | t -%}
+        <li class="pattern-social-links__item">
+          <a
+            href="{{ settings[setting_key] }}"
+            class="pattern-social-links__link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="{{ 'general.social.pattern_new_tab' | t: network: network_name | escape }}"
+          >
+            <span>{{ network_name | escape }}</span>
+            {%- render 'pattern-icon', name: 'arrow-up-right', size: 12, class: 'pattern-social-links__arrow' -%}
+          </a>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+{%- endif -%}
