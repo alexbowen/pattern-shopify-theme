@@ -87,92 +87,6 @@
         "include_margins": false
       }
     },
-    "pattern_columns_feature_demo": {
-      "type": "pattern-columns",
-      "blocks": {
-        "col_a": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "paper",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "center",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "feat": {
-              "type": "pattern-featured-record",
-              "settings": {
-                "product": "vakula-firecracker-ep5-phonogra",
-                "label": "Record of the week",
-                "layout": "horizontal",
-                "size": "standard",
-                "background": "dark",
-                "show_genres": true,
-                "show_description": true,
-                "description_lines": 3,
-                "description_override": "",
-                "show_comment": true,
-                "comment_override": "Three tracks, all killers.",
-                "show_button": true,
-                "show_add_to_cart": false
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "feat"
-          ]
-        },
-        "col_b": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "paper",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "top",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "pattern_featured_record_KcyMd8": {
-              "type": "pattern-featured-record",
-              "name": "Featured record",
-              "settings": {
-                "product": "abacus-erotic-illusions",
-                "label": "Staff pick",
-                "layout": "horizontal",
-                "size": "standard",
-                "background": "dark",
-                "show_genres": true,
-                "show_description": true,
-                "description_lines": 3,
-                "description_override": "",
-                "show_comment": true,
-                "comment_override": "",
-                "show_button": true,
-                "show_add_to_cart": false
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "pattern_featured_record_KcyMd8"
-          ]
-        }
-      },
-      "block_order": [
-        "col_a",
-        "col_b"
-      ],
-      "settings": {
-        "ratio": "50-50",
-        "width": "full",
-        "gap": "none",
-        "mobile_order": "normal",
-        "padding_top": 0,
-        "padding_bottom": 0
-      }
-    },
     "pattern_featured_records_demo": {
       "type": "pattern-featured-record-section",
       "blocks": {
@@ -358,6 +272,92 @@
       "name": "New in: Audioly play buttons (one block per view)",
       "settings": {
         "include_margins": false
+      }
+    },
+    "pattern_columns_feature_demo": {
+      "type": "pattern-columns",
+      "blocks": {
+        "col_a": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "paper",
+            "overlay_opacity": 50,
+            "padding": "medium",
+            "align": "center",
+            "min_height": "auto"
+          },
+          "blocks": {
+            "feat": {
+              "type": "pattern-featured-record",
+              "settings": {
+                "product": "vakula-firecracker-ep5-phonogra",
+                "label": "Record of the week",
+                "layout": "horizontal",
+                "size": "standard",
+                "background": "dark",
+                "show_genres": true,
+                "show_description": true,
+                "description_lines": 3,
+                "description_override": "",
+                "show_comment": true,
+                "comment_override": "Three tracks, all killers.",
+                "show_button": true,
+                "show_add_to_cart": false
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "feat"
+          ]
+        },
+        "col_b": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "paper",
+            "overlay_opacity": 50,
+            "padding": "medium",
+            "align": "top",
+            "min_height": "auto"
+          },
+          "blocks": {
+            "pattern_featured_record_KcyMd8": {
+              "type": "pattern-featured-record",
+              "name": "Featured record",
+              "settings": {
+                "product": "abacus-erotic-illusions",
+                "label": "Staff pick",
+                "layout": "horizontal",
+                "size": "standard",
+                "background": "dark",
+                "show_genres": true,
+                "show_description": true,
+                "description_lines": 3,
+                "description_override": "",
+                "show_comment": true,
+                "comment_override": "",
+                "show_button": true,
+                "show_add_to_cart": false
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "pattern_featured_record_KcyMd8"
+          ]
+        }
+      },
+      "block_order": [
+        "col_a",
+        "col_b"
+      ],
+      "settings": {
+        "ratio": "50-50",
+        "width": "full",
+        "gap": "none",
+        "mobile_order": "normal",
+        "padding_top": 0,
+        "padding_bottom": 0
       }
     },
     "featured_record_example_c": {
@@ -1190,11 +1190,11 @@
     "pattern_hero",
     "pattern_this_week",
     "apps_this_week_audioly",
-    "pattern_columns_feature_demo",
     "pattern_featured_records_demo",
     "apps_featured_records_demo",
     "pattern_new_in_views",
     "apps_new_in_views_audioly",
+    "pattern_columns_feature_demo",
     "featured_record_example_c",
     "pattern_genre_tiles",
     "pattern_service_row",
