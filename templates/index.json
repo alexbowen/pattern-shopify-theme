@@ -36,26 +36,6 @@
     "pattern_this_week": {
       "type": "pattern-this-week",
       "blocks": {
-        "record_1": {
-          "type": "pattern-record",
-          "settings": {
-            "product": "inta-city-runnin-outta-time-journey-to-the-sun-remixes",
-            "label": "",
-            "artist": "",
-            "title": ""
-          },
-          "blocks": {}
-        },
-        "record_2": {
-          "type": "pattern-record",
-          "settings": {
-            "product": "dj-sneak-voodoo-salon020-b2b",
-            "label": "",
-            "artist": "",
-            "title": ""
-          },
-          "blocks": {}
-        },
         "record_3": {
           "type": "pattern-record",
           "settings": {
@@ -68,13 +48,11 @@
         }
       },
       "block_order": [
-        "record_1",
-        "record_2",
         "record_3"
       ],
       "settings": {
         "heading": "",
-        "label": "This week",
+        "label": "Now Playing",
         "size": "standard",
         "layout": "lines",
         "background": "stripes",
