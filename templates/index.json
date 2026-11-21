@@ -23,7 +23,7 @@
         "secondary_label": "Browse by genre",
         "secondary_link": "",
         "background_texture": "stripes",
-        "image": "shopify://shop_images/20171116-.com.apple.Foundation.NSItemProvider.CHLpuR.jpg",
+        "image": "shopify://shop_images/20261120_173242.jpg",
         "image_alt": "",
         "full_height": 560,
         "full_overlay": 60,
@@ -36,26 +36,6 @@
     "pattern_this_week": {
       "type": "pattern-this-week",
       "blocks": {
-        "record_1": {
-          "type": "pattern-record",
-          "settings": {
-            "product": "inta-city-runnin-outta-time-journey-to-the-sun-remixes",
-            "label": "",
-            "artist": "",
-            "title": ""
-          },
-          "blocks": {}
-        },
-        "record_2": {
-          "type": "pattern-record",
-          "settings": {
-            "product": "dj-sneak-voodoo-salon020-b2b",
-            "label": "",
-            "artist": "",
-            "title": ""
-          },
-          "blocks": {}
-        },
         "record_3": {
           "type": "pattern-record",
           "settings": {
@@ -68,13 +48,11 @@
         }
       },
       "block_order": [
-        "record_1",
-        "record_2",
         "record_3"
       ],
       "settings": {
         "heading": "",
-        "label": "This week",
+        "label": "Now Playing",
         "size": "standard",
         "layout": "lines",
         "background": "stripes",
@@ -107,6 +85,92 @@
       ],
       "settings": {
         "include_margins": false
+      }
+    },
+    "pattern_columns_feature_demo": {
+      "type": "pattern-columns",
+      "blocks": {
+        "col_a": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "paper",
+            "overlay_opacity": 50,
+            "padding": "medium",
+            "align": "center",
+            "min_height": "auto"
+          },
+          "blocks": {
+            "feat": {
+              "type": "pattern-featured-record",
+              "settings": {
+                "product": "vakula-firecracker-ep5-phonogra",
+                "label": "Record of the week",
+                "layout": "horizontal",
+                "size": "standard",
+                "background": "dark",
+                "show_genres": true,
+                "show_description": true,
+                "description_lines": 3,
+                "description_override": "",
+                "show_comment": true,
+                "comment_override": "Three tracks, all killers.",
+                "show_button": true,
+                "show_add_to_cart": false
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "feat"
+          ]
+        },
+        "col_b": {
+          "type": "pattern-column",
+          "settings": {
+            "background": "paper",
+            "overlay_opacity": 50,
+            "padding": "medium",
+            "align": "top",
+            "min_height": "auto"
+          },
+          "blocks": {
+            "pattern_featured_record_KcyMd8": {
+              "type": "pattern-featured-record",
+              "name": "Featured record",
+              "settings": {
+                "product": "abacus-erotic-illusions",
+                "label": "Staff pick",
+                "layout": "horizontal",
+                "size": "standard",
+                "background": "dark",
+                "show_genres": true,
+                "show_description": true,
+                "description_lines": 3,
+                "description_override": "",
+                "show_comment": true,
+                "comment_override": "",
+                "show_button": true,
+                "show_add_to_cart": false
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "pattern_featured_record_KcyMd8"
+          ]
+        }
+      },
+      "block_order": [
+        "col_a",
+        "col_b"
+      ],
+      "settings": {
+        "ratio": "50-50",
+        "width": "full",
+        "gap": "none",
+        "mobile_order": "normal",
+        "padding_top": 0,
+        "padding_bottom": 0
       }
     },
     "pattern_featured_records_demo": {
@@ -244,7 +308,7 @@
         "view_popular"
       ],
       "settings": {
-        "heading": "New in",
+        "heading": "Latest Arrivals",
         "products_to_show": 12,
         "products_on_mobile": 6,
         "container_width": "standard",
@@ -294,92 +358,6 @@
       "name": "New in: Audioly play buttons (one block per view)",
       "settings": {
         "include_margins": false
-      }
-    },
-    "pattern_columns_feature_demo": {
-      "type": "pattern-columns",
-      "blocks": {
-        "col_a": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "paper",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "center",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "feat": {
-              "type": "pattern-featured-record",
-              "settings": {
-                "product": "vakula-firecracker-ep5-phonogra",
-                "label": "Record of the week",
-                "layout": "horizontal",
-                "size": "standard",
-                "background": "dark",
-                "show_genres": true,
-                "show_description": true,
-                "description_lines": 3,
-                "description_override": "",
-                "show_comment": true,
-                "comment_override": "Three tracks, all killers.",
-                "show_button": true,
-                "show_add_to_cart": false
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "feat"
-          ]
-        },
-        "col_b": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "paper",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "top",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "pattern_featured_record_KcyMd8": {
-              "type": "pattern-featured-record",
-              "name": "Featured record",
-              "settings": {
-                "product": "abacus-erotic-illusions",
-                "label": "Staff pick",
-                "layout": "horizontal",
-                "size": "standard",
-                "background": "dark",
-                "show_genres": true,
-                "show_description": true,
-                "description_lines": 3,
-                "description_override": "",
-                "show_comment": true,
-                "comment_override": "",
-                "show_button": true,
-                "show_add_to_cart": false
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "pattern_featured_record_KcyMd8"
-          ]
-        }
-      },
-      "block_order": [
-        "col_a",
-        "col_b"
-      ],
-      "settings": {
-        "ratio": "50-50",
-        "width": "full",
-        "gap": "none",
-        "mobile_order": "normal",
-        "padding_top": 0,
-        "padding_bottom": 0
       }
     },
     "featured_record_example_c": {
@@ -665,7 +643,7 @@
             "label": "Staff pick",
             "layout": "horizontal",
             "size": "standard",
-            "background": "none",
+            "background": "dark",
             "show_genres": true,
             "show_description": true,
             "description_lines": 3,
@@ -684,7 +662,7 @@
             "label": "Staff pick",
             "layout": "horizontal",
             "size": "standard",
-            "background": "none",
+            "background": "dark",
             "show_genres": true,
             "show_description": true,
             "description_lines": 3,
@@ -701,6 +679,7 @@
         "ex_a1",
         "ex_a2"
       ],
+      "disabled": true,
       "name": "Featured record (example) A: three records",
       "settings": {
         "eyebrow": "Example",
@@ -1094,6 +1073,7 @@
         "event_2",
         "event_3"
       ],
+      "disabled": true,
       "settings": {
         "overlay_opacity": 70,
         "label": "The space",
@@ -1157,19 +1137,19 @@
       "settings": {
         "background_texture": "stripes",
         "label": "Visit",
-        "heading": "Come and listen.",
+        "heading": "Alcantara Store",
         "heading_accent": "",
         "heading_end": "",
         "use_shop_address": true,
         "show_country": false,
         "address_override": "",
-        "hours": "[Opening hours]",
+        "hours": "Tuesday - Saturday\n11.00 - 19.00h",
         "maps_label": "Open in Maps",
         "maps_link": "https://maps.app.goo.gl/ursp6mbRLt6D15di7",
         "show_newsletter": true,
         "newsletter_label": "Newsletter",
-        "newsletter_heading": "New arrivals, first.",
-        "newsletter_text": "A short note when fresh crates land. No noise.",
+        "newsletter_heading": "What's Fresh",
+        "newsletter_text": "All the latest news delivered to your inbox every 2 weeks",
         "email_label": "Email address",
         "email_placeholder": "you@example.com",
         "button_label": "Subscribe",
@@ -1210,11 +1190,11 @@
     "pattern_hero",
     "pattern_this_week",
     "apps_this_week_audioly",
+    "pattern_columns_feature_demo",
     "pattern_featured_records_demo",
     "apps_featured_records_demo",
     "pattern_new_in_views",
     "apps_new_in_views_audioly",
-    "pattern_columns_feature_demo",
     "featured_record_example_c",
     "pattern_genre_tiles",
     "pattern_service_row",
