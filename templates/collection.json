@@ -66,11 +66,80 @@
       "settings": {
         "include_margins": true
       }
+    },
+    "pattern_service_row_j8dPVK": {
+      "type": "pattern-service-row",
+      "blocks": {
+        "service_MgrAkV": {
+          "type": "service",
+          "settings": {
+            "icon": "parcel",
+            "label": "Postage · PT & ES",
+            "highlight": "One flat rate",
+            "text": "To Portugal and Spain.",
+            "link": "",
+            "link_label": "Shipping details"
+          }
+        },
+        "service_Vd4Mgf": {
+          "type": "service",
+          "settings": {
+            "icon": "storefront",
+            "label": "Collect · Alcântara",
+            "highlight": "Collect in store",
+            "text": "Pick up at the shop and have a listen while you're there.",
+            "link": "",
+            "link_label": "How collection works"
+          }
+        },
+        "service_gRndc3": {
+          "type": "service",
+          "disabled": true,
+          "settings": {
+            "icon": "clock",
+            "label": "Delivery · Lisbon",
+            "highlight": "Lisbon in 24 hours",
+            "text": "Flat-fee delivery within Lisbon postcodes.",
+            "link": "",
+            "link_label": "Delivery zones"
+          }
+        }
+      },
+      "block_order": [
+        "service_MgrAkV",
+        "service_Vd4Mgf",
+        "service_gRndc3"
+      ],
+      "name": "Pattern service row",
+      "settings": {
+        "heading": "",
+        "background": "stripes-dark",
+        "padding_top": 48,
+        "padding_bottom": 96
+      }
+    },
+    "pattern_feature_split_a9fDWm": {
+      "type": "pattern-feature-split",
+      "disabled": true,
+      "name": "Pattern feature split",
+      "settings": {
+        "image_position": "left",
+        "tone": "clay",
+        "label": "We buy & exchange",
+        "heading": "Bring us your",
+        "heading_accent": "records",
+        "heading_end": ".",
+        "text": "<p>We buy and exchange records. Bring a crate to the shop or send us a list, and we'll make you an offer or swap them for something new to you.</p>",
+        "button_label": "How it works",
+        "button_link": ""
+      }
     }
   },
   "order": [
     "banner",
     "product-grid",
-    "1787136658bc232081"
+    "1787136658bc232081",
+    "pattern_service_row_j8dPVK",
+    "pattern_feature_split_a9fDWm"
   ]
 }
