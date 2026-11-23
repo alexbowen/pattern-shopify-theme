@@ -1155,7 +1155,7 @@
         "use_shop_address": true,
         "show_country": false,
         "address_override": "",
-        "hours": "Tuesday - Saturday\n11.00 - 19.00h",
+        "hours": "Tuesday - Saturday\n11:00 – 19:00",
         "maps_label": "Open in Maps",
         "maps_link": "https://maps.app.goo.gl/ursp6mbRLt6D15di7",
         "show_newsletter": true,
