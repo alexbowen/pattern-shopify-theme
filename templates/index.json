@@ -300,7 +300,7 @@
                 "description_lines": 3,
                 "description_override": "",
                 "show_comment": true,
-                "comment_override": "Three tracks, all killers.",
+                "comment_override": "",
                 "show_button": true,
                 "show_add_to_cart": false
               },
