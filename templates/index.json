@@ -19,7 +19,7 @@
         "headline_end": "curious listeners",
         "body": "Electronic and Organic sounds — new and used vinyl, in our Alcântara store and online.",
         "primary_label": "Shop new arrivals",
-        "primary_link": "/collections/all",
+        "primary_link": "/collections/all?sort_by=created-descending",
         "secondary_label": "Browse by genre",
         "secondary_link": "",
         "background_texture": "stripes",
