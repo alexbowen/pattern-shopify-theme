@@ -23,7 +23,7 @@
         "secondary_label": "Browse by genre",
         "secondary_link": "",
         "background_texture": "stripes",
-        "image": "shopify://shop_images/20261120_173242.jpg",
+        "image": "shopify://shop_images/20261123_173850.jpg",
         "image_alt": "",
         "full_height": 560,
         "full_overlay": 60,
@@ -1125,12 +1125,22 @@
         "story_pick"
       ],
       "settings": {
-        "source": "stories",
+        "label": "",
         "heading": "From the shop",
         "heading_accent": "",
         "heading_end": "",
         "link_label": "All news",
-        "link": "/blogs/news"
+        "link": "/blogs/news",
+        "source": "stories",
+        "blog": "",
+        "posts_count": 3,
+        "show_excerpt": true,
+        "show_date": true,
+        "show_tag": true,
+        "columns": "3",
+        "mobile_layout": "stacked",
+        "background": "paper",
+        "container_width": "standard"
       }
     },
     "pattern_visit": {
