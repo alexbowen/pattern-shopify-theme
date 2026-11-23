@@ -47,7 +47,7 @@
         "audioly_sticky_audio_player_play_pause_buttons_phBqQ7": {
           "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons/1f530410-ca0c-4485-98fc-b2daea5cb117",
           "settings": {
-            "productsPerPage": 16,
+            "productsPerPage": 24,
             "size": 60,
             "position": "center",
             "padding": 20,
