@@ -1093,7 +1093,7 @@
         "collection": "coming-soon-electronic",
         "products_to_show": 6,
         "title": "Coming Soon",
-        "heading_size": "h1",
+        "heading_size": "h0",
         "description": "<p>Available for pre order</p>",
         "show_description": false,
         "description_style": "body",
