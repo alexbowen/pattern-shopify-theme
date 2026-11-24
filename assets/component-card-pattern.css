@@ -44,8 +44,10 @@
 }
 
 /* ===== Row alignment =====
-   Text space is reserved below, but covers can differ slightly in height (collections set to
-   "adapt to image"), so the text column fills the card and the price row sits at its foot. */
+   Titles run to one or two lines, only some records have a label line, and covers can differ
+   slightly in height (collections set to "adapt to image"). The text column fills the card and
+   the meta row (with the price row under it) sits at its foot, so meta, hairline and price line
+   up across a row; a card without a label has its spare space above the meta row. */
 .card-wrapper .card--standard > .card__content {
   display: flex;
   flex-direction: column;
@@ -58,16 +60,22 @@
   flex-grow: 1;
 }
 
-.card-wrapper .card__information > .card-information {
+.card-wrapper .card__information > .card-pattern__meta {
   margin-top: auto;
 }
 
+/* Spacing that the auto margin above replaces */
+.card-wrapper .card__information > .card-pattern__label + .card-pattern__meta,
+.card-wrapper .card__information > .card-pattern__heading + .card-pattern__meta {
+  padding-top: 0.6rem;
+}
+
 /* ===== Artist / title ===== */
-/* One artist line + two title lines are always reserved */
+/* No reserved height: the label follows the title directly, and the bottom-pinned meta row keeps
+   rows aligned (see Row alignment) */
 .card-pattern__heading.card__heading {
   font-size: var(--card-artist-size);
   line-height: var(--card-line);
-  min-height: calc(var(--card-artist-size) * var(--card-line) + 2 * var(--card-title-size) * var(--card-title-line) + 0.2rem);
   color: var(--card-text);
 }
 
@@ -122,10 +130,25 @@
   text-underline-offset: 0.3rem;
 }
 
-/* ===== Meta: label · format · genre, one line, always reserves its height ===== */
+/* ===== Label: its own line under the title, DM Mono italic, muted, one line ===== */
+.card-pattern__label {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-mono, inherit);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.15rem;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--card-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===== Meta: format · genre, one line, always reserves its height ===== */
 .card-pattern__meta {
   font-family: var(--font-mono, inherit);
-  margin: 0.6rem 0 0;
+  margin: 0;
   min-height: calc(1.2rem * 1.4);
   font-size: 1.2rem;
   line-height: 1.4;
@@ -139,30 +162,6 @@
 /* Dawn hides every empty <p> (base.css p:empty); the meta line keeps its height regardless */
 .card-pattern__meta:empty {
   display: block;
-}
-
-/* When it doesn't fit, the label gives way first (ellipsis); format and genre stay whole. If
-   format and genre alone are still too wide, the line is cut from the left (label) side: it's
-   end-aligned, and the last item's auto margin keeps it left-aligned whenever it fits. */
-.card-pattern__meta:not(:empty) {
-  display: flex;
-  justify-content: flex-end;
-  min-width: 0;
-}
-
-.card-pattern__meta > span:last-child {
-  margin-right: auto;
-}
-
-.card-pattern__meta > span {
-  flex: 0 0 auto;
-}
-
-.card-pattern__meta > .card-pattern__meta-label {
-  flex: 0 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .card-pattern__sep {
@@ -213,7 +212,8 @@
     padding: 0.8rem 0.2rem 1rem;
   }
 
-  .card-pattern__meta {
+  .card-pattern__meta,
+  .card-pattern__label {
     font-size: 1.1rem;
   }
 

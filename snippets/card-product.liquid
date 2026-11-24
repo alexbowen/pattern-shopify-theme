@@ -148,8 +148,9 @@
         <div class="card__information">
           {%- comment -%}
             Pattern card text: "Artist - Title" split on the first " - " (no split, no artist line
-            when there isn't one), then a meta line: label · format (with item count) · first
-            child genre. Missing parts are left out with no stray separators.
+            when there isn't one), then the record label on its own line (DM Mono italic, muted,
+            left out when empty), then a meta line: format (with item count) · parent genre.
+            Missing parts are left out with no stray separators.
           {%- endcomment -%}
           {%- liquid
             assign card_full_title = card_product.title | strip
@@ -168,9 +169,6 @@
             assign card_meta = ''
             assign card_meta_sep = '|~|'
             assign card_label = card_product.metafields.custom.label.value | strip
-            if card_label != blank
-              assign card_meta = card_label
-            endif
 
             # custom.item_count is number_integer; `plus: 0` also copes with a numeric string.
             # 2+ items: "2LP" for LPs, "2×12\" Single" etc. for anything else; 1 or missing: format only.
@@ -254,12 +252,15 @@
               <span class="card-pattern__title">{{ card_title | escape }}</span>
             </a>
           </h3>
+          {%- if card_label != blank -%}
+            <p class="card-pattern__label">{{ card_label | escape }}</p>
+          {%- endif -%}
           <p class="card-pattern__meta">
             {%- if card_meta != blank -%}
               {%- assign card_meta_parts = card_meta | split: card_meta_sep -%}
               {%- for card_meta_part in card_meta_parts -%}
                 {%- unless forloop.first -%}<span class="card-pattern__sep" aria-hidden="true"> · </span>{%- endunless -%}
-                <span{% if forloop.first and card_label != blank %} class="card-pattern__meta-label"{% endif %}>{{ card_meta_part | escape }}</span>
+                <span>{{ card_meta_part | escape }}</span>
               {%- endfor -%}
             {%- endif -%}
           </p>
