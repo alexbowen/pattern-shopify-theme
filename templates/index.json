@@ -1204,9 +1204,9 @@
       "settings": {
         "collection": "coming-soon-electronic",
         "products_to_show": 4,
-        "title": "Featured collection",
+        "title": "Coming Soon",
         "heading_size": "h1",
-        "description": "",
+        "description": "<p>Available for pre order</p>",
         "show_description": false,
         "description_style": "body",
         "columns_desktop": 4,
@@ -1249,9 +1249,9 @@
     "pattern_columns_demo",
     "apps_columns_demo_audioly",
     "pattern_space_band",
+    "featured_collection_8grxUc",
     "pattern_editorial_row",
     "pattern_visit",
-    "featured_collection",
-    "featured_collection_8grxUc"
+    "featured_collection"
   ]
 }
