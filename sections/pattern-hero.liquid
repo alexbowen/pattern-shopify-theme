@@ -73,11 +73,23 @@
     if mobile_alpha > 0.92
       assign mobile_alpha = 0.92
     endif
+
+    assign hero_fill = section.settings.fill_screen
+    assign hero_parallax = false
+    if section.settings.parallax == 'subtle' and hero_image != blank
+      assign hero_parallax = true
+    endif
+    # The parallax layer is scaled 1.2x on tablets and desktops, so ask for a 20% wider image there
+    assign hero_sizes = '100vw'
+    if hero_parallax
+      assign hero_sizes = '(min-width: 750px) 120vw, 100vw'
+    endif
   -%}
   <section
-    class="pattern-section pattern-hero pattern-hero--full pattern-hero--overlay-{{ section.settings.overlay_direction }}{% if hero_image == blank %} pattern-hero--no-image{% endif %}"
+    id="PatternHero-{{ section.id }}"
+    class="pattern-section pattern-hero pattern-hero--full pattern-hero--overlay-{{ section.settings.overlay_direction }}{% if hero_image == blank %} pattern-hero--no-image{% endif %}{% if hero_fill %} pattern-hero--fill{% endif %}{% if hero_parallax %} pattern-hero--parallax{% endif %}"
     aria-labelledby="PatternHeroHeading-{{ section.id }}"
-    style="--hero-h: {{ section.settings.full_height }}px; --hero-h-mobile: {{ section.settings.full_height_mobile | default: 420 }}px; --hero-pad-top: {{ section.settings.full_padding_top | default: 48 }}px; --hero-pad-bottom: {{ section.settings.full_padding_bottom | default: 48 }}px; --hero-focal: {{ focal }}; --hero-focal-mobile: {{ focal_mobile }}; --hero-a-text: {{ text_alpha }}; --hero-a-mid: {{ strength }}; --hero-a-far: {{ far_alpha }}; --hero-a-mobile: {{ mobile_alpha }};"
+    style="--hero-h: {{ section.settings.full_height }}px; --hero-h-mobile: {{ section.settings.full_height_mobile | default: 460 }}px; --hero-pad-top: {{ section.settings.full_padding_top | default: 48 }}px; --hero-pad-bottom: {{ section.settings.full_padding_bottom | default: 48 }}px; --hero-focal: {{ focal }}; --hero-focal-mobile: {{ focal_mobile }}; --hero-a-text: {{ text_alpha }}; --hero-a-mid: {{ strength }}; --hero-a-far: {{ far_alpha }}; --hero-a-mobile: {{ mobile_alpha }};"
   >
     <div class="pattern-hero__bg{% if hero_image == blank %} pattern-stripe-dark{% endif %}" aria-hidden="{% if section.settings.image_alt == blank %}true{% else %}false{% endif %}">
       {%- if hero_image != blank -%}
@@ -101,7 +113,7 @@
               loading: 'eager',
               fetchpriority: 'high',
               widths: '375, 550, 750, 1100, 1500, 1800, 2400',
-              sizes: '100vw',
+              sizes: hero_sizes,
               alt: section.settings.image_alt,
               class: 'pattern-hero__bg-image'
           }}
@@ -120,6 +132,107 @@
       </div>
     </div>
   </section>
+
+  {%- if hero_fill or hero_parallax -%}
+    <script>
+      /* Pattern hero: "Fill the first screen" and "Parallax" (sections/pattern-hero.liquid).
+         Fill: --hero-above = everything above the hero (announcement bar, header) and --hero-below =
+         the height of the "This week" section right after it, so header + hero + This week = the
+         screen height.
+         The CSS clamps the hero to 360-880px and has a fallback offset for before this runs.
+         Parallax: the image layer (not the text, overlay or fade) moves down at 20% of the scroll
+         speed while the hero is on screen; transform only, rAF-throttled, tablets and up, off with
+         reduced motion. */
+      (() => {
+        const hero = document.getElementById('PatternHero-{{ section.id }}');
+        if (!hero) return;
+
+        if (hero.classList.contains('pattern-hero--fill')) {
+          const heroSection = hero.closest('.shopify-section') || hero;
+          // The This week section directly after the hero (empty sections, e.g. Apps, are skipped).
+          const findThisWeek = () => {
+            let el = heroSection.nextElementSibling;
+            while (el) {
+              if (el.querySelector('.pattern-this-week')) return el;
+              if (el.getBoundingClientRect().height > 0) return null;
+              el = el.nextElementSibling;
+            }
+            return null;
+          };
+          let thisWeek = null;
+          let observer = null;
+          // --hero-above: announcement bar + header (known as soon as this runs).
+          // --hero-below: the This week section; while the page is still loading and it isn't
+          // parsed yet, the CSS estimate stays in place.
+          const measure = () => {
+            const above = hero.getBoundingClientRect().top + window.scrollY;
+            hero.style.setProperty('--hero-above', `${Math.max(0, Math.round(above))}px`);
+            const found = findThisWeek();
+            if (found !== thisWeek) {
+              thisWeek = found;
+              if (observer && thisWeek) observer.observe(thisWeek);
+            }
+            if (thisWeek) {
+              hero.style.setProperty('--hero-below', `${Math.round(thisWeek.getBoundingClientRect().height)}px`);
+            } else if (document.readyState !== 'loading' || heroSection.nextElementSibling) {
+              hero.style.setProperty('--hero-below', '0px');
+            }
+          };
+          measure();
+          if ('ResizeObserver' in window) {
+            observer = new ResizeObserver(measure);
+            const header = document.querySelector('.shopify-section-group-header-group') || document.querySelector('header');
+            if (header) observer.observe(header);
+            if (thisWeek) observer.observe(thisWeek);
+          }
+          document.addEventListener('DOMContentLoaded', measure);
+          window.addEventListener('load', measure);
+          window.addEventListener('resize', measure, { passive: true });
+          window.addEventListener('orientationchange', measure);
+          if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+        }
+
+        if (hero.classList.contains('pattern-hero--parallax')) {
+          const layer = hero.querySelector('.pattern-hero__bg picture');
+          if (!layer) return;
+          const SPEED = 0.2;
+          const SCALE = 1.2; // must match the CSS
+          const motion = window.matchMedia('(min-width: 750px) and (prefers-reduced-motion: no-preference)');
+          let inView = true;
+          let ticking = false;
+          const update = () => {
+            ticking = false;
+            if (!motion.matches) {
+              layer.style.transform = '';
+              return;
+            }
+            // Never move further than the extra height the scale gives above the hero
+            const max = hero.offsetHeight * (SCALE - 1);
+            const shift = Math.min(Math.max(window.scrollY, 0) * SPEED, max);
+            layer.style.transform = `translate3d(0, ${shift.toFixed(1)}px, 0) scale(${SCALE})`;
+          };
+          const request = () => {
+            if (!inView || ticking) return;
+            ticking = true;
+            requestAnimationFrame(update);
+          };
+          if ('IntersectionObserver' in window) {
+            new IntersectionObserver((entries) => {
+              inView = entries[0].isIntersecting;
+              if (inView) request();
+            }).observe(hero);
+          }
+          window.addEventListener('scroll', request, { passive: true });
+          window.addEventListener('resize', request, { passive: true });
+          motion.addEventListener('change', () => {
+            ticking = false;
+            update();
+          });
+          update();
+        }
+      })();
+    </script>
+  {%- endif -%}
 {%- else -%}
 
 <section
@@ -239,9 +352,77 @@
     bottom: 0;
     height: 28%;
     background-color: var(--pattern-ink);
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 92%);
-    mask-image: linear-gradient(to bottom, transparent, #000 92%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000);
+    mask-image: linear-gradient(to bottom, transparent, #000);
     pointer-events: none;
+  }
+
+  /* ===== Fill the first screen =====
+     Header + hero + the This week section after it = the screen height (100svh, so phone toolbars
+     don't make it jump; 100vh where svh isn't supported). The script in this section measures
+     --hero-above and --hero-below; until it runs, the fallbacks are the usual header height and
+     the usual This week height (--hero-below-guess), which drops to 0 as soon as the section after
+     the hero turns out not to be This week (its wrapper gets .pattern-this-week-section from that
+     section's schema). The page can be laid out before the next section has arrived, so "This
+     week follows" is the starting assumption.
+     Never under 360px (taller windows get the page below the fold) or over 880px. */
+  .pattern-hero--full.pattern-hero--fill {
+    min-height: clamp(36rem, calc(100vh - var(--hero-above, 9.3rem) - var(--hero-below, var(--hero-below-guess, 0px))), 88rem);
+    justify-content: center;
+  }
+
+  @supports (height: 100svh) {
+    .pattern-hero--full.pattern-hero--fill {
+      min-height: clamp(36rem, calc(100svh - var(--hero-above, 9.3rem) - var(--hero-below, var(--hero-below-guess, 0px))), 88rem);
+    }
+  }
+
+  .pattern-hero--fill {
+    --hero-below-guess: 14.1rem;
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .pattern-hero--fill {
+      --hero-below-guess: 15.9rem;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .pattern-hero--full.pattern-hero--fill {
+      min-height: clamp(36rem, calc(100vh - var(--hero-above, 11.8rem) - var(--hero-below, var(--hero-below-guess, 0px))), 88rem);
+    }
+
+    @supports (height: 100svh) {
+      .pattern-hero--full.pattern-hero--fill {
+        min-height: clamp(36rem, calc(100svh - var(--hero-above, 11.8rem) - var(--hero-below, var(--hero-below-guess, 0px))), 88rem);
+      }
+    }
+
+    .pattern-hero--fill {
+      --hero-below-guess: 15.1rem;
+    }
+  }
+
+  .shopify-section:has(+ .shopify-section:not(.pattern-this-week-section)) .pattern-hero--fill {
+    --hero-below-guess: 0px;
+  }
+
+  /* The fade runs straight into the first This week row: no stripe band between them (only when
+     This week has no heading of its own). Its bottom padding still counts in the measurement. */
+  .shopify-section:has(.pattern-hero--fill .pattern-hero__fade) + .shopify-section .pattern-this-week__inner:not(:has(.pattern-this-week__heading)) {
+    padding-top: 0;
+  }
+
+  /* ===== Parallax (Subtle): the image layer only; the overlay and fade stay put =====
+     Scaled from the bottom edge so it reaches 20% of the hero's height above it; the script moves
+     it down by up to that much as the page scrolls, so no edge ever shows. Tablets and up only,
+     never with reduced motion. */
+  @media screen and (min-width: 750px) and (prefers-reduced-motion: no-preference) {
+    .pattern-hero--parallax .pattern-hero__bg picture {
+      transform: scale(1.2);
+      transform-origin: 50% 100%;
+      will-change: transform;
+    }
   }
 
   /* Top / bottom padding settings; the content is centred in whatever height is left */
@@ -523,6 +704,24 @@
       "info": "Optional. Used on phones instead of the hero image (with its own focal point)."
     },
     {
+      "type": "checkbox",
+      "id": "fill_screen",
+      "label": "Fill the first screen",
+      "info": "Header, hero and the \"This week\" section below it fill the screen exactly, so the next section starts at the fold. The hero stays between 360 and 880px.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "parallax",
+      "label": "Parallax",
+      "info": "Subtle: the photo moves a little slower than the page as you scroll. Tablets and desktops only; off for visitors who prefer reduced motion.",
+      "options": [
+        { "value": "off", "label": "Off" },
+        { "value": "subtle", "label": "Subtle" }
+      ],
+      "default": "subtle"
+    },
+    {
       "type": "range",
       "id": "full_height",
       "min": 320,
@@ -530,8 +729,8 @@
       "step": 20,
       "unit": "px",
       "label": "Height on desktop",
-      "info": "Minimum height; the hero grows if the text needs more room. Never more than 80% of the screen height.",
-      "default": 440
+      "info": "Used when \"Fill the first screen\" is off. Minimum height; the hero grows if the text needs more room. Never more than 80% of the screen height.",
+      "default": 520
     },
     {
       "type": "range",
@@ -541,8 +740,8 @@
       "step": 20,
       "unit": "px",
       "label": "Height on mobile",
-      "info": "Minimum height on phones; the hero grows if the text needs more room.",
-      "default": 420
+      "info": "Used when \"Fill the first screen\" is off. Minimum height on phones; the hero grows if the text needs more room.",
+      "default": 460
     },
     {
       "type": "range",
