@@ -1091,7 +1091,7 @@
       "name": "t:sections.featured-collection.presets.name",
       "settings": {
         "collection": "coming-soon-electronic",
-        "products_to_show": 6,
+        "products_to_show": 12,
         "title": "Coming Soon",
         "heading_size": "h0",
         "description": "<p>Available for pre order</p>",
