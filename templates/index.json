@@ -1044,6 +1044,14 @@
     "pattern_space_band": {
       "type": "pattern-space-band",
       "blocks": {
+        "event_gfLeJM": {
+          "type": "event",
+          "settings": {
+            "date": "21 Nov",
+            "name": "Event name — 19:00",
+            "link": ""
+          }
+        },
         "event_1": {
           "type": "event",
           "settings": {
@@ -1070,6 +1078,7 @@
         }
       },
       "block_order": [
+        "event_gfLeJM",
         "event_1",
         "event_2",
         "event_3"
@@ -1095,7 +1104,7 @@
         "label": "",
         "title": "Coming soon",
         "heading_size": "h0",
-        "description": "<p>Available for pre order</p>",
+        "description": "<p>Available for preorder</p>",
         "show_description": false,
         "description_style": "body",
         "columns_desktop": 6,
@@ -1125,7 +1134,7 @@
           "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
           "settings": {
             "collection": "coming-soon-electronic",
-            "productsToShow": 6,
+            "productsToShow": 12,
             "size": 60,
             "position": "center",
             "padding": 20,
