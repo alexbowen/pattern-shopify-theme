@@ -1,3 +1,15 @@
+{%- comment -%}
+  Dawn's Featured collection, restyled for Pattern in place (all Dawn settings kept). Heading row
+  like Latest arrivals / Browse by genre: optional mono label, display heading, muted description,
+  "View all" as the Pattern text link on the right. Background Paper / Sand / Clay / Ink / Dark
+  stripe (paper text, meta and hairlines on the dark two) and the shared Standard / Wide container;
+  Full width lets the grid run to the screen edges (with the gutter) while the heading stays in
+  the container. Carousel arrows are hairline squares.
+  Cards: snippets/card-product.liquid, the same snippet the Latest arrivals grid uses (its meta
+  logic lives in the snippet, so the two can't drift), in Dawn's grid / grid__item markup inside
+  .collection, so Audioly's selectors match. Audioly buttons on a non-collection page come from an
+  Apps section below with its "Play/pause buttons for featured collection" block.
+{%- endcomment -%}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
 
@@ -26,8 +38,8 @@
 
 {%- style -%}
   .section-{{ section.id }}-padding {
-    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    padding-top: {{ section.settings.padding_top | times: 0.667 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.667 | round: 0 }}px;
   }
 
   @media screen and (min-width: 750px) {
@@ -56,33 +68,54 @@
   if section.settings.enable_desktop_slider and products_to_display > section.settings.columns_desktop
     assign show_desktop_slider = true
   endif
+
+  assign fc_background = section.settings.background | default: 'paper'
+  assign fc_dark = false
+  if fc_background == 'ink' or fc_background == 'stripes-dark'
+    assign fc_dark = true
+  endif
 -%}
 
 <div
-  class="color-{{ section.settings.color_scheme }} isolate gradient"
+  class="color-{{ section.settings.color_scheme }} isolate gradient pattern-fc pattern-fc--{{ fc_background }}{% if fc_background == 'stripes-dark' %} pattern-stripe-dark{% endif %}{% if fc_dark %} pattern-fc--dark{% endif %}{% if section.settings.container_width == 'wide' %} pattern-fc--wide{% endif %}"
 >
   <div
     class="collection{% if section.settings.quick_add == 'bulk' %} collection-quick-add-bulk{% endif %} section-{{ section.id }}-padding{% if section.settings.full_width %} collection--full-width{% endif %}"
     id="collection-{{ section.id }}"
     data-id="{{ section.id }}"
   >
-    <div class="collection__title title-wrapper title-wrapper--no-top-margin page-width{% if show_mobile_slider %} title-wrapper--self-padded-tablet-down{% endif %}{% if show_desktop_slider %} collection__title--desktop-slider{% endif %}">
-      {%- if section.settings.title != blank -%}
-        <h2 class="title inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-          {{ section.settings.title }}
-        </h2>
-      {%- endif -%}
-      {%- if section.settings.description != blank
-        or section.settings.show_description
-        and section.settings.collection.description != empty
-      -%}
-        <div class="collection__description {{ section.settings.description_style }} rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-          {%- if section.settings.show_description -%}
-            {{ section.settings.collection.description }}
-          {%- else -%}
-            {{ section.settings.description -}}
-          {%- endif %}
-        </div>
+    <div class="collection__title title-wrapper title-wrapper--no-top-margin page-width pattern-fc__head{% if show_mobile_slider %} title-wrapper--self-padded-tablet-down{% endif %}{% if show_desktop_slider %} collection__title--desktop-slider{% endif %}">
+      <div class="pattern-fc__titles">
+        {%- if section.settings.label != blank -%}
+          <p class="pattern-label pattern-fc__label">{{ section.settings.label | escape }}</p>
+        {%- endif -%}
+        {%- if section.settings.title != blank -%}
+          <h2 class="pattern-display pattern-fc__heading inline-richtext{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+            {{ section.settings.title }}
+          </h2>
+        {%- endif -%}
+        {%- if section.settings.description != blank
+          or section.settings.show_description
+          and section.settings.collection.description != empty
+        -%}
+          <div class="collection__description pattern-fc__description rte{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+            {%- if section.settings.show_description -%}
+              {{ section.settings.collection.description }}
+            {%- else -%}
+              {{ section.settings.description -}}
+            {%- endif %}
+          </div>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.show_view_all and section.settings.collection != blank -%}
+        <a
+          href="{{ section.settings.collection.url }}"
+          class="pattern-link pattern-fc__all"
+          aria-label="{{ 'sections.featured_collection.view_all_label' | t: collection_name: section.settings.collection.title | escape }}"
+        >
+          {{- 'sections.featured_collection.view_all' | t -}}
+          {% render 'pattern-arrow' %}
+        </a>
       {%- endif -%}
     </div>
 
@@ -114,6 +147,7 @@
                   show_secondary_image: section.settings.show_secondary_image,
                   show_vendor: section.settings.show_vendor,
                   show_rating: section.settings.show_rating,
+                  lazy_load: true,
                   skip_styles: skip_card_product_styles,
                   section_id: section.id,
                   quick_add: section.settings.quick_add
@@ -185,22 +219,249 @@
       {%- endif -%}
     </slider-component>
 
-    {%- if section.settings.show_view_all and more_in_collection -%}
-      <div class="center collection__view-all{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
-        <a
-          href="{{ section.settings.collection.url }}"
-          class="{% if section.settings.view_all_style == 'link' %}link underlined-link{% elsif section.settings.view_all_style == 'solid' %}button{% else %}button button--secondary{% endif %}"
-          aria-label="{{ 'sections.featured_collection.view_all_label' | t: collection_name: section.settings.collection.title | escape }}"
-        >
-          {{ 'sections.featured_collection.view_all' | t }}
-        </a>
-      </div>
-    {%- endif -%}
     {% if section.settings.image_shape == 'arch' %}
       {{ 'mask-arch.svg' | inline_asset_content }}
     {%- endif -%}
   </div>
 </div>
+
+{% stylesheet %}
+  /* ===== Pattern featured collection (Dawn section restyled) ===== */
+  .pattern-fc {
+    --pattern-fc-max: var(--pattern-wrap-max);
+  }
+
+  .pattern-fc.gradient,
+  .pattern-fc .pattern-fc__heading {
+    color: var(--pattern-ink);
+  }
+
+  .pattern-fc.pattern-fc--wide {
+    --pattern-fc-max: 168rem;
+  }
+
+  /* Pattern tokens instead of the colour scheme's background (the stripe keeps its texture) */
+  .pattern-fc.gradient { background-color: var(--pattern-paper); }
+  .pattern-fc.gradient:not(.pattern-stripe-dark) { background-image: none; }
+  .pattern-fc.pattern-fc--sand { background-color: var(--pattern-sand); }
+  .pattern-fc.pattern-fc--clay { background-color: var(--pattern-clay); }
+  .pattern-fc.pattern-fc--ink { background-color: var(--pattern-ink); }
+  .pattern-fc.pattern-fc--stripes-dark { background-color: var(--pattern-stripe-dark-a); }
+
+  /* Shared container: same edges as the other Pattern sections */
+  .pattern-fc .page-width,
+  .pattern-fc .page-width-desktop {
+    box-sizing: border-box;
+    max-width: var(--pattern-fc-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--pattern-gutter);
+    padding-right: var(--pattern-gutter);
+  }
+
+  /* Full width: products run to the screen edges, inside the gutter (Dawn uses 1.5rem) */
+  .pattern-fc .collection.collection--full-width slider-component.slider-component-full-width:not(.slider-component-desktop) {
+    max-width: none;
+    padding-left: var(--pattern-gutter);
+    padding-right: var(--pattern-gutter);
+  }
+
+  /* Carousels start on the container's edge: desktop (first card's offset) and tablet / mobile
+     (Dawn's 1.5rem peek gutter becomes the shared gutter) */
+  .pattern-fc slider-component {
+    --desktop-margin-left-first-item: max(var(--pattern-gutter), calc((100vw - var(--pattern-fc-max)) / 2 + var(--pattern-gutter)));
+  }
+
+  .pattern-fc slider-component.slider-component-full-width {
+    --desktop-margin-left-first-item: var(--pattern-gutter);
+  }
+
+  @media screen and (min-width: 990px) {
+    .pattern-fc .slider-component-full-width .slider--desktop {
+      scroll-padding-left: var(--pattern-gutter);
+    }
+
+    .pattern-fc .slider-component-full-width .slider--desktop .slider__slide:first-child {
+      margin-left: var(--pattern-gutter);
+      scroll-margin-left: var(--pattern-gutter);
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    .pattern-fc ul.slider.slider--tablet,
+    .pattern-fc ul.slider.slider--tablet.grid--peek {
+      scroll-padding-left: var(--pattern-gutter);
+    }
+
+    .pattern-fc .slider--tablet.grid--peek .grid__item:first-of-type {
+      margin-left: var(--pattern-gutter);
+    }
+
+    .pattern-fc .slider--tablet:after {
+      padding-left: var(--pattern-gutter);
+    }
+  }
+
+  /* Heading row: label / heading / description left, View all right */
+  .pattern-fc .pattern-fc__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.2rem 3.2rem;
+    margin-bottom: 4rem;
+  }
+
+  .pattern-fc__titles {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    min-width: 0;
+    max-width: 72rem;
+  }
+
+  .pattern-fc__label {
+    margin: 0;
+    color: var(--pattern-muted);
+  }
+
+  .pattern-fc .pattern-fc__heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(4rem, 5vw, 7.2rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-transform: none;
+    color: inherit;
+    overflow-wrap: break-word;
+  }
+
+  .pattern-fc .pattern-fc__description {
+    margin: 0.4rem 0 0;
+    max-width: 60rem;
+    font-family: var(--font-body);
+    font-size: 1.6rem;
+    line-height: 1.5;
+    color: var(--pattern-muted);
+  }
+
+  .pattern-fc .pattern-fc__description > :first-child { margin-top: 0; }
+  .pattern-fc .pattern-fc__description > :last-child { margin-bottom: 0; }
+
+  .pattern-fc__all {
+    flex: 0 0 auto;
+    text-decoration-thickness: 0.1rem;
+    text-underline-offset: 0.4rem;
+  }
+
+  .pattern-fc__all:hover {
+    text-decoration-line: underline;
+    text-decoration-color: currentColor;
+  }
+
+  .pattern-fc__all:focus-visible {
+    outline: 0.2rem solid currentColor;
+    outline-offset: 0.3rem;
+  }
+
+  /* Card spacing as in Latest arrivals (Dawn's grid and carousel keep working) */
+  .pattern-fc .product-grid {
+    --grid-desktop-horizontal-spacing: 20px;
+    --grid-desktop-vertical-spacing: 40px;
+    --grid-mobile-horizontal-spacing: 12px;
+    --grid-mobile-vertical-spacing: 32px;
+  }
+
+  /* Carousel controls: hairline square buttons, mono counter */
+  .pattern-fc .slider-buttons {
+    gap: 1.2rem;
+    margin-top: 2.4rem;
+  }
+
+  .pattern-fc .slider-button {
+    width: 4.4rem;
+    height: 4.4rem;
+    border: 0.1rem solid var(--pattern-hairline);
+    border-radius: 0;
+    background: transparent;
+    color: currentColor;
+    transition: border-color 0.12s ease;
+  }
+
+  .pattern-fc .slider-button:not([disabled]):hover {
+    border-color: currentColor;
+    color: currentColor;
+  }
+
+  .pattern-fc .slider-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .pattern-fc .slider-button:focus-visible {
+    outline: 0.2rem solid var(--accent);
+    outline-offset: 0.2rem;
+    box-shadow: none;
+  }
+
+  .pattern-fc .slider-button .icon {
+    height: 0.8rem;
+  }
+
+  .pattern-fc .slider-counter {
+    font-family: var(--font-mono);
+    font-size: 1.2rem;
+    letter-spacing: 0.04em;
+    color: var(--pattern-muted);
+  }
+
+  /* ===== Ink / Dark stripe: paper heading, links, card text, meta and hairlines ===== */
+  .pattern-fc.pattern-fc--dark,
+  .pattern-fc.pattern-fc--dark .pattern-fc__heading {
+    color: var(--pattern-paper);
+  }
+
+  .pattern-fc--dark .pattern-fc__label,
+  .pattern-fc--dark .pattern-fc__description,
+  .pattern-fc--dark .slider-counter {
+    color: var(--pattern-paper-dim);
+  }
+
+  .pattern-fc--dark .slider-button {
+    border-color: var(--pattern-hairline-on-dark);
+  }
+
+  .pattern-fc--dark .card-wrapper {
+    --card-text: var(--pattern-paper);
+    --card-muted: var(--pattern-paper-dim);
+    --color-card-title: var(--pattern-paper-dim);
+    color: var(--pattern-paper);
+  }
+
+  .pattern-fc--dark .card-wrapper :is(.card__heading, .card__heading a, .card-pattern__link, .price, .price-item) {
+    color: var(--pattern-paper);
+  }
+
+  .pattern-fc--dark .card-wrapper .card__media::after {
+    box-shadow: inset 0 0 0 0.1rem var(--pattern-hairline-on-dark);
+  }
+
+  .pattern-fc--dark .card-pattern__price-row {
+    border-top-color: var(--pattern-hairline-on-dark);
+  }
+
+  .pattern-fc--dark .pattern-tag {
+    border-color: var(--pattern-paper);
+    color: var(--pattern-paper);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pattern-fc .slider-button {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -229,6 +490,12 @@
       "type": "header",
       "content": "t:sections.featured-collection.settings.header_text.content"
     },   
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label above the heading",
+      "info": "Small mono text. Optional."
+    },
     {
       "type": "inline_richtext",
       "id": "title",
@@ -346,6 +613,30 @@
       ],
       "default": "solid"
     }, 
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        { "value": "paper", "label": "Paper" },
+        { "value": "sand", "label": "Sand" },
+        { "value": "clay", "label": "Clay" },
+        { "value": "ink", "label": "Ink" },
+        { "value": "stripes-dark", "label": "Stripes, dark" }
+      ],
+      "default": "paper"
+    },
+    {
+      "type": "select",
+      "id": "container_width",
+      "label": "Container width",
+      "info": "Wide runs up to ~1680px. With Full width on, the products run to the screen edges and the heading stays in the container.",
+      "options": [
+        { "value": "standard", "label": "Standard" },
+        { "value": "wide", "label": "Wide" }
+      ],
+      "default": "standard"
+    },
     {
       "type": "color_scheme",
       "id": "color_scheme",
@@ -494,7 +785,7 @@
       "step": 4,
       "unit": "px",
       "label": "t:sections.all.padding.padding_top",
-      "default": 36
+      "default": 96
     },
     {
       "type": "range",
@@ -504,7 +795,7 @@
       "step": 4,
       "unit": "px",
       "label": "t:sections.all.padding.padding_bottom",
-      "default": 36
+      "default": 96
     }
   ],
   "presets": [
