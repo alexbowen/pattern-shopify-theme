@@ -172,16 +172,31 @@
   white-space: pre;
 }
 
-/* ===== Price row: hairline above, amount, condition tag ===== */
+/* ===== Price row: hairline above, amount, condition tag, pre-order chip ===== */
 .card-pattern__price-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.6rem 1rem;
+  gap: 0.6rem;
   min-width: 0;
   margin-top: 1rem;
   padding-top: 0.8rem;
   border-top: 0.1rem solid rgba(20, 20, 19, 0.15);
+  align-content: flex-start;
+}
+
+/* Pre-order chip: in narrow cards the chips can wrap onto a second line. The rows are pinned to
+   the bottom of each card, so a taller row would lift its hairline and price above the cards
+   next to it. In a list that contains a pre-order chip, narrow cards all reserve the second
+   line, so the hairlines and prices stay level across the row. Lists without one are unchanged. */
+.card-wrapper .card__information {
+  container: pattern-card-info / inline-size;
+}
+
+@container pattern-card-info (max-width: 26rem) {
+  ul:has(.pattern-tag--accent) .card-pattern__price-row {
+    min-height: 5.8rem;
+  }
 }
 
 .card-pattern__price-row .price {

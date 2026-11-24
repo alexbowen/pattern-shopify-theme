@@ -16,6 +16,8 @@
   Accepts:
   - product: {Object} product
   - part: {String} 'breadcrumb' | 'title' | 'pills' | 'specs' | 'tags'
+  - show_preorder: {Boolean} part 'tags': add the "Pre-order" chip after the condition tag
+    (snippets/pattern-preorder-tag.liquid). The product page passes it; the featured record card doesn't.
 
   Usage:
   {% render 'pattern-product-info', product: product, part: 'breadcrumb' %}
@@ -134,6 +136,9 @@
   {%- when 'tags' -%}
     {%- liquid
       render 'pattern-tag', text: condition, class: 'pattern-price-row__tag'
+      if show_preorder
+        render 'pattern-preorder-tag', product: product, class: 'pattern-price-row__tag'
+      endif
       render 'pattern-tag', text: format, class: 'pattern-price-row__tag'
     -%}
 

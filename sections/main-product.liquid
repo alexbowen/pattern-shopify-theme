@@ -124,7 +124,7 @@
                       price_class: 'price--large',
                       hide_currency_code: true
                     -%}
-                    {%- capture price_tags -%}{%- render 'pattern-product-info', product: product, part: 'tags' -%}{%- endcapture -%}
+                    {%- capture price_tags -%}{%- render 'pattern-product-info', product: product, part: 'tags', show_preorder: true -%}{%- endcapture -%}
                     {%- if price_tags != blank -%}
                       <span class="pattern-price-row__tags">{{ price_tags }}</span>
                     {%- endif -%}

@@ -1434,6 +1434,27 @@
     ]
   },
   {
+    "name": "Pre-orders",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Products with this tag show a \"Pre-order\" chip on product cards, the product page and cart lines. Capitals, spaces and hyphens don't matter: \"coming-soon\" also matches products tagged \"coming soon\"."
+      },
+      {
+        "type": "text",
+        "id": "preorder_tag",
+        "label": "Pre-order tag",
+        "default": "coming-soon"
+      },
+      {
+        "type": "text",
+        "id": "preorder_label",
+        "label": "Pre-order label",
+        "default": "Pre-order"
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.cart.name",
     "settings": [
       {

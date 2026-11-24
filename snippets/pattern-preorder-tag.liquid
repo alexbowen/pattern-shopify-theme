@@ -1,0 +1,33 @@
+{%- comment -%}
+  "Pre-order" chip: the shared outlined tag (snippets/pattern-tag.liquid) in the accent-text
+  colour, for products with the pre-order tag (Theme settings > Pre-orders). Tags are compared
+  case-insensitively and with spaces and hyphens treated alike, so "coming soon", "Coming-Soon"
+  and "coming-soon" all match. Renders nothing otherwise.
+  Used by the product cards, the product page price row and the cart lines.
+
+  Accepts:
+  - product: {Object} product
+  - class: {String} extra classes (optional)
+
+  Usage:
+  {% render 'pattern-preorder-tag', product: product %}
+{%- endcomment -%}
+{%- liquid
+  assign preorder_key = settings.preorder_tag | default: 'coming-soon' | strip | handleize
+  assign preorder_match = false
+  if product != blank and preorder_key != blank
+    for product_tag in product.tags
+      assign product_tag_key = product_tag | handleize
+      if product_tag_key == preorder_key
+        assign preorder_match = true
+        break
+      endif
+    endfor
+  endif
+-%}
+{%- if preorder_match -%}
+  {%- assign preorder_class = 'pattern-tag--accent' -%}
+  {%- if class != blank -%}{%- assign preorder_class = preorder_class | append: ' ' | append: class -%}{%- endif -%}
+  {%- assign preorder_label = settings.preorder_label | default: 'Pre-order' -%}
+  {%- render 'pattern-tag', text: preorder_label, class: preorder_class -%}
+{%- endif -%}

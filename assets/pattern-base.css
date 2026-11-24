@@ -135,6 +135,22 @@
   white-space: nowrap;
 }
 
+/* "Pre-order" chip (snippets/pattern-preorder-tag.liquid): the same outlined tag in the
+   accent-text colour, no fill. A label too long for a narrow card wraps inside the chip instead
+   of overflowing. On the dark section backgrounds (where .pattern-tag turns paper)
+   it uses the light accent made for the dark stripe. */
+.pattern-tag.pattern-tag--accent {
+  max-width: 100%;
+  border-color: var(--accent-text);
+  color: var(--accent-text);
+  white-space: normal;
+}
+
+:is(.pattern-fc--dark, .pattern-new-in--dark, .pattern-feature--bg-dark) .pattern-tag.pattern-tag--accent {
+  border-color: var(--accent-on-dark);
+  color: var(--accent-on-dark);
+}
+
 /* Genre / origin pills (snippets/pattern-product-info.liquid 'pills'): product page and the
    featured record card. Parents and sub-genres look the same; origin is dashed. */
 .pattern-product-pills {

@@ -124,6 +124,7 @@
     {%- unless show_tag == false -%}
       {%- render 'pattern-tag', text: record_condition -%}
     {%- endunless -%}
+    {%- render 'pattern-preorder-tag', product: product -%}
   </div>
 {%- else -%}
   {%- unless show_tag == false -%}
