@@ -16,32 +16,20 @@
           "type": "title",
           "settings": {}
         },
+        "pattern_pills": {
+          "type": "pattern_details",
+          "settings": {
+            "show_pills": true,
+            "show_specs": false
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
         "price": {
           "type": "price",
           "settings": {}
-        },
-        "audioly_sticky_audio_player_product_preview_inline_8K9b6J": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/product-preview-inline/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "trackSource": "product",
-            "product": "{{product}}",
-            "hideIfEmptyAudio": false,
-            "playlist": "",
-            "trackListing": "traditional",
-            "desktopColumnCount": 1,
-            "alwaysShowDisplayName": false,
-            "tracksToShow": "",
-            "playerBackgroundColor": "",
-            "playerForegroundColor": "",
-            "useGlobalTheme": true,
-            "playButtonBackgroundColor": "#000000",
-            "playButtonIconColor": "#ffffff",
-            "changeTrackBackgroundColor": "#ffffff",
-            "changeTrackIconColor": "#000000",
-            "waveFormColor": "#777777",
-            "waveFormProgressColor": "#ff0000",
-            "volumeButtonsIconColor": "#000000"
-          }
         },
         "variant_picker": {
           "type": "variant_picker",
@@ -59,16 +47,6 @@
           "settings": {
             "show_dynamic_checkout": true,
             "show_gift_card_recipient": true
-          }
-        },
-        "description": {
-          "type": "description",
-          "settings": {}
-        },
-        "share": {
-          "type": "share",
-          "settings": {
-            "share_label": "Share"
           }
         },
         "trust_postage": {
@@ -92,11 +70,35 @@
             "text": "Lisbon in 24 hours"
           }
         },
-        "pattern_pills": {
-          "type": "pattern_details",
+        "audioly_sticky_audio_player_product_preview_inline_8K9b6J": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/product-preview-inline/1f530410-ca0c-4485-98fc-b2daea5cb117",
           "settings": {
-            "show_pills": true,
-            "show_specs": false
+            "trackSource": "product",
+            "product": "{{product}}",
+            "hideIfEmptyAudio": true,
+            "playlist": "",
+            "trackListing": "traditional",
+            "trackListHeightConstraint": "unlimited",
+            "trackListMaxHeight": 200,
+            "desktopColumnCount": 1,
+            "alwaysShowDisplayName": false,
+            "tracksToShow": "",
+            "playerBackgroundColor": "",
+            "playerForegroundColor": "",
+            "useGlobalTheme": true,
+            "playButtonBackgroundColor": "#000000",
+            "playButtonIconColor": "#ffffff",
+            "changeTrackBackgroundColor": "#ffffff",
+            "changeTrackIconColor": "#000000",
+            "waveFormColor": "#777777",
+            "waveFormProgressColor": "#ff0000",
+            "volumeButtonsIconColor": "#000000"
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share"
           }
         }
       },
@@ -115,6 +117,11 @@
         "share"
       ],
       "settings": {
+        "show_breadcrumb": true,
+        "description_collapse": true,
+        "show_shop_comment": true,
+        "description_lines": 4,
+        "hide_dynamic_checkout": false,
         "enable_sticky_info": false,
         "color_scheme": "scheme-1",
         "media_size": "large",
@@ -127,10 +134,7 @@
         "hide_variants": true,
         "enable_video_looping": false,
         "padding_top": 16,
-        "padding_bottom": 12,
-        "show_breadcrumb": true,
-        "description_collapse": true,
-        "description_lines": 4
+        "padding_bottom": 12
       }
     },
     "related-products": {
@@ -157,6 +161,7 @@
         "service_6eGfcY": {
           "type": "service",
           "settings": {
+            "icon": "parcel",
             "label": "Postage · PT & ES",
             "highlight": "One flat rate",
             "text": "To Portugal and Spain.",
@@ -167,6 +172,7 @@
         "service_wrwMwY": {
           "type": "service",
           "settings": {
+            "icon": "parcel",
             "label": "Collect · Alcântara",
             "highlight": "Order online, collect in store",
             "text": "Pick up at the shop and have a listen while you're there.",
@@ -177,6 +183,7 @@
         "service_AawdgL": {
           "type": "service",
           "settings": {
+            "icon": "parcel",
             "label": "Delivery · Lisbon",
             "highlight": "Lisbon in 24 hours",
             "text": "Flat-fee delivery within Lisbon postcodes.",
@@ -190,13 +197,14 @@
         "service_wrwMwY",
         "service_AawdgL"
       ],
+      "disabled": true,
       "name": "Pattern service row",
       "settings": {
         "heading": "",
+        "background": "paper",
         "padding_top": 48,
         "padding_bottom": 96
-      },
-      "disabled": true
+      }
     }
   },
   "order": [
