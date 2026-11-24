@@ -25,7 +25,10 @@
         "background_texture": "stripes",
         "image": "shopify://shop_images/20261123_173850.jpg",
         "image_alt": "",
-        "full_height": 560,
+        "full_height": 440,
+        "full_height_mobile": 420,
+        "full_padding_top": 48,
+        "full_padding_bottom": 48,
         "full_overlay": 60,
         "overlay_direction": "left",
         "bottom_fade": true,
@@ -57,7 +60,9 @@
         "layout": "lines",
         "background": "stripes",
         "show_cover": true,
-        "show_price": false
+        "show_price": false,
+        "padding_top": 24,
+        "padding_bottom": 24
       }
     },
     "apps_this_week_audioly": {
