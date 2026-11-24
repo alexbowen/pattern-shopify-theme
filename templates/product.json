@@ -27,6 +27,31 @@
           "type": "description",
           "settings": {}
         },
+        "audioly_sticky_audio_player_product_preview_inline_8K9b6J": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/product-preview-inline/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "trackSource": "product",
+            "product": "{{product}}",
+            "hideIfEmptyAudio": true,
+            "playlist": "",
+            "trackListing": "traditional",
+            "trackListHeightConstraint": "unlimited",
+            "trackListMaxHeight": 200,
+            "desktopColumnCount": 1,
+            "alwaysShowDisplayName": false,
+            "tracksToShow": "",
+            "playerBackgroundColor": "",
+            "playerForegroundColor": "",
+            "useGlobalTheme": true,
+            "playButtonBackgroundColor": "#000000",
+            "playButtonIconColor": "#ffffff",
+            "changeTrackBackgroundColor": "#ffffff",
+            "changeTrackIconColor": "#000000",
+            "waveFormColor": "#777777",
+            "waveFormProgressColor": "#ff0000",
+            "volumeButtonsIconColor": "#000000"
+          }
+        },
         "price": {
           "type": "price",
           "settings": {}
@@ -70,31 +95,6 @@
             "text": "Lisbon in 24 hours"
           }
         },
-        "audioly_sticky_audio_player_product_preview_inline_8K9b6J": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/product-preview-inline/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "trackSource": "product",
-            "product": "{{product}}",
-            "hideIfEmptyAudio": true,
-            "playlist": "",
-            "trackListing": "traditional",
-            "trackListHeightConstraint": "unlimited",
-            "trackListMaxHeight": 200,
-            "desktopColumnCount": 1,
-            "alwaysShowDisplayName": false,
-            "tracksToShow": "",
-            "playerBackgroundColor": "",
-            "playerForegroundColor": "",
-            "useGlobalTheme": true,
-            "playButtonBackgroundColor": "#000000",
-            "playButtonIconColor": "#ffffff",
-            "changeTrackBackgroundColor": "#ffffff",
-            "changeTrackIconColor": "#000000",
-            "waveFormColor": "#777777",
-            "waveFormProgressColor": "#ff0000",
-            "volumeButtonsIconColor": "#000000"
-          }
-        },
         "share": {
           "type": "share",
           "settings": {
@@ -106,6 +106,7 @@
         "title",
         "pattern_pills",
         "description",
+        "audioly_sticky_audio_player_product_preview_inline_8K9b6J",
         "price",
         "variant_picker",
         "quantity_selector",
@@ -113,7 +114,6 @@
         "trust_postage",
         "trust_collect",
         "trust_lisbon",
-        "audioly_sticky_audio_player_product_preview_inline_8K9b6J",
         "share"
       ],
       "settings": {
