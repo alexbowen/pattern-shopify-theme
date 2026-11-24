@@ -152,10 +152,11 @@
         if header_style == 'dark'
           assign header_description = collection.description
         endif
-        # Same heading as the banner: the all-products collection reads "All records"
+        # Same heading as the banner: /collections/all uses Theme settings > Pattern design >
+        # All products heading
         assign header_title = collection.title
-        if collection.handle == 'all' or collection.title == 'Products'
-          assign header_title = 'All records'
+        if collection.handle == 'all'
+          assign header_title = settings.all_products_heading | default: collection.title
         endif
       -%}
       {% render 'genre-pills',

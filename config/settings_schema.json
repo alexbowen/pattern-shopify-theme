@@ -31,6 +31,13 @@
           { "value": "wide", "label": "Wide" }
         ],
         "default": "standard"
+      },
+      {
+        "type": "text",
+        "id": "all_products_heading",
+        "label": "All products heading",
+        "info": "Heading for /collections/all. It's also used in the browser tab title and link previews. Other collections show their own title.",
+        "default": "Shop"
       }
     ]
   },

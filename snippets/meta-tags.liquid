@@ -1,5 +1,9 @@
 {%- liquid
   assign og_title = page_title | default: shop.name
+  # /collections/all: same heading as the page (Theme settings > Pattern design > All products heading)
+  if request.page_type == 'collection' and collection.handle == 'all' and settings.all_products_heading != blank
+    assign og_title = settings.all_products_heading
+  endif
   assign og_url = canonical_url | default: request.origin
   assign og_type = 'website'
   assign og_description = page_description | default: shop.description | default: shop.name

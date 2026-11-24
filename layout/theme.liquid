@@ -20,6 +20,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Instrument+Serif:ital@0;1&display=swap">
 
+    {%- liquid
+      # /collections/all: the tab title and link previews use the same heading as the page
+      # (Theme settings > Pattern design > All products heading)
+      if request.page_type == 'collection' and collection.handle == 'all' and settings.all_products_heading != blank
+        assign page_title = settings.all_products_heading
+      endif
+    -%}
     <title>
       {{ page_title }}
       {%- if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif -%}

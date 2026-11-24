@@ -2,10 +2,10 @@
 {{ 'component-collection-hero.css' | asset_url | stylesheet_tag }}
 {{ 'pattern-collection.css' | asset_url | stylesheet_tag }}
 {%- liquid
-  # The all-products collection (and any collection literally titled "Products") reads "All records"
+  # /collections/all uses Theme settings > Pattern design > All products heading
   assign collection_heading = collection.title
-  if collection.handle == 'all' or collection.title == 'Products'
-    assign collection_heading = 'All records'
+  if collection.handle == 'all'
+    assign collection_heading = settings.all_products_heading | default: collection.title
   endif
 -%}
 
