@@ -46,7 +46,7 @@
         "record_3": {
           "type": "pattern-record",
           "settings": {
-            "product": "craig-alexander-soul-revival-ep-reissue-phonogramme83-b2b",
+            "product": "wbeeza-the-bump-ep-te-ns1002",
             "label": "",
             "artist": "",
             "title": ""
@@ -231,8 +231,8 @@
         "view_popular"
       ],
       "settings": {
-        "anchor_id": "new-arrivals",
         "heading": "Latest arrivals",
+        "anchor_id": "new-arrivals",
         "products_to_show": 12,
         "products_on_mobile": 12,
         "container_width": "standard",
@@ -1109,10 +1109,10 @@
       "type": "featured-collection",
       "name": "t:sections.featured-collection.presets.name",
       "settings": {
-        "anchor_id": "coming-soon",
         "collection": "coming-soon-electronic",
         "products_to_show": 12,
         "label": "",
+        "anchor_id": "coming-soon",
         "title": "Coming soon",
         "heading_size": "h0",
         "description": "<p>Available for preorder</p>",
@@ -1255,6 +1255,7 @@
         "collection": "all",
         "products_to_show": 8,
         "label": "",
+        "anchor_id": "",
         "title": "Featured products",
         "heading_size": "h2",
         "description": "",
