@@ -18,10 +18,12 @@
         "headline_accent": "for",
         "headline_end": "curious listeners",
         "body": "Electronic and Organic sounds — new and used vinyl, in our Alcântara store and online.",
-        "primary_label": "Shop new arrivals",
-        "primary_link": "/collections/all?sort_by=created-descending",
+        "primary_label": "New arrivals",
+        "primary_link": "#new-arrivals",
         "secondary_label": "Browse by genre",
         "secondary_link": "",
+        "tertiary_label": "Coming soon",
+        "tertiary_link": "#coming-soon",
         "background_texture": "stripes",
         "image": "shopify://shop_images/20261123_173850.jpg",
         "image_alt": "",
@@ -229,6 +231,7 @@
         "view_popular"
       ],
       "settings": {
+        "anchor_id": "new-arrivals",
         "heading": "Latest arrivals",
         "products_to_show": 12,
         "products_on_mobile": 12,
@@ -1106,6 +1109,7 @@
       "type": "featured-collection",
       "name": "t:sections.featured-collection.presets.name",
       "settings": {
+        "anchor_id": "coming-soon",
         "collection": "coming-soon-electronic",
         "products_to_show": 12,
         "label": "",
