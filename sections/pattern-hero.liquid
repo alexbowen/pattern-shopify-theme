@@ -36,17 +36,32 @@
       <p class="pattern-hero__body">{{ section.settings.body | escape | newline_to_br }}</p>
     {%- endif -%}
 
-    {%- if section.settings.primary_label != blank or section.settings.secondary_label != blank -%}
-      <div class="pattern-hero__ctas">
+    {%- if section.settings.primary_label != blank or section.settings.secondary_label != blank or section.settings.tertiary_label != blank -%}
+      {%- liquid
+        assign primary_link = section.settings.primary_link | default: routes.all_products_collection_url | strip
+        assign primary_first = primary_link | slice: 0
+        assign tertiary_link = section.settings.tertiary_link | default: '#coming-soon' | strip
+      -%}
+      <div class="pattern-hero__ctas" data-pattern-hero-ctas>
         {%- if section.settings.primary_label != blank -%}
-          <a href="{{ section.settings.primary_link | default: routes.all_products_collection_url }}" class="pattern-button">
+          <a href="{{ primary_link }}" class="pattern-button">
             {{- section.settings.primary_label | escape -}}
-            {% render 'pattern-arrow' %}
+            {%- if primary_first == '#' -%}
+              {%- comment -%} On-page anchor: a down arrow instead of the right arrow {%- endcomment -%}
+              <svg class="pattern-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M8 2v11M4 9l4 4 4-4"/></svg>
+            {%- else -%}
+              {% render 'pattern-arrow' %}
+            {%- endif -%}
           </a>
         {%- endif -%}
         {%- if section.settings.secondary_label != blank -%}
           <a href="{{ secondary_link }}" class="pattern-link pattern-hero__secondary">
             {{- section.settings.secondary_label | escape -}}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.tertiary_label != blank -%}
+          <a href="{{ tertiary_link }}" class="pattern-link pattern-hero__secondary">
+            {{- section.settings.tertiary_label | escape -}}
           </a>
         {%- endif -%}
       </div>
@@ -273,6 +288,48 @@
   }
 {%- endstyle -%}
 {%- endif -%}
+
+<script>
+  /* Hero links to sections on this page (href "#..."): hide a link whose target isn't on the page
+     (or isn't shown, e.g. an empty Coming soon), and scroll smoothly to the others (instantly with
+     reduced motion). Targets land below the sticky header with 16px to spare: scroll-margin-top
+     uses --pattern-anchor-offset (assets/pattern-base.css), set here. Without JavaScript the links
+     stay visible and jump normally. */
+  (() => {
+    const setup = () => {
+      const header = document.querySelector('.shopify-section-group-header-group, .section-header, sticky-header');
+      const setOffset = () => {
+        let height = 0;
+        if (header) {
+          const position = getComputedStyle(header).position;
+          if (position === 'sticky' || position === 'fixed') height = header.getBoundingClientRect().height;
+        }
+        document.documentElement.style.setProperty('--pattern-anchor-offset', `${Math.round(height + 16)}px`);
+      };
+      setOffset();
+      window.addEventListener('resize', setOffset, { passive: true });
+
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+      document.querySelectorAll('[data-pattern-hero-ctas] a[href^="#"]').forEach((link) => {
+        const id = decodeURIComponent(link.getAttribute('href').slice(1));
+        const target = id ? document.getElementById(id) : null;
+        if (!target || target.getClientRects().length === 0) {
+          link.hidden = true;
+          return;
+        }
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          target.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'start' });
+          if (history.pushState) history.pushState(null, '', `#${id}`);
+          if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: true });
+        });
+      });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup);
+    else setup();
+  })();
+</script>
 
 {% stylesheet %}
   .pattern-hero {
@@ -531,6 +588,18 @@
     color: var(--pattern-paper);
   }
 
+  .pattern-hero__ctas a[hidden] {
+    display: none;
+  }
+
+  /* Phones: the button on its own line, the text links together on the next */
+  @media screen and (max-width: 749px) {
+    .pattern-hero__ctas > .pattern-button:not(:last-child) {
+      flex-shrink: 0;
+      margin-right: 100%;
+    }
+  }
+
   .pattern-hero__media {
     position: relative;
     flex: 1 1 38rem;
@@ -646,25 +715,42 @@
       "type": "text",
       "id": "primary_label",
       "label": "Button label",
-      "default": "Shop new arrivals"
+      "info": "Leave empty to hide the button.",
+      "default": "New arrivals"
     },
     {
-      "type": "url",
+      "type": "text",
       "id": "primary_link",
       "label": "Button link",
-      "default": "/collections/all"
+      "info": "A page address such as /collections/all, or a section on this page: \"#\" and its Anchor ID, e.g. #new-arrivals (the button then shows a down arrow).",
+      "default": "#new-arrivals"
     },
     {
       "type": "text",
       "id": "secondary_label",
       "label": "Secondary link label",
+      "info": "Leave empty to hide the link.",
       "default": "Browse by genre"
     },
     {
-      "type": "url",
+      "type": "text",
       "id": "secondary_link",
       "label": "Secondary link",
-      "info": "Leave empty to jump to the genre tiles on the homepage."
+      "info": "A page address, or \"#\" and a section's Anchor ID. Leave empty to jump to the genre tiles on the homepage."
+    },
+    {
+      "type": "text",
+      "id": "tertiary_label",
+      "label": "Third link label",
+      "info": "Leave empty to hide the link.",
+      "default": "Coming soon"
+    },
+    {
+      "type": "text",
+      "id": "tertiary_link",
+      "label": "Third link",
+      "info": "A page address, or \"#\" and a section's Anchor ID. Leave empty to jump to #coming-soon. A link to a section that isn't on the page is hidden.",
+      "default": "#coming-soon"
     },
     {
       "type": "select",

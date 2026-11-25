@@ -224,6 +224,12 @@
   text-underline-offset: 0.4rem;
 }
 
+/* Sections with an "Anchor ID" setting: land below the sticky header (offset set by the hero's
+   script), with 16px to spare */
+[data-pattern-anchor] {
+  scroll-margin-top: var(--pattern-anchor-offset, 1.6rem);
+}
+
 .pattern-arrow {
   flex: 0 0 auto;
   width: 1.4rem;

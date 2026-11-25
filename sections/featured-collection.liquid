@@ -76,7 +76,9 @@
   endif
 -%}
 
+{%- assign anchor_id = section.settings.anchor_id | strip | handleize -%}
 <div
+  {% if anchor_id != blank %}id="{{ anchor_id }}" data-pattern-anchor{% endif %}
   class="color-{{ section.settings.color_scheme }} isolate gradient pattern-fc pattern-fc--{{ fc_background }}{% if fc_background == 'stripes-dark' %} pattern-stripe-dark{% endif %}{% if fc_dark %} pattern-fc--dark{% endif %}{% if section.settings.container_width == 'wide' %} pattern-fc--wide{% endif %}"
 >
   <div
@@ -495,6 +497,12 @@
       "id": "label",
       "label": "Label above the heading",
       "info": "Small mono text. Optional."
+    },
+    {
+      "type": "text",
+      "id": "anchor_id",
+      "label": "Anchor ID",
+      "info": "Optional. Lets links jump to this section with \"#\" and the ID, e.g. #new-arrivals. Lowercase letters, numbers and hyphens."
     },
     {
       "type": "inline_richtext",

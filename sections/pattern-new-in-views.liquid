@@ -54,7 +54,9 @@
     }
   }
 {%- endstyle -%}
+{%- assign anchor_id = section.settings.anchor_id | strip | handleize -%}
 <pattern-new-in-views
+  {% if anchor_id != blank %}id="{{ anchor_id }}" data-pattern-anchor{% endif %}
   class="pattern-section pattern-new-in-views pattern-new-in-views-collection{% if section.settings.container_width == 'wide' %} pattern-new-in-views--wide{% endif %}"
   data-section-id="{{ section.id }}"
 >
@@ -455,6 +457,12 @@
       "id": "heading",
       "label": "Heading",
       "default": "New in"
+    },
+    {
+      "type": "text",
+      "id": "anchor_id",
+      "label": "Anchor ID",
+      "info": "Optional. Lets links jump to this section with \"#\" and the ID, e.g. #new-arrivals. Lowercase letters, numbers and hyphens."
     },
     {
       "type": "range",
