@@ -1116,8 +1116,8 @@
         "view_LH93Yw": {
           "type": "view",
           "settings": {
-            "label": "Popular",
-            "collection": "",
+            "label": "Pre order",
+            "collection": "pre-order-coming-soon",
             "see_all_label": "See all"
           }
         }
