@@ -370,40 +370,6 @@
         "padding_bottom": 0
       }
     },
-    "featured_record_example_c": {
-      "type": "pattern-featured-record-section",
-      "blocks": {
-        "ex_c1": {
-          "type": "pattern-featured-record",
-          "settings": {
-            "product": "dj-honesty-camarque-ep-syncro40-b2b",
-            "label": "Record of the week",
-            "layout": "horizontal",
-            "size": "standard",
-            "background": "dark",
-            "show_genres": true,
-            "show_description": true,
-            "description_lines": 3,
-            "description_override": "",
-            "show_comment": true,
-            "comment_override": "",
-            "show_button": true,
-            "show_add_to_cart": false
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ex_c1"
-      ],
-      "disabled": true,
-      "name": "Featured record (example) C: dark stripe",
-      "settings": {
-        "eyebrow": "",
-        "heading": "Featured release",
-        "background": "dark"
-      }
-    },
     "pattern_genre_tiles": {
       "type": "pattern-genre-tiles",
       "blocks": {
@@ -644,60 +610,6 @@
         "padding_bottom": 96
       }
     },
-    "featured_record_example_a": {
-      "type": "pattern-featured-record-section",
-      "blocks": {
-        "ex_a1": {
-          "type": "pattern-featured-record",
-          "settings": {
-            "product": "various-artists-jazzy-sport-past-forward-silver",
-            "label": "Staff pick",
-            "layout": "horizontal",
-            "size": "standard",
-            "background": "dark",
-            "show_genres": true,
-            "show_description": true,
-            "description_lines": 3,
-            "description_override": "",
-            "show_comment": true,
-            "comment_override": "The Idjut Boys remix is a bit saucy",
-            "show_button": true,
-            "show_add_to_cart": false
-          },
-          "blocks": {}
-        },
-        "ex_a2": {
-          "type": "pattern-featured-record",
-          "settings": {
-            "product": "nathan-haynes-the-soft-chaos",
-            "label": "Staff pick",
-            "layout": "horizontal",
-            "size": "standard",
-            "background": "dark",
-            "show_genres": true,
-            "show_description": true,
-            "description_lines": 3,
-            "description_override": "",
-            "show_comment": true,
-            "comment_override": "",
-            "show_button": true,
-            "show_add_to_cart": false
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "ex_a1",
-        "ex_a2"
-      ],
-      "disabled": true,
-      "name": "Featured record (example) A: three records",
-      "settings": {
-        "eyebrow": "Example",
-        "heading": "Featured releases",
-        "background": "none"
-      }
-    },
     "featured_record_example_a_audioly": {
       "type": "apps",
       "blocks": {
@@ -724,105 +636,6 @@
       "name": "Featured record (example) A: Audioly play buttons",
       "settings": {
         "include_margins": false
-      }
-    },
-    "featured_record_example_b": {
-      "type": "pattern-columns",
-      "blocks": {
-        "ex_b_left": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "paper",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "top",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "ex_b_record": {
-              "type": "pattern-featured-record",
-              "settings": {
-                "product": "nail-more-time-lax12inch103-b2b",
-                "label": "Staff pick",
-                "layout": "vertical",
-                "size": "standard",
-                "background": "none",
-                "show_genres": true,
-                "show_description": true,
-                "description_lines": 3,
-                "description_override": "",
-                "show_comment": true,
-                "comment_override": "",
-                "show_button": true,
-                "show_add_to_cart": false
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "ex_b_record"
-          ]
-        },
-        "ex_b_right": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "stripes-clay",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "center",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "ex_b_heading": {
-              "type": "pattern-heading",
-              "settings": {
-                "eyebrow": "Featured record (example)",
-                "heading": "Staff picks",
-                "heading_accent": "",
-                "heading_end": "",
-                "size": "large",
-                "tag": "h2"
-              },
-              "blocks": {}
-            },
-            "ex_b_text": {
-              "type": "pattern-text",
-              "settings": {
-                "text": "<p>[Placeholder text: a couple of lines about this week&#39;s picks from the shop.]</p>",
-                "size": "large"
-              },
-              "blocks": {}
-            },
-            "ex_b_button": {
-              "type": "pattern-button",
-              "settings": {
-                "label": "All staff picks",
-                "link": "/collections/all",
-                "style": "accent"
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "ex_b_heading",
-            "ex_b_text",
-            "ex_b_button"
-          ]
-        }
-      },
-      "block_order": [
-        "ex_b_left",
-        "ex_b_right"
-      ],
-      "disabled": true,
-      "name": "Featured record (example) B: in columns",
-      "settings": {
-        "ratio": "50-50",
-        "width": "full",
-        "gap": "none",
-        "mobile_order": "normal",
-        "padding_top": 0,
-        "padding_bottom": 0
       }
     },
     "featured_record_example_b_audioly": {
@@ -1280,6 +1093,49 @@
         "padding_top": 44,
         "padding_bottom": 36
       }
+    },
+    "pattern_new_in_views_Ykp8jL": {
+      "type": "pattern-new-in-views",
+      "blocks": {
+        "view_EyLhNA": {
+          "type": "view",
+          "settings": {
+            "label": "Electronic",
+            "collection": "coming-soon-electronic",
+            "see_all_label": "See all"
+          }
+        },
+        "view_bMyFip": {
+          "type": "view",
+          "settings": {
+            "label": "Pre Order",
+            "collection": "pre-order-coming-soon",
+            "see_all_label": "See all"
+          }
+        },
+        "view_H7rcBT": {
+          "type": "view",
+          "settings": {
+            "label": "Popular",
+            "collection": "",
+            "see_all_label": "See all"
+          }
+        }
+      },
+      "block_order": [
+        "view_EyLhNA",
+        "view_bMyFip",
+        "view_H7rcBT"
+      ],
+      "name": "Pattern new in (views)",
+      "settings": {
+        "heading": "New in",
+        "anchor_id": "",
+        "products_to_show": 8,
+        "products_on_mobile": 6,
+        "container_width": "standard",
+        "image_ratio": "square"
+      }
     }
   },
   "order": [
@@ -1291,12 +1147,9 @@
     "pattern_new_in_views",
     "apps_new_in_views_audioly",
     "pattern_columns_feature_demo",
-    "featured_record_example_c",
     "pattern_genre_tiles",
     "pattern_service_row",
-    "featured_record_example_a",
     "featured_record_example_a_audioly",
-    "featured_record_example_b",
     "featured_record_example_b_audioly",
     "featured_record_example_c_audioly",
     "pattern_feature_split",
@@ -1307,6 +1160,7 @@
     "179548282811c2c151",
     "pattern_editorial_row",
     "pattern_visit",
-    "featured_collection"
+    "featured_collection",
+    "pattern_new_in_views_Ykp8jL"
   ]
 }
