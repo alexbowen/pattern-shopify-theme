@@ -1042,7 +1042,7 @@
       "settings": {
         "background_texture": "stripes",
         "label": "Visit",
-        "heading": "",
+        "heading": ".",
         "heading_accent": "",
         "heading_end": "",
         "use_shop_address": true,
