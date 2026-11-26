@@ -1,0 +1,162 @@
+{%- comment -%}
+  Product availability: the one place that decides what a product's availability state is and
+  what text goes with it, so the cards, the product page and the cart can't drift apart.
+  Texts and the date format: Theme settings > Availability.
+
+  State:
+  - The product metafield custom.pattern_availability when it is arriving, preorder or order_in.
+  - Otherwise in_stock when product.available, else sold_out. The metafield value "in_stock" (set
+    on normal products for the In stock filter toggle) counts exactly like a blank one.
+  The state (and so the label) comes only from the metafield. Stock quantity and the
+  continue-selling setting are not used for labels; whether the product can be bought is still
+  Shopify's product.available (see 'purchasable').
+
+  Date: custom.pattern_expected_date (a date metafield), used by arriving and preorder, formatted
+  with the date format setting (default "%-d %B"). Shopify's date filter gives month names in the
+  storefront's language.
+
+  Accepts:
+  - product: {Object} product
+  - part: {String} what to output (one value, no markup unless noted; texts are not escaped, so
+    escape them where they're printed):
+    - 'state': arriving | preorder | order_in | in_stock | sold_out
+    - 'date': the formatted expected date, or blank
+    - 'date_status': ok | past | missing for arriving / preorder; blank for other states
+    - 'purchasable': true | false (product.available)
+    - 'chip': the price-row chip text: Pre-order for preorder, Arriving when "Show a chip for
+      Arriving" is on, blank otherwise (order-in never has one). The Sold out pill stays with the
+      existing card code.
+    - 'button': the add-to-cart button label for an available product (Pre-order for preorder,
+      blank otherwise, meaning the usual "Add to cart")
+    - 'line': the line under the add-to-cart button, blank for in stock / sold out
+    - 'cart_line': the short line under a cart item, blank for in stock / sold out
+    - 'max_quantity': the quantity cap for preorder / order_in (setting, default 5), blank otherwise
+    - 'comment': an HTML comment when the product has an availability state but can't be bought
+
+  Usage:
+  {%- capture availability_state -%}{%- render 'pattern-availability', product: product, part: 'state' -%}{%- endcapture -%}
+{%- endcomment -%}
+{%- liquid
+  assign av_state = ''
+  assign av_date = ''
+  assign av_date_status = ''
+
+  if product != blank
+    assign av_value = product.metafields.custom.pattern_availability.value | strip | downcase
+    assign av_raw_date = product.metafields.custom.pattern_expected_date.value
+    case av_value
+      when 'arriving', 'preorder', 'order_in'
+        assign av_state = av_value
+      else
+        if product.available
+          assign av_state = 'in_stock'
+        else
+          assign av_state = 'sold_out'
+        endif
+    endcase
+
+    if av_state == 'arriving' or av_state == 'preorder'
+      if av_raw_date == blank
+        assign av_date_status = 'missing'
+      else
+        assign av_format = settings.availability_date_format | default: '%-d %B' | strip
+        if av_format == blank
+          assign av_format = '%-d %B'
+        endif
+        assign av_date = av_raw_date | date: av_format | strip
+        assign av_day = av_raw_date | date: '%Y%m%d' | plus: 0
+        assign av_today = 'now' | date: '%Y%m%d' | plus: 0
+        if av_date == blank or av_day == 0
+          assign av_date = ''
+          assign av_date_status = 'missing'
+        elsif av_day < av_today
+          assign av_date_status = 'past'
+        else
+          assign av_date_status = 'ok'
+        endif
+      endif
+    endif
+  endif
+-%}
+{%- case part -%}
+  {%- when 'state' -%}
+    {{- av_state -}}
+
+  {%- when 'date' -%}
+    {{- av_date -}}
+
+  {%- when 'date_status' -%}
+    {{- av_date_status -}}
+
+  {%- when 'purchasable' -%}
+    {%- if product.available -%}true{%- else -%}false{%- endif -%}
+
+  {%- when 'chip' -%}
+    {%- case av_state -%}
+      {%- when 'arriving' -%}
+        {%- if settings.availability_show_arriving_chip -%}
+          {{- settings.availability_badge_arriving | default: 'Arriving' -}}
+        {%- endif -%}
+      {%- when 'preorder' -%}
+        {{- settings.availability_badge_preorder | default: 'Pre-order' -}}
+    {%- endcase -%}
+
+  {%- when 'button' -%}
+    {%- if av_state == 'preorder' -%}
+      {{- settings.availability_button_preorder | default: 'Pre-order' -}}
+    {%- endif -%}
+
+  {%- when 'line', 'cart_line' -%}
+    {%- liquid
+      assign av_text = ''
+      case av_state
+        when 'arriving'
+          if av_date_status == 'missing'
+            assign av_text = settings.availability_line_arriving_no_date | default: 'Arriving soon'
+          elsif av_date_status == 'past'
+            assign av_text = settings.availability_line_arriving_past | default: 'Arriving shortly'
+          elsif part == 'cart_line'
+            assign av_text = settings.availability_cart_arriving | default: 'Arriving · around {date}'
+          else
+            assign av_text = settings.availability_line_arriving | default: 'Arriving around {date}, ships the same week'
+          endif
+        when 'preorder'
+          if av_date_status == 'missing'
+            assign av_text = settings.availability_line_preorder_no_date | default: 'Ships on release.'
+          elsif av_date_status == 'past'
+            assign av_text = settings.availability_line_preorder_past | default: 'Ships soon.'
+          elsif part == 'cart_line'
+            assign av_text = settings.availability_cart_preorder | default: 'Pre-order · out {date}'
+          else
+            assign av_text = settings.availability_line_preorder | default: 'Out {date}. Ships on release.'
+          endif
+          # In the cart the edge-case texts follow the Pre-order label: "Pre-order · ships soon"
+          if part == 'cart_line' and av_date_status != 'ok'
+            assign av_label = settings.availability_badge_preorder | default: 'Pre-order'
+            assign av_first = av_text | slice: 0 | downcase
+            assign av_rest = av_text | slice: 1, 500 | remove_last: '.'
+            assign av_text = av_label | append: ' · ' | append: av_first | append: av_rest
+          endif
+        when 'order_in'
+          if part == 'cart_line'
+            assign av_text = settings.availability_cart_order_in | default: 'Ordered in · ships in 10-14 working days'
+          else
+            assign av_text = settings.availability_line_order_in | default: 'Ordered in for you, ships in 10-14 working days. Portugal and Spain only.'
+          endif
+      endcase
+      assign av_text = av_text | replace: '{date}', av_date | strip
+    -%}
+    {{- av_text -}}
+
+  {%- when 'max_quantity' -%}
+    {%- if av_state == 'preorder' or av_state == 'order_in' -%}
+      {{- settings.availability_max_quantity | default: 5 -}}
+    {%- endif -%}
+
+  {%- when 'comment' -%}
+    {%- if product != blank and product.available == false -%}
+      {%- if av_state == 'arriving' or av_state == 'preorder' or av_state == 'order_in' -%}
+        <!-- Pattern availability: "{{ product.handle }}" is set to {{ av_state }} (custom.pattern_availability) but can't be bought (no stock, continue selling off). Showing the {{ av_state }} badge and line with a disabled Sold out button. Turn on "Continue selling when out of stock" or add stock. -->
+      {%- endif -%}
+    {%- endif -%}
+{%- endcase -%}

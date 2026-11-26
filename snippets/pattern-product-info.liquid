@@ -16,8 +16,9 @@
   Accepts:
   - product: {Object} product
   - part: {String} 'breadcrumb' | 'title' | 'pills' | 'specs' | 'tags'
-  - show_preorder: {Boolean} part 'tags': add the "Pre-order" chip after the condition tag
-    (snippets/pattern-preorder-tag.liquid). The product page passes it; the featured record card doesn't.
+  - show_availability: {Boolean} part 'tags': add the availability chip (Pre-order; Arriving when
+    that setting is on, from snippets/pattern-availability.liquid) as an accent tag after the
+    condition tag. The product page passes it; the featured record card doesn't.
 
   Usage:
   {% render 'pattern-product-info', product: product, part: 'breadcrumb' %}
@@ -136,8 +137,11 @@
   {%- when 'tags' -%}
     {%- liquid
       render 'pattern-tag', text: condition, class: 'pattern-price-row__tag'
-      if show_preorder
-        render 'pattern-preorder-tag', product: product, class: 'pattern-price-row__tag'
+      if show_availability
+        capture availability_chip
+          render 'pattern-availability', product: product, part: 'chip'
+        endcapture
+        render 'pattern-tag', text: availability_chip, class: 'pattern-tag--accent pattern-price-row__tag'
       endif
       render 'pattern-tag', text: format, class: 'pattern-price-row__tag'
     -%}

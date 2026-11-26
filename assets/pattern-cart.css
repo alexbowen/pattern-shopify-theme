@@ -73,6 +73,18 @@
   margin-top: 0.8rem;
 }
 
+/* Availability (snippets/pattern-availability.liquid 'cart_line'): "Pre-order · out 12 December".
+   Same small muted DM Mono as the label line; also used by the cart drawer. */
+.pattern-cart-record__availability {
+  margin: 0.6rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--pattern-muted);
+  overflow-wrap: anywhere;
+}
+
 /* Unit price + condition tag, laid out like the product cards' price row ("€18,00 [NEW]") */
 .pattern-cart-record__price-row {
   display: flex;

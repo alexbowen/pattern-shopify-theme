@@ -6,6 +6,9 @@
   - The record label as a small muted DM Mono line (hidden when empty).
   - A DM Mono meta line: format (with item count, "2LP" / "2×12\" Single") · parent genre.
   - The condition as the shared outlined tag (snippets/pattern-tag.liquid), when known.
+  - The accent availability chip (Pre-order) after the condition tag in the price row, and the
+    availability line (arriving / pre-order / order-in, snippets/pattern-availability.liquid) as a
+    small muted DM Mono line, e.g. "Pre-order · out 12 December".
   Missing parts are left out with no stray separators. Styles: assets/pattern-cart.css.
 
   Accepts:
@@ -124,10 +127,16 @@
     {%- unless show_tag == false -%}
       {%- render 'pattern-tag', text: record_condition -%}
     {%- endunless -%}
-    {%- render 'pattern-preorder-tag', product: product -%}
+    {%- capture record_chip -%}{%- render 'pattern-availability', product: product, part: 'chip' -%}{%- endcapture -%}
+    {%- render 'pattern-tag', text: record_chip, class: 'pattern-tag--accent' -%}
   </div>
 {%- else -%}
   {%- unless show_tag == false -%}
     {%- render 'pattern-tag', text: record_condition, class: 'pattern-cart-record__tag' -%}
   {%- endunless -%}
+{%- endif -%}
+{%- capture record_availability -%}{%- render 'pattern-availability', product: product, part: 'cart_line' -%}{%- endcapture -%}
+{%- assign record_availability = record_availability | strip -%}
+{%- if record_availability != blank -%}
+  <p class="pattern-cart-record__availability">{{ record_availability | escape }}</p>
 {%- endif -%}

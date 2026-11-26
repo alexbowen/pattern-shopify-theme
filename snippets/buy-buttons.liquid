@@ -22,7 +22,23 @@
       if block.settings.show_dynamic_checkout and gift_card_recipient_feature_active == false
         assign show_dynamic_checkout = true
       endif
+
+      # Availability (snippets/pattern-availability.liquid): the button label for an available
+      # product ("Pre-order" for pre-orders, else "Add to cart") and the line under the button.
+      # Whether the button is enabled still follows Shopify's availability.
+      capture availability_button
+        render 'pattern-availability', product: product, part: 'button'
+      endcapture
+      capture availability_line
+        render 'pattern-availability', product: product, part: 'line'
+      endcapture
+      assign add_label = availability_button | strip
+      if add_label == blank
+        assign add_label = 'products.product.add_to_cart' | t
+      endif
+      assign availability_line = availability_line | strip
     -%}
+    {%- render 'pattern-availability', product: product, part: 'comment' -%}
 
     <product-form
       class="product-form"
@@ -75,6 +91,7 @@
             type="submit"
             name="add"
             class="product-form__submit button button--full-width {% if show_dynamic_checkout %}button--secondary{% else %}button--primary{% endif %}"
+            data-add-label="{{ add_label | escape }}"
             {% if product.selected_or_first_available_variant.available == false
               or quantity_rule_soldout
               or product.selected_or_first_available_variant == null
@@ -88,11 +105,14 @@
               {%- elsif product.selected_or_first_available_variant.available == false or quantity_rule_soldout -%}
                 {{ 'products.product.sold_out' | t }}
               {%- else -%}
-                {{ 'products.product.add_to_cart' | t }}
+                {{ add_label | escape }}
               {%- endif -%}
             </span>
             {%- render 'loading-spinner' -%}
           </button>
+          {%- if availability_line != blank -%}
+            <p class="pattern-availability-line">{{ availability_line | escape }}</p>
+          {%- endif -%}
           {%- if show_dynamic_checkout -%}
             {{ form | payment_button }}
           {%- endif -%}

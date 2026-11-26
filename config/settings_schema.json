@@ -1434,23 +1434,132 @@
     ]
   },
   {
-    "name": "Pre-orders",
+    "name": "Availability",
     "settings": [
       {
         "type": "paragraph",
-        "content": "Products with this tag show a \"Pre-order\" chip on product cards, the product page and cart lines. Capitals, spaces and hyphens don't matter: \"coming-soon\" also matches products tagged \"coming soon\"."
+        "content": "Set per product with the metafields Availability (custom.pattern_availability: arriving, preorder or order_in; blank or in_stock is a normal product) and Expected date (custom.pattern_expected_date). In the texts below, {date} is replaced by the expected date."
+      },
+      {
+        "type": "header",
+        "content": "Chips"
       },
       {
         "type": "text",
-        "id": "preorder_tag",
-        "label": "Pre-order tag",
-        "default": "coming-soon"
+        "id": "availability_badge_arriving",
+        "label": "Arriving chip",
+        "default": "Arriving",
+        "info": "On the price row of product cards, the product page and cart lines, when shown."
       },
       {
         "type": "text",
-        "id": "preorder_label",
-        "label": "Pre-order label",
+        "id": "availability_badge_preorder",
+        "label": "Pre-order chip",
+        "default": "Pre-order",
+        "info": "On the price row of product cards, the product page and pre-order cart lines."
+      },
+      {
+        "type": "checkbox",
+        "id": "availability_show_arriving_chip",
+        "label": "Show a chip for Arriving",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Product page"
+      },
+      {
+        "type": "text",
+        "id": "availability_button_preorder",
+        "label": "Pre-order button label",
         "default": "Pre-order"
+      },
+      {
+        "type": "text",
+        "id": "availability_line_arriving",
+        "label": "Arriving line",
+        "default": "Arriving around {date}, ships the same week",
+        "info": "Under the add-to-cart button."
+      },
+      {
+        "type": "text",
+        "id": "availability_line_arriving_no_date",
+        "label": "Arriving line, no date",
+        "default": "Arriving soon"
+      },
+      {
+        "type": "text",
+        "id": "availability_line_arriving_past",
+        "label": "Arriving line, date passed",
+        "default": "Arriving shortly"
+      },
+      {
+        "type": "text",
+        "id": "availability_line_preorder",
+        "label": "Pre-order line",
+        "default": "Out {date}. Ships on release."
+      },
+      {
+        "type": "text",
+        "id": "availability_line_preorder_no_date",
+        "label": "Pre-order line, no date",
+        "default": "Ships on release."
+      },
+      {
+        "type": "text",
+        "id": "availability_line_preorder_past",
+        "label": "Pre-order line, date passed",
+        "default": "Ships soon."
+      },
+      {
+        "type": "text",
+        "id": "availability_line_order_in",
+        "label": "Order-in line",
+        "default": "Ordered in for you, ships in 10-14 working days. Portugal and Spain only."
+      },
+      {
+        "type": "range",
+        "id": "availability_max_quantity",
+        "label": "Pre-order and order-in maximum quantity",
+        "min": 1,
+        "max": 20,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "header",
+        "content": "Cart"
+      },
+      {
+        "type": "text",
+        "id": "availability_cart_arriving",
+        "label": "Arriving cart line",
+        "default": "Arriving · around {date}",
+        "info": "Under the item on the cart page and in the added-to-cart pop-up. With no date, or once it has passed, the cart uses the product page line."
+      },
+      {
+        "type": "text",
+        "id": "availability_cart_preorder",
+        "label": "Pre-order cart line",
+        "default": "Pre-order · out {date}",
+        "info": "With no date, or once it has passed, the cart shows the Pre-order badge and the product page line, e.g. \"Pre-order · ships soon\"."
+      },
+      {
+        "type": "text",
+        "id": "availability_cart_order_in",
+        "label": "Order-in cart line",
+        "default": "Ordered in · ships in 10-14 working days"
+      },
+      {
+        "type": "header",
+        "content": "Date"
+      },
+      {
+        "type": "text",
+        "id": "availability_date_format",
+        "label": "Date format",
+        "default": "%-d %B",
+        "info": "strftime format. %-d %B gives \"7 December\"; month names follow the store's language."
       }
     ]
   },

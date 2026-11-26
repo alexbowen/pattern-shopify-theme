@@ -8,6 +8,14 @@ class FacetFiltersForm extends HTMLElement {
     }, 800);
 
     const facetForm = this.querySelector('form');
+    // In stock toggle (snippets/pattern-filter-bar.liquid): its paired metafield filter
+    // (pattern_availability = in_stock) is a hidden input, enabled only while the toggle is ticked,
+    // so both filters are added or removed together. Runs before the debounced submit below.
+    facetForm.addEventListener('input', (event) => {
+      if (!event.target.matches('[data-pattern-in-stock]')) return;
+      const pair = event.target.parentElement.querySelector('[data-pattern-in-stock-pair]');
+      if (pair) pair.disabled = !event.target.checked;
+    });
     facetForm.addEventListener('input', this.debouncedOnSubmit.bind(this));
 
     const facetWrapper = this.querySelector('#FacetsWrapperDesktop');

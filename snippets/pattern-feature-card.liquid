@@ -165,8 +165,11 @@
                   </div>
                   {%- form 'product', product, id: fc_form_id, novalidate: 'novalidate' -%}
                     <input type="hidden" name="id" value="{{ fc_variant.id }}">
-                    <button type="submit" name="add" class="pattern-button pattern-feature__add">
-                      <span>{{ 'products.product.add_to_cart' | t }}</span>
+                    {%- capture fc_add_label -%}{%- render 'pattern-availability', product: product, part: 'button' -%}{%- endcapture -%}
+                    {%- assign fc_add_label = fc_add_label | strip -%}
+                    {%- if fc_add_label == blank -%}{%- assign fc_add_label = 'products.product.add_to_cart' | t -%}{%- endif -%}
+                    <button type="submit" name="add" class="pattern-button pattern-feature__add" data-add-label="{{ fc_add_label | escape }}">
+                      <span>{{ fc_add_label | escape }}</span>
                       {%- render 'loading-spinner' -%}
                     </button>
                   {%- endform -%}

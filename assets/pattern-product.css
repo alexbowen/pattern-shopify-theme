@@ -252,6 +252,23 @@
   cursor: not-allowed;
 }
 
+/* Availability line right under the add-to-cart button, above Shop Pay (snippets/buy-buttons.liquid,
+   texts in Theme settings > Availability): "Arriving around 3 December, ships the same week" etc.
+   Muted body text. */
+.pattern-availability-line {
+  margin: -0.2rem 0 1.2rem;
+  font-family: var(--font-body);
+  font-size: 1.4rem;
+  line-height: 1.45;
+  letter-spacing: 0;
+  color: var(--pattern-muted);
+}
+
+/* Keep Dawn's not-allowed cursor on a disabled Shop Pay button when the line sits between them */
+.product-form__submit[disabled] + .pattern-availability-line + .shopify-payment-button .shopify-payment-button__button[disabled] {
+  cursor: not-allowed;
+}
+
 /* Dynamic checkout (Shop Pay, Buy it now) stays below as the secondary action; section setting
    "Hide dynamic checkout buttons" hides it */
 .pattern-product--no-dynamic-checkout .shopify-payment-button {

@@ -124,7 +124,7 @@
                       price_class: 'price--large',
                       hide_currency_code: true
                     -%}
-                    {%- capture price_tags -%}{%- render 'pattern-product-info', product: product, part: 'tags', show_preorder: true -%}{%- endcapture -%}
+                    {%- capture price_tags -%}{%- render 'pattern-product-info', product: product, part: 'tags', show_availability: true -%}{%- endcapture -%}
                     {%- if price_tags != blank -%}
                       <span class="pattern-price-row__tags">{{ price_tags }}</span>
                     {%- endif -%}
@@ -271,6 +271,23 @@
                   if qty_variant.inventory_management == 'shopify' and qty_variant.inventory_policy != 'continue' and qty_variant.inventory_quantity <= 1
                     assign hide_quantity = true
                   endif
+
+                  # Pre-order and order-in (snippets/pattern-availability.liquid): when they can be
+                  # bought, always show the stepper, not capped by stock, up to the maximum in
+                  # Theme settings > Availability (or the variant's own quantity rule maximum when
+                  # that is lower).
+                  capture availability_max
+                    render 'pattern-availability', product: product, part: 'max_quantity'
+                  endcapture
+                  assign qty_max = qty_variant.quantity_rule.max
+                  assign availability_max = availability_max | strip
+                  if availability_max != blank and qty_variant.available
+                    assign hide_quantity = false
+                    assign availability_max = availability_max | plus: 0
+                    if qty_max == null or availability_max < qty_max
+                      assign qty_max = availability_max
+                    endif
+                  endif
                 -%}
                 <div
                   id="Quantity-Form-{{ section.id }}"
@@ -312,9 +329,9 @@
                         data-cart-quantity="{{ cart_qty }}"
                         data-min="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
                         min="{{ product.selected_or_first_available_variant.quantity_rule.min }}"
-                        {% if product.selected_or_first_available_variant.quantity_rule.max != null %}
-                          data-max="{{ product.selected_or_first_available_variant.quantity_rule.max }}"
-                          max="{{ product.selected_or_first_available_variant.quantity_rule.max }}"
+                        {% if qty_max != null %}
+                          data-max="{{ qty_max }}"
+                          max="{{ qty_max }}"
                         {% endif %}
                         step="{{ product.selected_or_first_available_variant.quantity_rule.increment }}"
                         value="{{ product.selected_or_first_available_variant.quantity_rule.min }}"

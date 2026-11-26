@@ -24,11 +24,42 @@
   - chip_excludes: {String} ,param,param, list left out of the active chips (genres: the pills
     already show them)
   - paginate: {Object}
+
+  In stock toggle: applies two filters together, availability = in stock (filter.v.availability=1)
+  AND the product metafield custom.pattern_availability = in_stock (a Search & Discovery filter, so
+  arriving / pre-order / order-in products drop out). It shows as on only when both are in the URL.
+  The metafield value rides along in a hidden input that is enabled only while the toggle is ticked
+  (assets/facets.js), so ticking adds both, unticking removes both, and other filters, sort and the
+  query are kept (pagination resets, as with any filter). The metafield group itself isn't shown
+  anywhere (row, sheet, chips) and its "remove" links go through snippets/pattern-in-stock-url.liquid.
+  Until the metafield filter is enabled in Search & Discovery the toggle uses availability alone.
 {% endcomment %}
 
 {%- comment -%} The search object has no products_count; results_count is its (filtered) total. {%- endcomment -%}
 {%- assign results_total = results.products_count | default: results.results_count -%}
 {%- liquid
+  # In stock toggle pair (see above)
+  assign pa_param = 'filter.p.m.custom.pattern_availability'
+  assign pa_filter = results.filters | where: 'param_name', pa_param | first
+  assign pa_value = pa_filter.values | where: 'value', 'in_stock' | first
+  assign availability_filter = results.filters | where: 'param_name', 'filter.v.availability' | first
+  assign in_stock_value = availability_filter.values | where: 'value', '1' | first
+  assign in_stock_on = false
+  if in_stock_value.active
+    assign in_stock_on = true
+    if pa_filter and pa_value.active != true
+      assign in_stock_on = false
+    endif
+  endif
+  if utility_excludes == blank
+    assign utility_excludes = ','
+  endif
+  if chip_excludes == blank
+    assign chip_excludes = ','
+  endif
+  assign utility_excludes = utility_excludes | append: pa_param | append: ','
+  assign chip_excludes = chip_excludes | append: pa_param | append: ','
+
   assign sort_by = results.sort_by | default: results.default_sort_by
   assign clear_all_url = results.url | append: '?sort_by=' | append: sort_by
   # Search results: keep the query (products, prefix match) when clearing filters.
@@ -74,7 +105,7 @@
         endif
       endif
     endif
-    if discovery_params contains filter_key or filter.param_name == 'filter.v.availability'
+    if discovery_params contains filter_key or filter.param_name == 'filter.v.availability' or filter.param_name == pa_param
       for value in filter.active_values
         assign encoded_value = value.value | url_encode
         assign clear_sheet_url = clear_sheet_url | append: '&' | append: value.param_name | append: '=' | append: encoded_value
@@ -234,20 +265,32 @@
             {%- if utility_excludes contains filter_key -%}{%- continue -%}{%- endif -%}
             {%- if filter.param_name == 'filter.v.availability' -%}
               {%- assign in_stock = filter.values | where: 'value', '1' | first -%}
-              {%- comment -%} "In stock" on/off toggle (a native checkbox, so its role and state are announced): ticks availability=1 only. {%- endcomment -%}
+              {%- comment -%} "In stock" on/off toggle (a native checkbox, so its role and state are announced): availability=1 plus the paired metafield filter (see above). {%- endcomment -%}
               <div id="Details-{{ filter.param_name | escape }}-{{ section.id }}" class="filter-bar__item js-filter">
                 {%- if in_stock and in_stock.count > 0 or in_stock.active -%}
-                  <label class="filter-chip filter-chip--toggle{% if in_stock.active %} filter-chip--active{% endif %}" for="FilterToggle-{{ filter.param_name | escape }}">
+                  <label class="filter-chip filter-chip--toggle{% if in_stock_on %} filter-chip--active{% endif %}" for="FilterToggle-{{ filter.param_name | escape }}">
                     <input
                       type="checkbox"
                       class="filter-chip__toggle-input visually-hidden"
                       id="FilterToggle-{{ filter.param_name | escape }}"
                       name="{{ in_stock.param_name }}"
                       value="{{ in_stock.value }}"
-                      {% if in_stock.active %}
+                      data-pattern-in-stock
+                      {% if in_stock_on %}
                         checked
                       {% endif %}
                     >
+                    {%- if pa_filter -%}
+                      <input
+                        type="hidden"
+                        name="{{ pa_param }}"
+                        value="in_stock"
+                        data-pattern-in-stock-pair
+                        {% unless in_stock_on %}
+                          disabled
+                        {% endunless %}
+                      >
+                    {%- endif -%}
                     <span class="filter-chip__check svg-wrapper" aria-hidden="true">{{- 'icon-checkmark.svg' | inline_asset_content -}}</span>
                     <span class="filter-chip__label">{{ 'products.facets.filter_bar.in_stock' | t }}</span>
                   </label>
@@ -267,8 +310,9 @@
           {%- assign filter_key = ',' | append: filter.param_name | append: ',' -%}
           {%- if chip_excludes contains filter_key -%}{%- continue -%}{%- endif -%}
           {%- for value in filter.active_values -%}
+            {%- capture remove_url -%}{%- if filter.param_name == 'filter.v.availability' -%}{%- render 'pattern-in-stock-url', url: value.url_to_remove -%}{%- else -%}{{ value.url_to_remove }}{%- endif -%}{%- endcapture -%}
             <facet-remove>
-              <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
+              <a href="{{ remove_url }}" class="active-facets__button active-facets__button--light">
                 <span class="active-facets__button-inner button button--tertiary">
                   {{ filter.label | escape }}: {{ value.label | escape }}
                   <span class="svg-wrapper">
@@ -365,17 +409,29 @@
                             <legend class="filter-sheet__legend">{{ filter.label | escape }}</legend>
                             <ul class="mobile-facets__list filter-sheet__list list-unstyled" role="list">
                               <li>
-                                <label class="filter-chip filter-chip--toggle{% if in_stock.active %} filter-chip--active{% endif %}" for="FilterToggle-Mobile-{{ filter.param_name | escape }}">
+                                <label class="filter-chip filter-chip--toggle{% if in_stock_on %} filter-chip--active{% endif %}" for="FilterToggle-Mobile-{{ filter.param_name | escape }}">
                                   <input
                                     type="checkbox"
                                     class="mobile-facets__checkbox"
                                     id="FilterToggle-Mobile-{{ filter.param_name | escape }}"
                                     name="{{ in_stock.param_name }}"
                                     value="{{ in_stock.value }}"
-                                    {% if in_stock.active %}
+                                    data-pattern-in-stock
+                                    {% if in_stock_on %}
                                       checked
                                     {% endif %}
                                   >
+                                {%- if pa_filter -%}
+                                  <input
+                                    type="hidden"
+                                    name="{{ pa_param }}"
+                                    value="in_stock"
+                                    data-pattern-in-stock-pair
+                                    {% unless in_stock_on %}
+                                      disabled
+                                    {% endunless %}
+                                  >
+                                {%- endif -%}
                                   <span class="filter-chip__check svg-wrapper" aria-hidden="true">{{- 'icon-checkmark.svg' | inline_asset_content -}}</span>
                                   <span class="filter-chip__label">{{ 'products.facets.filter_bar.in_stock' | t }}</span>
                                 </label>
@@ -463,8 +519,9 @@
       {%- assign filter_key = ',' | append: filter.param_name | append: ',' -%}
       {%- if chip_excludes contains filter_key -%}{%- continue -%}{%- endif -%}
       {%- for value in filter.active_values -%}
+        {%- capture remove_url -%}{%- if filter.param_name == 'filter.v.availability' -%}{%- render 'pattern-in-stock-url', url: value.url_to_remove -%}{%- else -%}{{ value.url_to_remove }}{%- endif -%}{%- endcapture -%}
         <facet-remove>
-          <a href="{{ value.url_to_remove }}" class="active-facets__button active-facets__button--light">
+          <a href="{{ remove_url }}" class="active-facets__button active-facets__button--light">
             <span class="active-facets__button-inner button button--tertiary">
               {{ filter.label | escape }}: {{ value.label | escape }}
               <span class="svg-wrapper">

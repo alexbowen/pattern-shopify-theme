@@ -311,12 +311,14 @@
             {%- comment -%}
               Catalogue-label price row: amount without the currency code (cards only), then the
               condition as a small outlined tag (New and Used look the same) when known, then the
-              accent "Pre-order" chip for products with the pre-order tag (Theme settings > Pre-orders).
+              accent availability chip (Pre-order; Arriving only when that setting is on, from
+              snippets/pattern-availability.liquid, Theme settings > Availability).
             {%- endcomment -%}
+            {%- capture card_availability_chip -%}{%- render 'pattern-availability', product: card_product, part: 'chip' -%}{%- endcapture -%}
             <div class="card-pattern__price-row">
               {% render 'price', product: card_product, price_class: '', show_compare_at_price: true, hide_currency_code: true %}
               {%- render 'pattern-tag', text: card_condition, class: 'card-pattern__condition' -%}
-              {%- render 'pattern-preorder-tag', product: card_product, class: 'card-pattern__preorder' -%}
+              {%- render 'pattern-tag', text: card_availability_chip, class: 'pattern-tag--accent card-pattern__availability' -%}
             </div>
             {%- if card_product.quantity_price_breaks_configured? -%}
               {% if card_product.variants_count == 1 and quick_add == 'bulk' %}

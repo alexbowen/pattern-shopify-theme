@@ -1,0 +1,44 @@
+{%- comment -%}
+  The "In stock" toggle on collection and search pages (snippets/pattern-filter-bar.liquid) applies
+  two filters together: availability = in stock (filter.v.availability=1) AND the product metafield
+  custom.pattern_availability = in_stock (Search & Discovery filter). This takes a link that removes
+  the availability filter (a value's url_to_remove) and also drops the paired metafield filter from
+  it, so every "remove In stock" link clears both. Other filters, sort and the query are kept.
+
+  Accepts:
+  - url: {String} a filter URL
+
+  Usage:
+  {%- render 'pattern-in-stock-url', url: value.url_to_remove -%}
+{%- endcomment -%}
+{%- liquid
+  assign pair_key = 'filter.p.m.custom.pattern_availability='
+  assign pair_value = 'in_stock'
+  if url contains '?'
+    assign url_base = url | split: '?' | first
+    assign url_query = url | split: '?' | last
+    assign kept = ''
+    assign parts = url_query | split: '&'
+    for part in parts
+      assign part_key = part | replace: '%2E', '.' | replace: '%2e', '.'
+      if part_key contains pair_key
+        assign part_value = part_key | split: '=' | last | downcase
+        if part_value == pair_value
+          continue
+        endif
+      endif
+      if kept == blank
+        assign kept = part
+      else
+        assign kept = kept | append: '&' | append: part
+      endif
+    endfor
+    if kept == blank
+      echo url_base
+    else
+      echo url_base | append: '?' | append: kept
+    endif
+  else
+    echo url
+  endif
+-%}

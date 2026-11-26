@@ -164,6 +164,12 @@
                             </div>
                           {%- endif -%}
 
+                          {%- capture item_availability -%}{%- render 'pattern-availability', product: item.product, part: 'cart_line' -%}{%- endcapture -%}
+                          {%- assign item_availability = item_availability | strip -%}
+                          {%- if item_availability != blank -%}
+                            <p class="pattern-cart-record__availability">{{ item_availability | escape }}</p>
+                          {%- endif -%}
+
                           {%- if item.product.has_only_default_variant == false
                             or item.properties.size != 0
                             or item.selling_plan_allocation != null

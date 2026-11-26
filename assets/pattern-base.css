@@ -135,10 +135,10 @@
   white-space: nowrap;
 }
 
-/* "Pre-order" chip (snippets/pattern-preorder-tag.liquid): the same outlined tag in the
-   accent-text colour, no fill. A label too long for a narrow card wraps inside the chip instead
-   of overflowing. On the dark section backgrounds (where .pattern-tag turns paper)
-   it uses the light accent made for the dark stripe. */
+/* Availability chip on the price row of cards, the product page and cart lines (Pre-order, from
+   snippets/pattern-availability.liquid): the same outlined tag in the accent-text colour, no
+   fill. A long label wraps inside the tag instead of overflowing. On the dark section
+   backgrounds (where .pattern-tag turns paper) it uses the light accent made for the dark stripe. */
 .pattern-tag.pattern-tag--accent {
   max-width: 100%;
   border-color: var(--accent-text);

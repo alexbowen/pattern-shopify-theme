@@ -281,10 +281,13 @@
                 <div class="pattern-filter-sticky__chips">
                   {%- assign sticky_chips = 0 -%}
                   {%- for filter in results.filters -%}
+                    {%- comment -%} The In stock toggle's paired metafield filter has no chip of its own; the In stock chip removes both (snippets/pattern-in-stock-url.liquid). {%- endcomment -%}
+                    {%- if filter.param_name == 'filter.p.m.custom.pattern_availability' -%}{%- continue -%}{%- endif -%}
                     {%- for value in filter.active_values -%}
                       {%- assign sticky_chips = sticky_chips | plus: 1 -%}
+                      {%- capture sticky_remove_url -%}{%- if filter.param_name == 'filter.v.availability' -%}{%- render 'pattern-in-stock-url', url: value.url_to_remove -%}{%- else -%}{{ value.url_to_remove }}{%- endif -%}{%- endcapture -%}
                       <facet-remove class="pattern-filter-sticky__chip-wrap">
-                        <a href="{{ value.url_to_remove }}" class="pattern-filter-sticky__chip">
+                        <a href="{{ sticky_remove_url }}" class="pattern-filter-sticky__chip">
                           <span>{{ value.label | escape }}</span>
                           <span class="pattern-filter-sticky__x" aria-hidden="true">×</span>
                           <span class="visually-hidden">{{ 'products.facets.clear_filter' | t }}: {{ filter.label | escape }} {{ value.label | escape }}</span>
