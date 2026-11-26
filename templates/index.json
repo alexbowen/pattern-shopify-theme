@@ -1094,26 +1094,26 @@
         "padding_bottom": 36
       }
     },
-    "pattern_new_in_views_Ykp8jL": {
+    "pattern_new_in_views_KEeDHL": {
       "type": "pattern-new-in-views",
       "blocks": {
-        "view_EyLhNA": {
+        "view_bWjJ6U": {
           "type": "view",
           "settings": {
-            "label": "Electronic",
+            "label": "All",
             "collection": "coming-soon-electronic",
             "see_all_label": "See all"
           }
         },
-        "view_bMyFip": {
+        "view_MBe8NG": {
           "type": "view",
           "settings": {
-            "label": "Pre Order",
-            "collection": "pre-order-coming-soon",
+            "label": "Flipside",
+            "collection": "",
             "see_all_label": "See all"
           }
         },
-        "view_H7rcBT": {
+        "view_LH93Yw": {
           "type": "view",
           "settings": {
             "label": "Popular",
@@ -1123,13 +1123,13 @@
         }
       },
       "block_order": [
-        "view_EyLhNA",
-        "view_bMyFip",
-        "view_H7rcBT"
+        "view_bWjJ6U",
+        "view_MBe8NG",
+        "view_LH93Yw"
       ],
       "name": "Pattern new in (views)",
       "settings": {
-        "heading": "New in",
+        "heading": "Coming soon",
         "anchor_id": "",
         "products_to_show": 8,
         "products_on_mobile": 6,
@@ -1161,6 +1161,6 @@
     "pattern_editorial_row",
     "pattern_visit",
     "featured_collection",
-    "pattern_new_in_views_Ykp8jL"
+    "pattern_new_in_views_KEeDHL"
   ]
 }
