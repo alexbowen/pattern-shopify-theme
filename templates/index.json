@@ -964,6 +964,38 @@
     "179548282811c2c151": {
       "type": "apps",
       "blocks": {
+        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_p4hEAV": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "pre-order-coming-soon",
+            "productsToShow": 4,
+            "size": 60,
+            "position": "center",
+            "padding": 20,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 40,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 10,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        },
+        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_EWTHYw": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "this-week-coming-soon",
+            "productsToShow": 4,
+            "size": 60,
+            "position": "center",
+            "padding": 20,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 40,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 10,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
+        },
         "audioly_sticky_audio_player_play_pause_buttons_featured_collection_iPRXpg": {
           "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
           "settings": {
@@ -982,6 +1014,8 @@
         }
       },
       "block_order": [
+        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_p4hEAV",
+        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_EWTHYw",
         "audioly_sticky_audio_player_play_pause_buttons_featured_collection_iPRXpg"
       ],
       "settings": {
