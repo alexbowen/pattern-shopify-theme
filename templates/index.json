@@ -918,37 +918,47 @@
         "link": ""
       }
     },
-    "featured_collection_8grxUc": {
-      "type": "featured-collection",
-      "name": "t:sections.featured-collection.presets.name",
+    "pattern_new_in_views_KEeDHL": {
+      "type": "pattern-new-in-views",
+      "blocks": {
+        "view_bWjJ6U": {
+          "type": "view",
+          "settings": {
+            "label": "All",
+            "collection": "coming-soon-electronic",
+            "see_all_label": "See all"
+          }
+        },
+        "view_MBe8NG": {
+          "type": "view",
+          "settings": {
+            "label": "This week",
+            "collection": "this-week-coming-soon",
+            "see_all_label": "See all"
+          }
+        },
+        "view_LH93Yw": {
+          "type": "view",
+          "settings": {
+            "label": "Pre order",
+            "collection": "pre-order-coming-soon",
+            "see_all_label": "See all"
+          }
+        }
+      },
+      "block_order": [
+        "view_bWjJ6U",
+        "view_MBe8NG",
+        "view_LH93Yw"
+      ],
+      "name": "Pattern new in (views)",
       "settings": {
-        "collection": "coming-soon-electronic",
-        "products_to_show": 12,
-        "label": "",
-        "anchor_id": "coming-soon",
-        "title": "Coming soon",
-        "heading_size": "h0",
-        "description": "<p>Available for preorder</p>",
-        "show_description": false,
-        "description_style": "body",
-        "columns_desktop": 6,
-        "enable_desktop_slider": false,
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "solid",
-        "background": "paper",
+        "heading": "Coming soon",
+        "anchor_id": "",
+        "products_to_show": 8,
+        "products_on_mobile": 6,
         "container_width": "standard",
-        "color_scheme": "",
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": false,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "none",
-        "columns_mobile": "2",
-        "swipe_on_mobile": false,
-        "padding_top": 36,
-        "padding_bottom": 36
+        "image_ratio": "square"
       }
     },
     "179548282811c2c151": {
@@ -1093,49 +1103,6 @@
         "padding_top": 44,
         "padding_bottom": 36
       }
-    },
-    "pattern_new_in_views_KEeDHL": {
-      "type": "pattern-new-in-views",
-      "blocks": {
-        "view_bWjJ6U": {
-          "type": "view",
-          "settings": {
-            "label": "All",
-            "collection": "coming-soon-electronic",
-            "see_all_label": "See all"
-          }
-        },
-        "view_MBe8NG": {
-          "type": "view",
-          "settings": {
-            "label": "This week",
-            "collection": "this-week-coming-soon",
-            "see_all_label": "See all"
-          }
-        },
-        "view_LH93Yw": {
-          "type": "view",
-          "settings": {
-            "label": "Pre order",
-            "collection": "pre-order-coming-soon",
-            "see_all_label": "See all"
-          }
-        }
-      },
-      "block_order": [
-        "view_bWjJ6U",
-        "view_MBe8NG",
-        "view_LH93Yw"
-      ],
-      "name": "Pattern new in (views)",
-      "settings": {
-        "heading": "Coming soon",
-        "anchor_id": "",
-        "products_to_show": 8,
-        "products_on_mobile": 6,
-        "container_width": "standard",
-        "image_ratio": "square"
-      }
     }
   },
   "order": [
@@ -1156,11 +1123,10 @@
     "pattern_columns_demo",
     "apps_columns_demo_audioly",
     "pattern_space_band",
-    "featured_collection_8grxUc",
+    "pattern_new_in_views_KEeDHL",
     "179548282811c2c151",
     "pattern_editorial_row",
     "pattern_visit",
-    "featured_collection",
-    "pattern_new_in_views_KEeDHL"
+    "featured_collection"
   ]
 }
