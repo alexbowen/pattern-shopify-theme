@@ -1108,7 +1108,7 @@
         "view_MBe8NG": {
           "type": "view",
           "settings": {
-            "label": "This Week",
+            "label": "This week",
             "collection": "this-week-coming-soon",
             "see_all_label": "See all"
           }
