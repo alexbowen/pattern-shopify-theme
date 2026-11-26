@@ -1108,8 +1108,8 @@
         "view_MBe8NG": {
           "type": "view",
           "settings": {
-            "label": "Flipside",
-            "collection": "",
+            "label": "This Week",
+            "collection": "this-week-coming-soon",
             "see_all_label": "See all"
           }
         },
