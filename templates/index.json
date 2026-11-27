@@ -717,7 +717,7 @@
       "name": "Pattern new in (views)",
       "settings": {
         "heading": "Coming soon",
-        "anchor_id": "",
+        "anchor_id": "coming-soon",
         "products_to_show": 12,
         "products_on_mobile": 8,
         "container_width": "standard",
