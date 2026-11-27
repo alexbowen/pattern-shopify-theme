@@ -3,19 +3,17 @@
   display type, title in the italic serif, meta line (label · format), optional price and cover.
 
   Play button: this snippet has no audio or player code. Audioly injects its own play/pause
-  button when one of its app blocks on the page renders a placeholder for this product (e.g. an
-  Apps section with "Play pause buttons for featured collection" directly after the section,
-  set to a collection that contains the product). Audioly finds the card from the product's links
-  (the card root is the nearest element holding all of them, so there are always two: slot +
-  text), prepends its button wrapper (position: absolute, no offsets) to the card root and sizes
-  it to the card's .card__inner. So .card__inner is a dedicated play slot, and the CSS only places
-  Audioly's wrapper over that slot and restyles the button.
-
-  Which section Audioly searches: its featured collection block walks back from its Apps section
-  to the nearest earlier section with an element whose class contains "collection" (else one with
-  product links). The list wrappers carry .pattern-listen-collection for that, so each Apps block
-  stops at the nearest list instead of at an earlier Apps section. Never use the exact class
-  "collection" on a list: Audioly would then pair placeholders with ".collection li" by position.
+  button when one of its app blocks on the page renders a placeholder for this product (an Apps
+  section with "Play pause buttons for featured collection" directly after the section, set to a
+  collection that contains the product). The theme runs Audioly's featured collections in
+  "multiple featured collections" mode (layout/theme.liquid, Theme settings > Audio player):
+  Audioly walks back from its Apps section to the nearest earlier section with an element whose
+  class contains "collection", takes the ".collection li" items there and gives each placeholder
+  the first item linking to its product that has no button yet. So the card is an <li> inside a
+  ul.collection (display: contents, so the layout is unchanged). Audioly prepends its button
+  wrapper (position: absolute, no offsets) to that <li>, the card root, and sizes it to the card's
+  .card__inner. So .card__inner is a dedicated play slot, and the CSS only places Audioly's wrapper
+  over that slot and restyles the button.
 
   Layout and size can come from the surrounding list (blocks/pattern-listen-list.liquid or
   sections/pattern-this-week.liquid) through classes and CSS variables, because a block can't
@@ -86,7 +84,8 @@
   -%}
   {%- if show_price -%}{{ 'component-price.css' | asset_url | stylesheet_tag }}{%- endif -%}
 
-  <div class="pattern-listen-card pattern-listen-card--{{ card_layout }}{% if card_show_image %} pattern-listen-card--cover{% endif %}">
+  <ul class="collection pattern-listen-card-list" role="list">
+  <li class="pattern-listen-card pattern-listen-card--{{ card_layout }}{% if card_show_image %} pattern-listen-card--cover{% endif %}">
     {%- if card_show_image -%}
       <div class="pattern-listen-card__cover{% if product.featured_image == blank %} pattern-placeholder{% endif %}">
         {%- if product.featured_image != blank -%}
@@ -148,10 +147,17 @@
     {%- endif -%}
 
     {{- app_blocks -}}
-  </div>
+  </li>
+  </ul>
 {%- endif -%}
 
 {% stylesheet %}
+  /* Audioly's ".collection li" hook (see above): the list adds no box */
+  .pattern-listen-card-list {
+    display: contents;
+    list-style: none;
+  }
+
   /* ===== Sizes (set on the list: .pattern-listen--compact / --standard / --large) =====
      Large is the original look (artist up to 104px). Standard: artist 28–36px (never above 40),
      title ~20px, 56px cover, 48px play. Compact: artist ~24px, 44px cover and play. The play
@@ -236,6 +242,7 @@
     --lc-play-margin: 0;
 
     position: relative; /* containing block for Audioly's absolutely positioned button wrapper */
+    list-style: none;
     display: grid;
     grid-template-columns: var(--lc-cols);
     grid-template-areas: var(--lc-areas);

@@ -4,13 +4,12 @@
   a clamped description, the shop comment as a pull quote, and a View record button (optional
   Add to cart through the theme's product form).
 
-  Play button: no audio code here. Same mechanism as snippets/pattern-listen-card.liquid:
-  Audioly finds the card from its product links (two of them, so the card root holds them all),
-  prepends its button wrapper to the card root and sizes it to .card__inner, which is a play slot
-  over the cover's bottom-left corner. The root's class contains "collection" so an Audioly Apps
-  block placed after the section stops at this section. The page needs an Apps section after the
-  section with Audioly's featured collection play buttons block, set to a collection containing
-  the record.
+  Play button: no audio code here. Same mechanism as snippets/pattern-listen-card.liquid: the
+  card root is an <li> in ul.collection, the ".collection li" item Audioly's featured collection
+  block matches by product link; Audioly prepends its button wrapper to it and sizes it to
+  .card__inner, a play slot over the cover's bottom-left corner. The page needs an Apps section
+  after the section with Audioly's featured collection play buttons block, set to a collection
+  containing the record.
 
   Narrow containers (under ~560px) switch a horizontal card to the vertical layout (container
   query), so it works in columns and side by side.
@@ -90,8 +89,8 @@
   -%}
   {{ 'component-price.css' | asset_url | stylesheet_tag }}
 
-  <div class="pattern-feature-wrap">
-    <article class="pattern-feature pattern-feature-collection pattern-feature--{{ fc_layout }} pattern-feature--{{ fc_size }} pattern-feature--bg-{{ fc_bg }}{% if fc_bg == 'dark' %} pattern-stripe-dark{% endif %}{% unless product.available %} pattern-feature--sold-out{% endunless %}">
+  <ul class="pattern-feature-wrap collection" role="list">
+    <li class="pattern-feature pattern-feature-collection pattern-feature--{{ fc_layout }} pattern-feature--{{ fc_size }} pattern-feature--bg-{{ fc_bg }}{% if fc_bg == 'dark' %} pattern-stripe-dark{% endif %}{% unless product.available %} pattern-feature--sold-out{% endunless %}">
       <div class="pattern-feature__cover{% if product.featured_image == blank %} pattern-placeholder{% endif %}">
         {%- if product.featured_image != blank -%}
           {{
@@ -185,18 +184,22 @@
           {%- endif -%}
         {%- endif -%}
       </div>
-    </article>
-  </div>
+    </li>
+  </ul>
 {%- endif -%}
 
 {% stylesheet %}
   /* ===== Featured record card ===== */
   .pattern-feature-wrap {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     container-type: inline-size;
     min-width: 0;
   }
 
   .pattern-feature {
+    list-style: none;
     --fc-cover: 24rem;
     --fc-artist: clamp(2.6rem, 2.4vw, 3.2rem);
     --fc-title: clamp(1.7rem, 1.4vw, 2rem);
