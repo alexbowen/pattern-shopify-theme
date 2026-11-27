@@ -984,7 +984,7 @@
           "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
           "settings": {
             "collection": "this-week-coming-soon",
-            "productsToShow": 4,
+            "productsToShow": 12,
             "size": 60,
             "position": "center",
             "padding": 20,
