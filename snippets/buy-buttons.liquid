@@ -37,6 +37,21 @@
         assign add_label = 'products.product.add_to_cart' | t
       endif
       assign availability_line = availability_line | strip
+
+      # Order-in: no Shop Pay / accelerated checkout (setting); arriving, pre-order and order-in:
+      # no Shopify pickup widget, since the record isn't in the shop yet.
+      capture availability_dynamic_checkout
+        render 'pattern-availability', product: product, part: 'dynamic_checkout'
+      endcapture
+      if availability_dynamic_checkout contains 'hide'
+        assign show_dynamic_checkout = false
+      endif
+      capture availability_pickup
+        render 'pattern-availability', product: product, part: 'pickup'
+      endcapture
+      if availability_pickup contains 'hide'
+        assign show_pickup_availability = false
+      endif
     -%}
     {%- render 'pattern-availability', product: product, part: 'comment' -%}
 

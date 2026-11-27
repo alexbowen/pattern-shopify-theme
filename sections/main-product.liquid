@@ -222,13 +222,24 @@
                   {%- endif -%}
                 </div>
               {%- when 'pattern_trust' -%}
-                {%- if block.settings.label != blank or block.settings.text != blank -%}
+                {%- liquid
+                  # Availability (snippets/pattern-availability.liquid): for arriving, pre-order and
+                  # order-in, Postage / Collect / Delivery rows take their text from Theme settings > Availability.
+                  capture trust_text
+                    render 'pattern-availability', product: product, part: 'info_row', row: block.settings.availability_row, label: block.settings.label
+                  endcapture
+                  assign trust_text = trust_text | strip
+                  if trust_text == blank
+                    assign trust_text = block.settings.text
+                  endif
+                -%}
+                {%- if block.settings.label != blank or trust_text != blank -%}
                   <div class="pattern-product-trust" {{ block.shopify_attributes }}>
                     {%- if block.settings.label != blank -%}
                       <span class="pattern-label pattern-product-trust__label">{{ block.settings.label | escape }}</span>
                     {%- endif -%}
-                    {%- if block.settings.text != blank -%}
-                      <span class="pattern-product-trust__text">{{ block.settings.text | escape }}</span>
+                    {%- if trust_text != blank -%}
+                      <span class="pattern-product-trust__text">{{ trust_text | escape }}</span>
                     {%- endif -%}
                   </div>
                 {%- endif -%}
@@ -827,6 +838,20 @@
           "id": "text",
           "label": "Text",
           "default": "Flat-rate postage to PT & ES"
+        },
+        {
+          "type": "select",
+          "id": "availability_row",
+          "label": "Row for availability text",
+          "info": "For arriving, pre-order and order-in records the text comes from Theme settings > Availability. Auto picks the row from the label (Postage, Collect, Delivery).",
+          "options": [
+            { "value": "auto", "label": "Auto (from label)" },
+            { "value": "postage", "label": "Postage" },
+            { "value": "collect", "label": "Collect" },
+            { "value": "delivery", "label": "Delivery" },
+            { "value": "none", "label": "None (always this text)" }
+          ],
+          "default": "auto"
         }
       ]
     },

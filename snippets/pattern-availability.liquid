@@ -32,6 +32,16 @@
     - 'cart_line': the short line under a cart item, blank for in stock / sold out
     - 'max_quantity': the quantity cap for preorder / order_in (setting, default 5), blank otherwise
     - 'comment': an HTML comment when the product has an availability state but can't be bought
+    - 'pickup': 'hide' when Shopify's pickup widget ("Pickup available at ...") should not show
+      (arriving, preorder, order_in), blank otherwise
+    - 'dynamic_checkout': 'hide' for order_in when "Hide Shop Pay / accelerated checkout buttons
+      for order-in products" is on, blank otherwise
+    - 'info_row': the text for a product page info row (needs row), blank for in stock / sold
+      out, meaning the row keeps its own text
+  - row: {String} for 'info_row': postage | collect | delivery | none, or auto (or blank) to
+    pick it from label
+  - label: {String} for 'info_row' with row auto: the row's label ("Postage", "Collect",
+    "Delivery"; "Shipping" and "Pickup" also work)
 
   Usage:
   {%- capture availability_state -%}{%- render 'pattern-availability', product: product, part: 'state' -%}{%- endcapture -%}
@@ -159,4 +169,72 @@
         <!-- Pattern availability: "{{ product.handle }}" is set to {{ av_state }} (custom.pattern_availability) but can't be bought (no stock, continue selling off). Showing the {{ av_state }} badge and line with a disabled Sold out button. Turn on "Continue selling when out of stock" or add stock. -->
       {%- endif -%}
     {%- endif -%}
+
+  {%- when 'pickup' -%}
+    {%- if av_state == 'arriving' or av_state == 'preorder' or av_state == 'order_in' -%}hide{%- endif -%}
+
+  {%- when 'dynamic_checkout' -%}
+    {%- if av_state == 'order_in' and settings.availability_hide_dynamic_checkout_order_in -%}hide{%- endif -%}
+
+  {%- when 'info_row' -%}
+    {%- liquid
+      # Liquid can't read shipping profiles, so the availability state decides the row text.
+      # The date suffix (", around {date}" / ", out {date}") is added only when the expected date
+      # is set and not past; a {date} inside a row text is filled the same way.
+      assign av_text = ''
+      assign av_suffix = ''
+      assign av_row = row | default: 'auto'
+      if av_row == 'auto'
+        assign av_label = label | downcase
+        if av_label contains 'postage' or av_label contains 'shipping'
+          assign av_row = 'postage'
+        elsif av_label contains 'collect' or av_label contains 'pickup'
+          assign av_row = 'collect'
+        elsif av_label contains 'delivery'
+          assign av_row = 'delivery'
+        endif
+      endif
+      case av_state
+        when 'order_in'
+          case av_row
+            when 'postage'
+              assign av_text = settings.availability_info_postage_order_in | default: 'Portugal & Spain only, ships 10-14 working days after you order'
+            when 'collect'
+              assign av_text = settings.availability_info_collect_order_in | default: 'Collect in store, Alcântara, once it arrives'
+            when 'delivery'
+              assign av_text = settings.availability_info_delivery_order_in | default: 'Lisbon delivery once it arrives'
+          endcase
+        when 'arriving'
+          case av_row
+            when 'postage'
+              assign av_text = settings.availability_info_postage_arriving | default: 'Ships once it arrives'
+            when 'collect'
+              assign av_text = settings.availability_info_collect_arriving | default: 'Collect in store once it arrives'
+            when 'delivery'
+              assign av_text = settings.availability_info_delivery_arriving | default: 'Lisbon delivery once it arrives'
+          endcase
+          assign av_suffix = settings.availability_info_date_arriving | default: ', around {date}'
+        when 'preorder'
+          case av_row
+            when 'postage'
+              assign av_text = settings.availability_info_postage_preorder | default: 'Ships on release'
+            when 'collect'
+              assign av_text = settings.availability_info_collect_preorder | default: 'Collect in store on release'
+            when 'delivery'
+              assign av_text = settings.availability_info_delivery_preorder | default: 'Lisbon delivery on release'
+          endcase
+          assign av_suffix = settings.availability_info_date_preorder | default: ', out {date}'
+      endcase
+      if av_text != blank
+        if av_date_status == 'ok'
+          unless av_text contains '{date}'
+            assign av_text = av_text | append: av_suffix
+          endunless
+          assign av_text = av_text | replace: '{date}', av_date
+        else
+          assign av_text = av_text | remove: '{date}' | strip
+        endif
+      endif
+    -%}
+    {{- av_text | strip -}}
 {%- endcase -%}

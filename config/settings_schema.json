@@ -1552,6 +1552,93 @@
       },
       {
         "type": "header",
+        "content": "Product page info rows"
+      },
+      {
+        "type": "paragraph",
+        "content": "Postage, Collect and Delivery rows on the product page for arriving, pre-order and order-in records. In-stock and sold-out records keep each row's own text. The date suffix is added when the expected date is set and not past; you can also put {date} in a text."
+      },
+      {
+        "type": "text",
+        "id": "availability_info_postage_order_in",
+        "label": "Order-in postage",
+        "default": "Portugal & Spain only, ships 10-14 working days after you order"
+      },
+      {
+        "type": "text",
+        "id": "availability_info_collect_order_in",
+        "label": "Order-in collect",
+        "default": "Collect in store, Alcântara, once it arrives"
+      },
+      {
+        "type": "text",
+        "id": "availability_info_delivery_order_in",
+        "label": "Order-in delivery",
+        "default": "Lisbon delivery once it arrives"
+      },
+      {
+        "type": "text",
+        "id": "availability_info_postage_arriving",
+        "label": "Arriving postage",
+        "default": "Ships once it arrives"
+      },
+      {
+        "type": "text",
+        "id": "availability_info_collect_arriving",
+        "label": "Arriving collect",
+        "default": "Collect in store once it arrives"
+      },
+      {
+        "type": "text",
+        "id": "availability_info_delivery_arriving",
+        "label": "Arriving delivery",
+        "default": "Lisbon delivery once it arrives"
+      },
+      {
+        "type": "text",
+        "id": "availability_info_date_arriving",
+        "label": "Arriving date suffix",
+        "default": ", around {date}",
+        "info": "Added to the arriving rows when there is an expected date."
+      },
+      {
+        "type": "text",
+        "id": "availability_info_postage_preorder",
+        "label": "Pre-order postage",
+        "default": "Ships on release"
+      },
+      {
+        "type": "text",
+        "id": "availability_info_collect_preorder",
+        "label": "Pre-order collect",
+        "default": "Collect in store on release"
+      },
+      {
+        "type": "text",
+        "id": "availability_info_delivery_preorder",
+        "label": "Pre-order delivery",
+        "default": "Lisbon delivery on release"
+      },
+      {
+        "type": "text",
+        "id": "availability_info_date_preorder",
+        "label": "Pre-order date suffix",
+        "default": ", out {date}",
+        "info": "Added to the pre-order rows when there is an expected date."
+      },
+      {
+        "type": "header",
+        "content": "Checkout buttons"
+      },
+      {
+        "type": "checkbox",
+        "id": "availability_hide_dynamic_checkout_order_in",
+        "label": "Hide Shop Pay / accelerated checkout buttons for order-in products",
+        "default": true,
+        "info": "Add to cart stays. Arriving, pre-order and order-in records never show the store pickup widget."
+      },
+      {
+        "type": "header",
         "content": "Date"
       },
       {
