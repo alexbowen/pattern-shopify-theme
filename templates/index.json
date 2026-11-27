@@ -361,6 +361,7 @@
         "col_a",
         "col_b"
       ],
+      "disabled": true,
       "settings": {
         "ratio": "50-50",
         "width": "full",
