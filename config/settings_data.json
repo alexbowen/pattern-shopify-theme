@@ -10,6 +10,18 @@
 {
   "current": {
     "availability_line_order_in": "Ordered in for you, ships in 10-14 working days. Portugal and Spain only.",
+    "availability_info_postage_order_in": "Portugal & Spain only, ships 10-14 working days after you order",
+    "availability_info_collect_order_in": "Collect in store, Alcântara, once it arrives",
+    "availability_info_delivery_order_in": "Lisbon delivery once it arrives",
+    "availability_info_postage_arriving": "Ships once it arrives",
+    "availability_info_collect_arriving": "Collect in store once it arrives",
+    "availability_info_delivery_arriving": "Lisbon delivery once it arrives",
+    "availability_info_date_arriving": ", around {date}",
+    "availability_info_postage_preorder": "Ships on release",
+    "availability_info_collect_preorder": "Collect in store on release",
+    "availability_info_delivery_preorder": "Lisbon delivery on release",
+    "availability_info_date_preorder": ", out {date}",
+    "availability_hide_dynamic_checkout_order_in": true,
     "all_products_heading": "Browse",
     "logo_width": 90,
     "favicon": "shopify://shop_images/pattern-logo_17933bd4-5792-4166-a003-61d5ee06e38e.png",
