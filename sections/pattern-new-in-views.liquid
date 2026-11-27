@@ -141,7 +141,7 @@
             hidden
           {% endunless %}
         >
-          <ul class="grid product-grid pattern-new-in-views__grid" role="list">
+          <ul class="grid product-grid pattern-new-in-views__grid collection" role="list">
             {%- for product in block.settings.collection.products limit: products_to_show -%}
               {%- liquid
                 assign skip_card_styles = true
@@ -169,7 +169,7 @@
       {%- endfor -%}
     {%- elsif request.design_mode -%}
       {%- comment -%} No view has a collection yet: placeholder cards so the layout shows in the editor. {%- endcomment -%}
-      <ul class="grid product-grid pattern-new-in-views__grid" role="list">
+      <ul class="grid product-grid pattern-new-in-views__grid collection" role="list">
         {%- for i in (1..products_to_show) -%}
           <li class="grid__item">
             {% render 'card-product', show_vendor: false %}

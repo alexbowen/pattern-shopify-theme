@@ -1651,6 +1651,18 @@
     ]
   },
   {
+    "name": "Audio player",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "audioly_match_by_product",
+        "label": "Match Audioly play buttons to cards by product",
+        "default": true,
+        "info": "For Audioly's featured collection play buttons blocks: each button goes on the card that links to its product, so tabbed sections and records shown in more than one tab all get buttons. Turn off to use Audioly's default (by position)."
+      }
+    ]
+  },
+  {
     "name": "t:settings_schema.cart.name",
     "settings": [
       {

@@ -399,5 +399,20 @@
     {%- if settings.cart_type == 'drawer' -%}
       <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
     {%- endif -%}
+
+    {%- if settings.audioly_match_by_product -%}
+      {%- comment -%}
+        Audioly: run its "Play pause buttons for featured collection" blocks in its own "multiple
+        featured collections" mode, which gives each placeholder the first ".collection li" item
+        linking to its product that has no button yet (instead of pairing by position). Needed for
+        tabbed sections whose views share products. A module script runs after the page is parsed,
+        so after the app embed sets its default, and before Audioly's own module (later in the
+        page) scans. Theme settings > Audio player.
+      {%- endcomment -%}
+      <script type="module">
+        window.AudiolyApp = window.AudiolyApp || {};
+        window.AudiolyApp.multipleFeaturedCollectionsEnabled = true;
+      </script>
+    {%- endif -%}
   </body>
 </html>
