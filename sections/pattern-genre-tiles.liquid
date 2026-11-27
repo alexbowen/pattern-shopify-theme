@@ -34,7 +34,8 @@
   assign all_url = section.settings.link | default: base_url
 -%}
 
-<section class="pattern-section pattern-genres pattern-genres--bg-{{ bg }}{{ texture_class }}" id="browse-by-genre" aria-labelledby="PatternGenresHeading-{{ section.id }}">
+{%- assign anchor_id = section.settings.anchor_id | strip | handleize -%}
+<section class="pattern-section pattern-genres pattern-genres--bg-{{ bg }}{{ texture_class }}"{% if anchor_id != blank %} id="{{ anchor_id }}" data-pattern-anchor{% endif %} aria-labelledby="PatternGenresHeading-{{ section.id }}">
   <div class="pattern-wrap pattern-genres__inner">
     <div class="pattern-genres__head">
       <div class="pattern-genres__intro">
@@ -431,6 +432,13 @@
       "id": "heading_accent",
       "label": "Heading accent word (italic)",
       "info": "Optional. Added after the heading."
+    },
+    {
+      "type": "text",
+      "id": "anchor_id",
+      "label": "Anchor ID",
+      "default": "browse-by-genre",
+      "info": "Lets links jump to this section with \"#\" and the ID, e.g. #browse-by-genre (the hero's Browse by genre link). Lowercase letters, numbers and hyphens."
     },
     {
       "type": "select",
