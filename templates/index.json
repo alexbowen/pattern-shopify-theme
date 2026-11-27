@@ -883,6 +883,14 @@
             "link": ""
           }
         },
+        "event_2": {
+          "type": "event",
+          "settings": {
+            "date": "[DD MMM]",
+            "name": "[Event name] — [time]",
+            "link": ""
+          }
+        },
         "event_3": {
           "type": "event",
           "settings": {
@@ -895,6 +903,7 @@
       "block_order": [
         "event_gfLeJM",
         "event_1",
+        "event_2",
         "event_3"
       ],
       "disabled": true,
@@ -973,6 +982,7 @@
         },
         "audioly_sticky_audio_player_play_pause_buttons_featured_collection_EWTHYw": {
           "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "disabled": true,
           "settings": {
             "collection": "this-week-coming-soon",
             "productsToShow": 12,
