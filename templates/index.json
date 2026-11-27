@@ -964,10 +964,10 @@
     "179548282811c2c151": {
       "type": "apps",
       "blocks": {
-        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_p4hEAV": {
+        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_iPRXpg": {
           "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
           "settings": {
-            "collection": "pre-order-coming-soon",
+            "collection": "coming-soon-electronic",
             "productsToShow": 12,
             "size": 60,
             "position": "center",
@@ -996,10 +996,10 @@
             "alwaysVisibleIfActive": true
           }
         },
-        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_iPRXpg": {
+        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_p4hEAV": {
           "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
           "settings": {
-            "collection": "coming-soon-electronic",
+            "collection": "pre-order-coming-soon",
             "productsToShow": 12,
             "size": 60,
             "position": "center",
@@ -1014,9 +1014,9 @@
         }
       },
       "block_order": [
-        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_p4hEAV",
+        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_iPRXpg",
         "audioly_sticky_audio_player_play_pause_buttons_featured_collection_EWTHYw",
-        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_iPRXpg"
+        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_p4hEAV"
       ],
       "settings": {
         "include_margins": true
@@ -1104,39 +1104,6 @@
         "button_label": "Subscribe",
         "success_message": "Thanks, you’re on the list."
       }
-    },
-    "featured_collection": {
-      "type": "featured-collection",
-      "disabled": true,
-      "settings": {
-        "collection": "all",
-        "products_to_show": 8,
-        "label": "",
-        "anchor_id": "",
-        "title": "Featured products",
-        "heading_size": "h2",
-        "description": "",
-        "show_description": false,
-        "description_style": "body",
-        "columns_desktop": 4,
-        "enable_desktop_slider": false,
-        "full_width": false,
-        "show_view_all": true,
-        "view_all_style": "solid",
-        "background": "paper",
-        "container_width": "standard",
-        "color_scheme": "scheme-1",
-        "image_ratio": "adapt",
-        "image_shape": "default",
-        "show_secondary_image": true,
-        "show_vendor": false,
-        "show_rating": false,
-        "quick_add": "none",
-        "columns_mobile": "2",
-        "swipe_on_mobile": false,
-        "padding_top": 44,
-        "padding_bottom": 36
-      }
     }
   },
   "order": [
@@ -1160,7 +1127,6 @@
     "pattern_new_in_views_KEeDHL",
     "179548282811c2c151",
     "pattern_editorial_row",
-    "pattern_visit",
-    "featured_collection"
+    "pattern_visit"
   ]
 }
