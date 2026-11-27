@@ -610,90 +610,6 @@
         "padding_bottom": 96
       }
     },
-    "featured_record_example_a_audioly": {
-      "type": "apps",
-      "blocks": {
-        "audioly_example_a": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "weekly-electronic",
-            "productsToShow": 18,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_example_a"
-      ],
-      "name": "Featured record (example) A: Audioly play buttons",
-      "settings": {
-        "include_margins": false
-      }
-    },
-    "featured_record_example_b_audioly": {
-      "type": "apps",
-      "blocks": {
-        "audioly_example_b": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "weekly-electronic",
-            "productsToShow": 18,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_example_b"
-      ],
-      "name": "Featured record (example) B: Audioly play buttons",
-      "settings": {
-        "include_margins": false
-      }
-    },
-    "featured_record_example_c_audioly": {
-      "type": "apps",
-      "blocks": {
-        "audioly_example_c": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "weekly-electronic",
-            "productsToShow": 18,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_example_c"
-      ],
-      "name": "Featured record (example) C: Audioly play buttons",
-      "settings": {
-        "include_margins": false
-      }
-    },
     "pattern_feature_split": {
       "type": "pattern-feature-split",
       "disabled": true,
@@ -1090,9 +1006,6 @@
     "pattern_columns_feature_demo",
     "pattern_genre_tiles",
     "pattern_service_row",
-    "featured_record_example_a_audioly",
-    "featured_record_example_b_audioly",
-    "featured_record_example_c_audioly",
     "pattern_feature_split",
     "pattern_columns_demo",
     "pattern_space_band",
