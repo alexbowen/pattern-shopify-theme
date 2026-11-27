@@ -969,7 +969,7 @@
           "settings": {
             "collection": "coming-soon-electronic",
             "productsToShow": 12,
-            "size": 60,
+            "size": 56,
             "position": "center",
             "padding": 20,
             "mobileSettingsEnabled": false,
@@ -985,7 +985,7 @@
           "settings": {
             "collection": "this-week-coming-soon",
             "productsToShow": 12,
-            "size": 60,
+            "size": 56,
             "position": "center",
             "padding": 20,
             "mobileSettingsEnabled": false,
