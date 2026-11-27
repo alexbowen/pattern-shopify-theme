@@ -273,11 +273,28 @@
             "hideIfPointerIsFine": false,
             "alwaysVisibleIfActive": true
           }
+        },
+        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_T8KTdT": {
+          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
+          "settings": {
+            "collection": "new-in-popular",
+            "productsToShow": 4,
+            "size": 60,
+            "position": "center",
+            "padding": 20,
+            "mobileSettingsEnabled": false,
+            "sizeOnMobile": 40,
+            "positionOnMobile": "center",
+            "paddingOnMobile": 10,
+            "hideIfPointerIsFine": false,
+            "alwaysVisibleIfActive": true
+          }
         }
       },
       "block_order": [
         "audioly_new_in_electronic",
-        "audioly_new_in_flipside"
+        "audioly_new_in_flipside",
+        "audioly_sticky_audio_player_play_pause_buttons_featured_collection_T8KTdT"
       ],
       "name": "New in: Audioly play buttons (one block per view)",
       "settings": {
@@ -361,7 +378,6 @@
         "col_a",
         "col_b"
       ],
-      "disabled": true,
       "settings": {
         "ratio": "50-50",
         "width": "full",
@@ -609,235 +625,6 @@
         "background": "stripes-dark",
         "padding_top": 48,
         "padding_bottom": 96
-      }
-    },
-    "featured_record_example_a_audioly": {
-      "type": "apps",
-      "blocks": {
-        "audioly_example_a": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "weekly-electronic",
-            "productsToShow": 18,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_example_a"
-      ],
-      "disabled": true,
-      "name": "Featured record (example) A: Audioly play buttons",
-      "settings": {
-        "include_margins": false
-      }
-    },
-    "featured_record_example_b_audioly": {
-      "type": "apps",
-      "blocks": {
-        "audioly_example_b": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "weekly-electronic",
-            "productsToShow": 18,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_example_b"
-      ],
-      "disabled": true,
-      "name": "Featured record (example) B: Audioly play buttons",
-      "settings": {
-        "include_margins": false
-      }
-    },
-    "featured_record_example_c_audioly": {
-      "type": "apps",
-      "blocks": {
-        "audioly_example_c": {
-          "type": "shopify://apps/audioly-sticky-audio-player/blocks/play-pause-buttons-featured-collection/1f530410-ca0c-4485-98fc-b2daea5cb117",
-          "settings": {
-            "collection": "weekly-electronic",
-            "productsToShow": 18,
-            "size": 56,
-            "position": "center",
-            "padding": 0,
-            "mobileSettingsEnabled": false,
-            "sizeOnMobile": 56,
-            "positionOnMobile": "center",
-            "paddingOnMobile": 0,
-            "hideIfPointerIsFine": false,
-            "alwaysVisibleIfActive": true
-          }
-        }
-      },
-      "block_order": [
-        "audioly_example_c"
-      ],
-      "disabled": true,
-      "name": "Featured record (example) C: Audioly play buttons",
-      "settings": {
-        "include_margins": false
-      }
-    },
-    "pattern_feature_split": {
-      "type": "pattern-feature-split",
-      "disabled": true,
-      "settings": {
-        "image": "shopify://shop_images/20171116-.com.apple.Foundation.NSItemProvider.FgbqxL.jpg",
-        "image_position": "left",
-        "tone": "clay",
-        "label": "We buy & exchange",
-        "heading": "Bring us your",
-        "heading_accent": "records",
-        "heading_end": ".",
-        "text": "<p>We buy and exchange records. Bring a crate to the shop or send us a list, and we'll make you an offer or swap them for something new to you.</p>",
-        "button_label": "How it works",
-        "button_link": ""
-      }
-    },
-    "pattern_columns_demo": {
-      "type": "pattern-columns",
-      "blocks": {
-        "column_left": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "stripes-dark",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "center",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "listen_list": {
-              "type": "pattern-listen-list",
-              "settings": {
-                "label": "Recommended",
-                "size": "standard",
-                "layout": "lines",
-                "show_cover": true,
-                "show_price": false
-              },
-              "blocks": {
-                "rec_a": {
-                  "type": "pattern-record",
-                  "settings": {
-                    "product": "nail-more-time-lax12inch103-b2b",
-                    "label": "",
-                    "artist": "",
-                    "title": ""
-                  },
-                  "blocks": {}
-                },
-                "rec_b": {
-                  "type": "pattern-record",
-                  "settings": {
-                    "product": "dj-honesty-camarque-ep-syncro40-b2b",
-                    "label": "",
-                    "artist": "",
-                    "title": ""
-                  },
-                  "blocks": {}
-                },
-                "rec_c": {
-                  "type": "pattern-record",
-                  "settings": {
-                    "product": "various-artists-jazzy-sport-past-forward-silver",
-                    "label": "",
-                    "artist": "",
-                    "title": ""
-                  },
-                  "blocks": {}
-                }
-              },
-              "block_order": [
-                "rec_a",
-                "rec_b",
-                "rec_c"
-              ]
-            }
-          },
-          "block_order": [
-            "listen_list"
-          ]
-        },
-        "column_right": {
-          "type": "pattern-column",
-          "settings": {
-            "background": "clay",
-            "overlay_opacity": 50,
-            "padding": "medium",
-            "align": "center",
-            "min_height": "auto"
-          },
-          "blocks": {
-            "heading": {
-              "type": "pattern-heading",
-              "settings": {
-                "eyebrow": "We buy & exchange",
-                "heading": "Bring us your",
-                "heading_accent": "records",
-                "heading_end": ".",
-                "size": "large",
-                "tag": "h2"
-              },
-              "blocks": {}
-            },
-            "text": {
-              "type": "pattern-text",
-              "settings": {
-                "text": "<p>We buy and exchange records. Bring a crate to the shop or send us a list, and we&#39;ll make you an offer or swap them for something new to you.</p>",
-                "size": "large"
-              },
-              "blocks": {}
-            },
-            "button": {
-              "type": "pattern-button",
-              "settings": {
-                "label": "How it works",
-                "link": "/pages/sell-your-records",
-                "style": "accent"
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "heading",
-            "text",
-            "button"
-          ]
-        }
-      },
-      "block_order": [
-        "column_left",
-        "column_right"
-      ],
-      "disabled": true,
-      "settings": {
-        "ratio": "60-40",
-        "width": "full",
-        "gap": "none",
-        "mobile_order": "normal",
-        "padding_top": 0,
-        "padding_bottom": 0
       }
     },
     "pattern_space_band": {
@@ -1094,11 +881,6 @@
     "pattern_columns_feature_demo",
     "pattern_genre_tiles",
     "pattern_service_row",
-    "featured_record_example_a_audioly",
-    "featured_record_example_b_audioly",
-    "featured_record_example_c_audioly",
-    "pattern_feature_split",
-    "pattern_columns_demo",
     "pattern_space_band",
     "pattern_new_in_views_KEeDHL",
     "179548282811c2c151",
